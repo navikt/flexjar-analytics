@@ -1,0 +1,40 @@
+{
+  "name": "flexjar-analytics",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build && tsc --noEmit",
+    "start": "node .output/server/index.mjs",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@navikt/aksel-icons": "^7.35.1",
+    "@navikt/ds-css": "^7.35.1",
+    "@navikt/ds-react": "^7.35.1",
+    "@navikt/oasis": "^4.1.1",
+    "@tanstack/react-query": "^5.62.0",
+    "@tanstack/react-router": "^1.140.0",
+    "@tanstack/react-start": "^1.140.0",
+    "dayjs": "^1.11.13",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "recharts": "^2.14.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@types/node": "^22.5.4",
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "@vitejs/plugin-react": "^4.6.0",
+    "typescript": "^5.7.2",
+    "vite": "^7.1.7",
+    "vite-tsconfig-paths": "^5.1.4"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

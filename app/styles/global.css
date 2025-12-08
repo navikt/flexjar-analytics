@@ -1,0 +1,534 @@
+/* 
+ * Flexjar Analytics - Global Styles
+ * 
+ * Uses Aksel Darkside tokens (--ax-* prefix) for automatic light/dark mode support.
+ * See: https://aksel.nav.no/grunnleggende/darkside
+ * 
+ * Key tokens:
+ * - --ax-bg-default: Standard background
+ * - --ax-bg-raised: Elevated surfaces (cards)
+ * - --ax-bg-sunken: Page background
+ * - --ax-text-neutral: Standard text
+ * - --ax-text-neutral-subtle: Muted text
+ * - --ax-border-neutral-subtle: Subtle borders
+ */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background-color: var(--ax-bg-sunken);
+  color: var(--ax-text-neutral);
+}
+
+/* Layout utilities */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.dashboard-card {
+  background: var(--ax-bg-raised);
+  border-radius: 8px;
+  padding: 1.5rem;
+  border: 1px solid var(--ax-border-neutral-subtle);
+  box-shadow: var(--ax-shadow-small);
+}
+
+.dashboard-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+/* Stats cards */
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-height: 120px;
+}
+
+.stat-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1;
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: var(--ax-text-neutral-subtle);
+}
+
+.stat-subtitle {
+  color: var(--ax-text-neutral-subtle);
+  margin-top: auto;
+}
+
+/* Chart containers */
+.chart-container {
+  height: 300px;
+  width: 100%;
+}
+
+.chart-container-small {
+  height: 200px;
+  width: 100%;
+}
+
+/* Filter bar */
+.filter-bar-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+  padding: 1rem;
+  background: var(--ax-bg-raised);
+  border-radius: 8px;
+  border: 1px solid var(--ax-border-neutral-subtle);
+}
+
+.filter-toggles {
+  padding: 0.75rem 1rem;
+  background: var(--ax-bg-raised);
+  border-radius: 8px;
+  border: 1px solid var(--ax-border-neutral-subtle);
+}
+
+/* Export alerts */
+.export-alert {
+  grid-column: 1 / -1;
+}
+
+/* Table improvements */
+.feedback-table {
+  background: var(--ax-bg-raised);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--ax-border-neutral-subtle);
+}
+
+/* Rating emoji display */
+.rating-emoji {
+  font-size: 1.25rem;
+}
+
+/* Expanded rating bar in feedback details */
+.expanded-rating-bar {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.expanded-rating-dot {
+  font-size: 1.25rem;
+  opacity: 0.25;
+  transition: opacity 0.15s;
+}
+
+.expanded-rating-dot.filled {
+  opacity: 1;
+}
+
+/* Sensitive data badge */
+.sensitive-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  padding: 0.125rem 0.5rem;
+  background: var(--ax-bg-warning-soft);
+  color: var(--ax-text-warning);
+  border-radius: 4px;
+}
+
+/* Export buttons */
+.export-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Scrollable table wrapper */
+.table-wrapper {
+  overflow-x: auto;
+}
+
+/* Navigation tabs */
+.nav-tabs {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--ax-border-neutral-subtle);
+  margin-bottom: 1.5rem;
+}
+
+.nav-tab {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--ax-text-neutral-subtle);
+  font-weight: 500;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.nav-tab:hover {
+  color: var(--ax-text-neutral);
+}
+
+.nav-tab.active {
+  color: var(--ax-text-accent);
+  border-bottom-color: var(--ax-border-accent);
+}
+
+/* Date range picker */
+.date-range {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* Header */
+.app-header {
+  background: var(--ax-bg-raised);
+  border-bottom: 1px solid var(--ax-border-neutral-subtle);
+  padding: 0 1rem;
+}
+
+.header-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 64px;
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 600;
+  font-size: 1.25rem;
+  text-decoration: none;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.header-title:hover {
+  opacity: 0.8;
+}
+
+.header-logo {
+  height: 40px;
+  width: auto;
+}
+
+/* Main content area */
+.main-content {
+  padding: 1.5rem 1rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+  }
+}
+
+/* Loading states */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--ax-bg-neutral-soft) 25%,
+    var(--ax-bg-neutral-moderate) 50%,
+    var(--ax-bg-neutral-soft) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Field Stats Section */
+.field-stats-section {
+  margin-top: 1rem;
+}
+
+.field-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.field-stat-card {
+  min-height: auto;
+  padding: 1.25rem;
+}
+
+.field-card-header {
+  margin-bottom: 0.5rem;
+}
+
+.field-card-label {
+  flex: 1;
+  min-width: 0;
+}
+
+.field-card-icon {
+  flex-shrink: 0;
+}
+
+.rating-average {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.rating-average .rating-value {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.rating-average .rating-emoji {
+  font-size: 1.5rem;
+}
+
+/* Rating bar rows */
+.rating-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.rating-bar-row .rating-label {
+  width: 1.25rem;
+  text-align: center;
+  font-weight: 500;
+}
+
+.rating-bar-row .rating-bar {
+  flex: 1;
+  height: 10px;
+  background: var(--ax-bg-neutral-moderate);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.rating-bar-row .rating-bar-fill {
+  height: 100%;
+  border-radius: 5px;
+  transition: width 0.3s ease;
+}
+
+.rating-bar-row .rating-count {
+  width: 2rem;
+  text-align: right;
+  color: var(--ax-text-neutral-subtle);
+  font-size: 0.75rem;
+}
+
+/* Text field card */
+.text-field-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.text-stat-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+.text-stat-subtitle {
+  color: var(--ax-text-neutral-subtle);
+}
+
+/* Response rate visualization bar */
+.response-rate-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--ax-bg-neutral-moderate);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.response-rate-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+/* Feedback table row styling */
+.feedback-row {
+  transition: background-color 0.15s;
+}
+
+.feedback-row:hover {
+  background-color: var(--ax-bg-neutral-soft);
+}
+
+/* Expanded details section */
+.feedback-expanded {
+  background: var(--ax-bg-sunken);
+  border-top: 1px solid var(--ax-border-neutral-subtle);
+}
+
+/* Text answer boxes in expanded view */
+.text-answer-box {
+  background: var(--ax-bg-raised);
+  border: 1px solid var(--ax-border-neutral-subtle);
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+/* Tag/badge styling */
+.answer-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  background: var(--ax-bg-neutral-soft);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: var(--ax-text-neutral);
+}
+
+/* Survey name pill */
+.survey-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.625rem;
+  background: var(--ax-bg-accent-soft);
+  color: var(--ax-text-accent);
+  border-radius: 100px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* 
+ * Dark mode contrast improvements
+ * Darkside's default tokens can be too subtle - we boost contrast here
+ */
+:root[class="dark"],
+[data-theme="dark"] {
+  /* Stronger border contrast for cards */
+  --dashboard-card-border: var(--ax-border-neutral);
+  --dashboard-card-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  
+  /* Ensure page background is darker than cards */
+  --page-bg: #0f1114;
+  --card-bg: #1a1d21;
+}
+
+/* Apply dark mode card styling when Theme is dark */
+.dark .dashboard-card,
+.dark .filter-bar,
+.dark .feedback-table,
+.dark .app-header {
+  background: var(--card-bg, var(--ax-bg-raised));
+  border-color: var(--ax-border-neutral);
+  box-shadow: var(--dashboard-card-shadow, var(--ax-shadow-small));
+}
+
+.dark body,
+.dark html {
+  background-color: var(--page-bg, var(--ax-bg-sunken));
+}
+
+/* Aksel Theme component uses data-theme attribute */
+[data-theme="dark"] .dashboard-card,
+[data-theme="dark"] .filter-bar,
+[data-theme="dark"] .feedback-table,
+[data-theme="dark"] .app-header,
+[data-theme="dark"] .field-stat-card {
+  background: #1c1f24;
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] body {
+  background-color: #0d0f12;
+}
+
+/* Better text contrast in dark mode */
+[data-theme="dark"] .stat-value {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .stat-label,
+[data-theme="dark"] .stat-subtitle {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Improved rating bar background */
+[data-theme="dark"] .rating-bar-row .rating-bar {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Text answer boxes */
+[data-theme="dark"] .text-answer-box {
+  background: #22262b;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Expanded feedback section */
+[data-theme="dark"] .feedback-expanded {
+  background: #14161a;
+}
+
+/* Header title visibility */
+[data-theme="dark"] .header-title {
+  color: #ffffff;
+}
