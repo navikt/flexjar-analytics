@@ -196,18 +196,11 @@ export function FeedbackTable() {
                               </Tooltip>
                             ))}
                             {/* Vis første tekstsvar som preview */}
-                            <BodyShort truncate style={{ maxWidth: 350 }}>
-                              {getMainTextPreview(feedback) || (
-                                <span
-                                  style={{
-                                    color: COLORS.textMuted,
-                                    fontStyle: "italic",
-                                  }}
-                                >
-                                  Ingen kommentar
-                                </span>
-                              )}
-                            </BodyShort>
+                            {getMainTextPreview(feedback) && (
+                              <BodyShort truncate style={{ maxWidth: 350 }}>
+                                {getMainTextPreview(feedback)}
+                              </BodyShort>
+                            )}
                           </HStack>
                           {/* Vis survey-type og antall svar */}
                           <HStack gap="2" align="center">
