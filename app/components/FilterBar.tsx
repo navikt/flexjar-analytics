@@ -4,10 +4,12 @@ import {
   LaptopIcon,
   MobileIcon,
   StarIcon,
+  TagIcon,
   XMarkIcon,
 } from "@navikt/aksel-icons";
 import {
   Button,
+  UNSAFE_Combobox as Combobox,
   DatePicker,
   HStack,
   Label,
@@ -21,6 +23,8 @@ import { useEffect, useRef } from "react";
 import { useFilterOptions } from "~/lib/useFilterOptions";
 import { useSearchParams } from "~/lib/useSearchParams";
 import { useSurveysByApp } from "~/lib/useSurveysByApp";
+import { useTags } from "~/lib/useTags";
+import { getTagLabel } from "./TagEditor";
 
 interface FilterBarProps {
   showTextFilter?: boolean;
@@ -38,6 +42,10 @@ export function FilterBar({ showTextFilter = false }: FilterBarProps) {
   // Use separate query for filter options so they don't change when filtering
   const { data: filterOptions } = useFilterOptions();
   const { data: surveysByApp } = useSurveysByApp();
+  const { data: allTags = [] } = useTags();
+
+  // Parse current tag filter (comma-separated)
+  const selectedTags = params.tags ? params.tags.split(",") : [];
 
   const {
     datepickerProps: fromDateProps,
@@ -139,7 +147,8 @@ export function FilterBar({ showTextFilter = false }: FilterBarProps) {
     params.app ||
     params.lavRating ||
     params.medTekst ||
-    params.deviceType;
+    params.deviceType ||
+    params.tags;
 
   return (
     <div className="filter-bar-container">
@@ -179,6 +188,26 @@ export function FilterBar({ showTextFilter = false }: FilterBarProps) {
             </option>
           ))}
         </Select>
+
+        {showTextFilter && allTags.length > 0 && (
+          <Combobox
+            label="Tags"
+            size="small"
+            isMultiSelect
+            options={allTags.map((tag) => ({
+              label: getTagLabel(tag),
+              value: tag,
+            }))}
+            selectedOptions={selectedTags}
+            onToggleSelected={(option, isSelected) => {
+              const newTags = isSelected
+                ? [...selectedTags, option]
+                : selectedTags.filter((t) => t !== option);
+              setParam("tags", newTags.length > 0 ? newTags.join(",") : undefined);
+            }}
+            style={{ minWidth: 180 }}
+          />
+        )}
 
         <DatePicker {...fromDateProps}>
           <DatePicker.Input {...fromInputProps} label="Fra dato" size="small" />

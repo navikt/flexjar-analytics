@@ -1081,6 +1081,7 @@ function filterFeedback(
   const lavRating = params.get("lavRating");
   const pathname = params.get("pathname");
   const deviceType = params.get("deviceType");
+  const tags = params.get("tags");
 
   if (app) {
     filtered = filtered.filter((item) => item.app === app);
@@ -1127,6 +1128,13 @@ function filterFeedback(
   }
   if (surveyId) {
     filtered = filtered.filter((item) => item.surveyId === surveyId);
+  }
+  // Filter by tags (comma-separated, matches any)
+  if (tags) {
+    const tagList = tags.split(",").map((t) => t.trim());
+    filtered = filtered.filter((item) =>
+      item.tags?.some((tag) => tagList.includes(tag))
+    );
   }
 
   // Sort by date descending
