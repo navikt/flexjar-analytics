@@ -2,6 +2,24 @@
 
 Analytics dashboard for Flexjar survey data. Built with TanStack Start.
 
+## Quick Start
+
+```bash
+# Prerequisites: Node.js 20+
+
+# 1. Clone and install
+git clone https://github.com/navikt/flexjar-analytics.git
+cd flexjar-analytics
+npm install
+
+# 2. Set environment (optional - defaults work locally)
+export FLEXJAR_BACKEND_URL=http://localhost:8080
+
+# 3. Start development server
+npm run dev
+# Open http://localhost:3000
+```
+
 ## Features
 
 - 📊 **Dashboard** - Visual overview with charts and statistics
