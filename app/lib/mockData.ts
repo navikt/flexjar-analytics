@@ -76,7 +76,7 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-sykmeldt",
     context: createContext("/syk/oppfolgingsplaner/1234/sykmeldt", "desktop"),
-    tags: ["good-feedback"],
+    tags: ["👍 Bra"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -98,7 +98,7 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-sykmeldt",
     context: createContext("/syk/oppfolgingsplaner/5678/sykmeldt", "mobile"),
-    tags: ["ux", "feature"],
+    tags: ["🎨 UX", "✨ Feature"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -125,7 +125,7 @@ const mockFeedbackItems: FeedbackDto[] = [
       1920,
       1080,
     ),
-    tags: ["good-feedback"],
+    tags: ["👍 Bra"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -146,7 +146,7 @@ const mockFeedbackItems: FeedbackDto[] = [
       390,
       844,
     ),
-    tags: ["ux", "needs-review"],
+    tags: ["🎨 UX", "👀 Trenger review"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -173,7 +173,7 @@ const mockFeedbackItems: FeedbackDto[] = [
       820,
       1180,
     ),
-    tags: ["bug", "resolved"],
+    tags: ["🐛 Bug", "✅ Løst"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -364,7 +364,7 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-arbeidsgiver",
     context: createContext("/syk/oppfolgingsplaner/arbeidsgiver/1234", "desktop", 1920, 1080),
-    tags: ["feature"],
+    tags: ["✨ Feature"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -390,7 +390,7 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-arbeidsgiver",
     context: createContext("/syk/oppfolgingsplaner/arbeidsgiver/5678", "desktop", 1440, 900),
-    tags: ["good-feedback"],
+    tags: ["👍 Bra"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -411,7 +411,7 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-arbeidsgiver",
     context: createContext("/syk/oppfolgingsplaner/arbeidsgiver/9012", "tablet", 768, 1024),
-    tags: ["ux", "needs-review"],
+    tags: ["🎨 UX", "👀 Trenger review"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -437,7 +437,7 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-arbeidsgiver",
     context: createContext("/syk/oppfolgingsplaner/arbeidsgiver/3456", "desktop", 1366, 768),
-    tags: ["feature"],
+    tags: ["✨ Feature"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -463,7 +463,7 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-arbeidsgiver",
     context: createContext("/syk/oppfolgingsplaner/arbeidsgiver/7890", "desktop", 2560, 1440),
-    tags: ["good-feedback"],
+    tags: ["👍 Bra"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -484,7 +484,7 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-arbeidsgiver",
     context: createContext("/syk/oppfolgingsplaner/arbeidsgiver/2345", "mobile", 390, 844),
-    tags: ["bug", "urgent"],
+    tags: ["🐛 Bug", "🔥 Urgent"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -555,7 +555,7 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "oppfolgingsplan-frontend",
     surveyId: "oppfolgingsplan-gammel-sykmeldt",
     context: createContext("/oppfolgingsplan/sykmeldt", "desktop", 1440, 900),
-    tags: ["wont-fix"],
+    tags: ["🚫 Fikses ikke"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -577,7 +577,7 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "oppfolgingsplan-frontend",
     surveyId: "oppfolgingsplan-gammel-sykmeldt",
     context: createContext("/oppfolgingsplan/sykmeldt", "mobile", 375, 812),
-    tags: ["wont-fix"],
+    tags: ["🚫 Fikses ikke"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -635,7 +635,7 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "oppfolgingsplan-frontend",
     surveyId: "oppfolgingsplan-gammel-sykmeldt",
     context: createContext("/oppfolgingsplan/sykmeldt", "desktop", 1366, 768),
-    tags: ["bug"],
+    tags: ["🐛 Bug"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -662,7 +662,7 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "oppfolgingsplan-frontend",
     surveyId: "oppfolgingsplan-gammel-arbeidsgiver",
     context: createContext("/oppfolgingsplan/arbeidsgiver", "desktop", 1440, 900),
-    tags: ["wont-fix"],
+    tags: ["🚫 Fikses ikke"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -688,7 +688,7 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "oppfolgingsplan-frontend",
     surveyId: "oppfolgingsplan-gammel-arbeidsgiver",
     context: createContext("/oppfolgingsplan/arbeidsgiver", "desktop", 1920, 1080),
-    tags: ["wont-fix"],
+    tags: ["🚫 Fikses ikke"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -759,7 +759,7 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "oppfolgingsplan-frontend",
     surveyId: "oppfolgingsplan-gammel-arbeidsgiver",
     context: createContext("/oppfolgingsplan/arbeidsgiver", "mobile", 375, 812),
-    tags: ["bug"],
+    tags: ["🐛 Bug"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",

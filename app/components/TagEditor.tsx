@@ -15,33 +15,42 @@ interface TagEditorProps {
   compact?: boolean;
 }
 
-// Predefined tag suggestions with emoji indicators
-const TAG_PRESETS: Record<
-  string,
-  {
-    label: string;
-    category: "error" | "success" | "info" | "warning" | "neutral";
-  }
-> = {
-  bug: { label: "🐛 Bug", category: "error" },
-  feature: { label: "✨ Feature", category: "info" },
-  ux: { label: "🎨 UX", category: "warning" },
-  urgent: { label: "🔥 Urgent", category: "error" },
-  "good-feedback": { label: "👍 Bra", category: "success" },
-  "needs-review": { label: "👀 Trenger review", category: "warning" },
-  resolved: { label: "✅ Løst", category: "success" },
-  "wont-fix": { label: "🚫 Fikses ikke", category: "neutral" },
-};
+// Predefined tag suggestions - these are the actual values stored
+const TAG_SUGGESTIONS = [
+  "🐛 Bug",
+  "✨ Feature",
+  "🎨 UX",
+  "🔥 Urgent",
+  "👍 Bra",
+  "👀 Trenger review",
+  "✅ Løst",
+  "🚫 Fikses ikke",
+];
 
-// Chips only support "neutral" or "action" variants
+// Determine chip variant based on emoji prefix
 function getChipsVariant(tag: string): "neutral" | "action" {
-  const category = TAG_PRESETS[tag]?.category;
-  // Use "action" for important categories, "neutral" for others
-  return category === "error" || category === "warning" ? "action" : "neutral";
+  // Use "action" (highlighted) for important/warning tags
+  if (tag.startsWith("🐛") || tag.startsWith("🔥") || tag.startsWith("👀")) {
+    return "action";
+  }
+  return "neutral";
 }
 
+// For backwards compatibility - if old-style tags exist, this maps them
+// Can be removed once all old tags are migrated
+const LEGACY_TAG_MAP: Record<string, string> = {
+  "bug": "🐛 Bug",
+  "feature": "✨ Feature",
+  "ux": "🎨 UX",
+  "urgent": "🔥 Urgent",
+  "good-feedback": "👍 Bra",
+  "needs-review": "👀 Trenger review",
+  "resolved": "✅ Løst",
+  "wont-fix": "🚫 Fikses ikke",
+};
+
 export function getTagLabel(tag: string): string {
-  return TAG_PRESETS[tag]?.label || tag;
+  return LEGACY_TAG_MAP[tag] || tag;
 }
 
 export function TagEditor({
@@ -55,8 +64,8 @@ export function TagEditor({
   const addTagMutation = useAddTag();
   const removeTagMutation = useRemoveTag();
 
-  // Combine preset tags with existing tags from the system
-  const availableTags = [...new Set([...Object.keys(TAG_PRESETS), ...allTags])];
+  // Combine suggested tags with existing tags from the system
+  const availableTags = [...new Set([...TAG_SUGGESTIONS, ...allTags])];
   const suggestedTags = availableTags.filter(
     (tag) => !currentTags.includes(tag),
   );
@@ -97,7 +106,7 @@ export function TagEditor({
               variant={getChipsVariant(tag)}
               onDelete={() => handleRemoveTag(tag)}
             >
-              {getTagLabel(tag)}
+              {tag}
             </Chips.Removable>
           ))}
         </Chips>
@@ -110,10 +119,7 @@ export function TagEditor({
             size="small"
             label="Legg til tag"
             hideLabel
-            options={suggestedTags.map((tag) => ({
-              label: getTagLabel(tag),
-              value: tag,
-            }))}
+            options={suggestedTags}
             allowNewValues
             value={inputValue}
             onChange={(value) => setInputValue(value || "")}
@@ -163,7 +169,7 @@ export function TagDisplay({ tags }: { tags: string[] }) {
           selected={false}
           checkmark={false}
         >
-          {getTagLabel(tag)}
+          {tag}
         </Chips.Toggle>
       ))}
     </Chips>

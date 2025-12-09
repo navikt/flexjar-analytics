@@ -24,7 +24,6 @@ import { useFilterOptions } from "~/lib/useFilterOptions";
 import { useSearchParams } from "~/lib/useSearchParams";
 import { useSurveysByApp } from "~/lib/useSurveysByApp";
 import { useTags } from "~/lib/useTags";
-import { getTagLabel } from "./TagEditor";
 
 interface FilterBarProps {
   showTextFilter?: boolean;
@@ -194,10 +193,7 @@ export function FilterBar({ showTextFilter = false }: FilterBarProps) {
             label="Tags"
             size="small"
             isMultiSelect
-            options={allTags.map((tag) => ({
-              label: getTagLabel(tag),
-              value: tag,
-            }))}
+            options={allTags}
             selectedOptions={selectedTags}
             onToggleSelected={(option, isSelected) => {
               const newTags = isSelected
