@@ -36,23 +36,6 @@ function getChipsVariant(tag: string): "neutral" | "action" {
   return "neutral";
 }
 
-// For backwards compatibility - if old-style tags exist, this maps them
-// Can be removed once all old tags are migrated
-const LEGACY_TAG_MAP: Record<string, string> = {
-  "bug": "🐛 Bug",
-  "feature": "✨ Feature",
-  "ux": "🎨 UX",
-  "urgent": "🔥 Urgent",
-  "good-feedback": "👍 Bra",
-  "needs-review": "👀 Trenger review",
-  "resolved": "✅ Løst",
-  "wont-fix": "🚫 Fikses ikke",
-};
-
-export function getTagLabel(tag: string): string {
-  return LEGACY_TAG_MAP[tag] || tag;
-}
-
 export function TagEditor({
   feedbackId,
   currentTags,
