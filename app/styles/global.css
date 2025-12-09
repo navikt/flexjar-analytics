@@ -763,45 +763,43 @@ body {
 .survey-answers-list {
   display: flex;
   flex-direction: column;
-  gap: 0;
-  position: relative;
+  gap: 0.75rem;
 }
 
 .survey-answer-item {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1.875rem 1fr;
   gap: 1rem;
-  padding: 0.5rem 0;
   position: relative;
 }
 
-/* Vertical connector line between items */
-.survey-answer-item:not(:last-child)::before {
+/* Vertical connector line between circles */
+.survey-answer-item:not(:last-child) .survey-answer-number::after {
   content: "";
   position: absolute;
-  left: calc(0.9375rem - 1px); /* Center of the number circle minus half line width */
-  top: calc(0.5rem + 1.875rem); /* padding-top + circle height */
-  bottom: -0.5rem; /* Extend to next item's top padding */
+  left: 50%;
+  transform: translateX(-50%);
+  top: 100%; /* Start at bottom of circle */
+  height: calc(0.75rem + 1rem + 0.375rem); /* gap + card padding-top + half line height adjustment */
   width: 2px;
   background: var(--ax-border-neutral-subtle);
-  z-index: 0;
 }
 
 .survey-answer-number {
-  flex-shrink: 0;
+  position: relative;
   width: 1.875rem;
   height: 1.875rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--ax-bg-neutral-soft);
+  background: var(--ax-bg-default);
   border: 2px solid var(--ax-border-neutral-subtle);
   border-radius: 50%;
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--ax-text-neutral-subtle);
-  z-index: 1;
-  align-self: flex-start;
-  margin-top: 1rem; /* Align with content padding-top */
+  /* Align with answer-header text (card padding 1rem + half of line-height) */
+  margin-top: calc(1rem + 0.125rem);
 }
 
 /* Unified answer card styling */
@@ -894,12 +892,12 @@ body {
 }
 
 /* Dark mode for survey answers list */
-[data-theme="dark"] .survey-answer-item:not(:last-child)::before {
+[data-theme="dark"] .survey-answer-item:not(:last-child) .survey-answer-number::after {
   background: rgba(255, 255, 255, 0.1);
 }
 
 [data-theme="dark"] .survey-answer-number {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--ax-bg-raised);
   border-color: rgba(255, 255, 255, 0.15);
   color: rgba(255, 255, 255, 0.6);
 }
