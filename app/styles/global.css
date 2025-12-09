@@ -767,28 +767,23 @@ body {
   position: relative;
 }
 
-/* Vertical connector line */
-.survey-answers-list::before {
-  content: "";
-  position: absolute;
-  left: 0.9375rem; /* Center of the number circle */
-  top: 1.5rem;
-  bottom: 1.5rem;
-  width: 2px;
-  background: linear-gradient(
-    to bottom,
-    var(--ax-border-neutral-subtle),
-    var(--ax-border-neutral-subtle) 90%,
-    transparent
-  );
-  z-index: 0;
-}
-
 .survey-answer-item {
   display: flex;
   gap: 1rem;
-  padding: 0.75rem 0;
+  padding: 0.5rem 0;
   position: relative;
+}
+
+/* Vertical connector line between items */
+.survey-answer-item:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  left: calc(0.9375rem - 1px); /* Center of the number circle minus half line width */
+  top: calc(0.5rem + 1.875rem); /* padding-top + circle height */
+  bottom: -0.5rem; /* Extend to next item's top padding */
+  width: 2px;
+  background: var(--ax-border-neutral-subtle);
+  z-index: 0;
 }
 
 .survey-answer-number {
@@ -805,6 +800,8 @@ body {
   font-weight: 600;
   color: var(--ax-text-neutral-subtle);
   z-index: 1;
+  align-self: flex-start;
+  margin-top: 1rem; /* Align with content padding-top */
 }
 
 /* Unified answer card styling */
@@ -897,13 +894,8 @@ body {
 }
 
 /* Dark mode for survey answers list */
-[data-theme="dark"] .survey-answers-list::before {
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.1),
-    rgba(255, 255, 255, 0.1) 90%,
-    transparent
-  );
+[data-theme="dark"] .survey-answer-item:not(:last-child)::before {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 [data-theme="dark"] .survey-answer-number {
