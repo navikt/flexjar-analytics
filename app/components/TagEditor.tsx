@@ -40,7 +40,7 @@ function getChipsVariant(tag: string): "neutral" | "action" {
   return category === "error" || category === "warning" ? "action" : "neutral";
 }
 
-function getTagLabel(tag: string): string {
+export function getTagLabel(tag: string): string {
   return TAG_PRESETS[tag]?.label || tag;
 }
 

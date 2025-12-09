@@ -31,7 +31,7 @@ import { useFeedback } from "~/lib/useFeedback";
 import { useSearchParams } from "~/lib/useSearchParams";
 import { DeleteFeedbackDialog } from "./DeleteFeedbackDialog";
 import { DeleteSurveyDialog } from "./DeleteSurveyDialog";
-import { TagEditor } from "./TagEditor";
+import { getTagLabel, TagEditor } from "./TagEditor";
 
 // Dark mode compatible colors
 const COLORS = {
@@ -225,13 +225,13 @@ export function FeedbackTable() {
                             </Detail>
                             {feedback.tags && feedback.tags.length > 0 && (
                               <HStack gap="1" wrap>
-                                {feedback.tags.slice(0, 3).map((tag) => (
+                                {feedback.tags.slice(0, 2).map((tag) => (
                                   <Tag key={tag} variant="neutral" size="xsmall">
-                                    {tag}
+                                    {getTagLabel(tag)}
                                   </Tag>
                                 ))}
-                                {feedback.tags.length > 3 && (
-                                  <Detail textColor="subtle">+{feedback.tags.length - 3}</Detail>
+                                {feedback.tags.length > 2 && (
+                                  <Detail textColor="subtle">+{feedback.tags.length - 2}</Detail>
                                 )}
                               </HStack>
                             )}
