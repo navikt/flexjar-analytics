@@ -20,11 +20,12 @@ const TAG_SUGGESTIONS = [
   "🐛 Bug",
   "✨ Feature",
   "🎨 UX",
-  "🔥 Urgent",
-  "👍 Bra",
-  "👀 Trenger review",
+  "🔥 Kritisk",
+  "👀 Til vurdering",
   "✅ Løst",
   "🚫 Fikses ikke",
+  "🗑️ Spam",
+  "⚠️ Personopplysninger",
 ];
 
 // Determine chip variant based on emoji prefix

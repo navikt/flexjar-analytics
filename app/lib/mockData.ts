@@ -76,7 +76,6 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-sykmeldt",
     context: createContext("/syk/oppfolgingsplaner/1234/sykmeldt", "desktop"),
-    tags: ["👍 Bra"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -125,7 +124,6 @@ const mockFeedbackItems: FeedbackDto[] = [
       1920,
       1080,
     ),
-    tags: ["👍 Bra"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -146,7 +144,7 @@ const mockFeedbackItems: FeedbackDto[] = [
       390,
       844,
     ),
-    tags: ["🎨 UX", "👀 Trenger review"],
+    tags: ["🎨 UX", "👀 Til vurdering"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -390,7 +388,6 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-arbeidsgiver",
     context: createContext("/syk/oppfolgingsplaner/arbeidsgiver/5678", "desktop", 1440, 900),
-    tags: ["👍 Bra"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -411,7 +408,7 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-arbeidsgiver",
     context: createContext("/syk/oppfolgingsplaner/arbeidsgiver/9012", "tablet", 768, 1024),
-    tags: ["🎨 UX", "👀 Trenger review"],
+    tags: ["🎨 UX", "👀 Til vurdering"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -463,7 +460,6 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-arbeidsgiver",
     context: createContext("/syk/oppfolgingsplaner/arbeidsgiver/7890", "desktop", 2560, 1440),
-    tags: ["👍 Bra"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -484,7 +480,7 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-arbeidsgiver",
     context: createContext("/syk/oppfolgingsplaner/arbeidsgiver/2345", "mobile", 390, 844),
-    tags: ["🐛 Bug", "🔥 Urgent"],
+    tags: ["🐛 Bug", "🔥 Kritisk"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
