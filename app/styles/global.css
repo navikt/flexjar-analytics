@@ -763,7 +763,19 @@ body {
 .survey-answers-list {
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 0.75rem;
+  position: relative;
+}
+
+/* SVG connector lines layer */
+.survey-connector-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 30px;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
 }
 
 .survey-answer-item {
@@ -771,22 +783,6 @@ body {
   grid-template-columns: 1.875rem 1fr;
   gap: 1rem;
   position: relative;
-  padding-bottom: 0.75rem;
-}
-
-.survey-answer-item:last-child {
-  padding-bottom: 0;
-}
-
-/* Vertical connector line - use the item's full height */
-.survey-answer-item:not(:last-child)::before {
-  content: "";
-  position: absolute;
-  left: calc(0.9375rem - 1px); /* Center of circle */
-  top: calc(1rem + 0.125rem + 1.875rem); /* margin-top of circle + circle height */
-  bottom: 0;
-  width: 2px;
-  background: var(--ax-border-neutral-subtle);
 }
 
 .survey-answer-number {
@@ -803,7 +799,7 @@ body {
   font-weight: 600;
   color: var(--ax-text-neutral-subtle);
   z-index: 1;
-  /* Align with answer-header text (card padding 1rem + half of line-height) */
+  /* Align with answer-header text */
   margin-top: calc(1rem + 0.125rem);
 }
 
@@ -897,8 +893,8 @@ body {
 }
 
 /* Dark mode for survey answers list */
-[data-theme="dark"] .survey-answer-item:not(:last-child)::before {
-  background: rgba(255, 255, 255, 0.1);
+[data-theme="dark"] .survey-connector-lines line {
+  stroke: rgba(255, 255, 255, 0.1);
 }
 
 [data-theme="dark"] .survey-answer-number {
