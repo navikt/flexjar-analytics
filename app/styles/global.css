@@ -755,3 +755,197 @@ body {
 [data-theme="dark"] .header-title {
   color: #ffffff;
 }
+
+/* =============================================
+ * Survey Answers List - Sequential Form View
+ * ============================================= */
+
+.survey-answers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+}
+
+/* Vertical connector line */
+.survey-answers-list::before {
+  content: "";
+  position: absolute;
+  left: 0.9375rem; /* Center of the number circle */
+  top: 1.5rem;
+  bottom: 1.5rem;
+  width: 2px;
+  background: linear-gradient(
+    to bottom,
+    var(--ax-border-neutral-subtle),
+    var(--ax-border-neutral-subtle) 90%,
+    transparent
+  );
+  z-index: 0;
+}
+
+.survey-answer-item {
+  display: flex;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  position: relative;
+}
+
+.survey-answer-number {
+  flex-shrink: 0;
+  width: 1.875rem;
+  height: 1.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ax-bg-neutral-soft);
+  border: 2px solid var(--ax-border-neutral-subtle);
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ax-text-neutral-subtle);
+  z-index: 1;
+}
+
+/* Unified answer card styling */
+.answer-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem 1.25rem;
+  background: var(--ax-bg-default);
+  border-radius: 8px;
+  border: 1px solid var(--ax-border-neutral-subtle);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.answer-card:hover {
+  border-color: var(--ax-border-neutral);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.answer-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.answer-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ax-text-neutral);
+}
+
+.answer-description {
+  font-weight: 400;
+  color: var(--ax-text-neutral-subtle);
+}
+
+.answer-type-icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.answer-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.answer-content--text {
+  display: block;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--ax-text-neutral);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.answer-content--choice {
+  display: block;
+}
+
+.answer-empty {
+  font-style: italic;
+  color: var(--ax-text-neutral-subtle);
+}
+
+/* Choice options display */
+.choice-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.choice-option {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.375rem 0.75rem;
+  background: var(--ax-bg-neutral-soft);
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  color: var(--ax-text-neutral-subtle);
+  border: 1px solid transparent;
+}
+
+.choice-option--selected {
+  background: var(--ax-bg-accent-soft);
+  color: var(--ax-text-accent);
+  border-color: var(--ax-border-accent-subtle);
+  font-weight: 500;
+}
+
+/* Dark mode for survey answers list */
+[data-theme="dark"] .survey-answers-list::before {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.1) 90%,
+    transparent
+  );
+}
+
+[data-theme="dark"] .survey-answer-number {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+[data-theme="dark"] .answer-card {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .answer-card:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .answer-label {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .answer-description {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+[data-theme="dark"] .answer-content--text {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+[data-theme="dark"] .answer-empty {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+[data-theme="dark"] .choice-option {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+[data-theme="dark"] .choice-option--selected {
+  background: var(--ax-bg-accent-soft);
+  color: var(--ax-text-accent);
+  border-color: var(--ax-border-accent-subtle);
+}

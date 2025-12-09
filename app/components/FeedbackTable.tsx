@@ -409,107 +409,128 @@ function getAnswerSummary(feedback: FeedbackDto): string | null {
   return parts.length > 0 ? parts.join(", ") : null;
 }
 
-// Render expanded view with grouped answers
+// Render expanded view - preserves original form order
 function renderExpandedAnswers(answers: Answer[]) {
-  const ratingAnswers = answers.filter((a) => a.fieldType === "RATING");
-  const textAnswers = answers.filter((a) => a.fieldType === "TEXT");
-  const choiceAnswers = answers.filter(
-    (a) => a.fieldType === "SINGLE_CHOICE" || a.fieldType === "MULTI_CHOICE",
-  );
-
   return (
-    <>
-      {/* Ratings med visuell bar */}
-      {ratingAnswers.length > 0 && (
-        <div className="expanded-section">
-          <Label size="small" className="expanded-section-label">
-            Vurderinger
-          </Label>
-          <VStack gap="3">
-            {ratingAnswers.map((answer) => {
-              const ratingValue =
-                answer.value.type === "rating" ? answer.value.rating : 0;
-              return (
-                <div key={answer.fieldId} className="rating-answer-card">
-                  <div className="rating-answer-header">
-                    <StarIcon
-                      fontSize="1rem"
-                      style={{ color: COLORS.iconWarning }}
-                    />
-                    <span className="rating-answer-label">{answer.question.label}</span>
-                  </div>
-                  <div className="rating-answer-content">
-                    <div className="expanded-rating-bar">
-                      {[1, 2, 3, 4, 5].map((n) => (
-                        <span
-                          key={n}
-                          className={`expanded-rating-dot ${n <= ratingValue ? "filled" : ""}`}
-                          data-rating={n}
-                        >
-                          {ratingToEmoji(n)}
-                        </span>
-                      ))}
-                    </div>
-                    <span className="rating-answer-score">{ratingValue}/5</span>
-                  </div>
-                </div>
-              );
-            })}
-          </VStack>
-        </div>
-      )}
-
-      {/* Tekstsvar */}
-      {textAnswers.length > 0 && (
-        <div className="expanded-section">
-          <Label size="small" className="expanded-section-label">
-            Kommentarer
-          </Label>
-          <VStack gap="3">
-            {textAnswers.map((answer) => (
-              <div key={answer.fieldId} className="text-answer-card">
-                <div className="text-answer-header">
-                  <ChatIcon fontSize="1rem" style={{ color: COLORS.iconInfo }} />
-                  <span className="text-answer-label">
-                    {answer.question.label}
-                    {answer.question.description && (
-                      <span className="text-answer-description">
-                        {" "}— {answer.question.description}
-                      </span>
-                    )}
-                  </span>
-                </div>
-                <div className="text-answer-content">
-                  {answer.value.type === "text" && answer.value.text ? (
-                    answer.value.text
-                  ) : (
-                    <span className="text-answer-empty">Ikke utfylt</span>
-                  )}
-                </div>
-              </div>
-            ))}
-          </VStack>
-        </div>
-      )}
-
-      {/* Valgsvar */}
-      {choiceAnswers.length > 0 && (
-        <div className="expanded-section">
-          <Label size="small" className="expanded-section-label">
-            Valg
-          </Label>
-          <VStack gap="3">
-            {choiceAnswers.map((answer) => (
-              <VStack key={answer.fieldId} gap="1">
-                <Label size="small">{answer.question.label}</Label>
-                <BodyShort>{formatAnswerValue(answer)}</BodyShort>
-              </VStack>
-            ))}
-          </VStack>
-        </div>
-      )}
-    </>
+    <div className="expanded-section">
+      <Label size="small" className="expanded-section-label">
+        Svar ({answers.length} {answers.length === 1 ? "felt" : "felter"})
+      </Label>
+      <div className="survey-answers-list">
+        {answers.map((answer, index) => (
+          <div key={answer.fieldId} className="survey-answer-item">
+            <div className="survey-answer-number">{index + 1}</div>
+            {renderAnswer(answer)}
+          </div>
+        ))}
+      </div>
+    </div>
   );
+}
+
+// Render a single answer based on its type
+function renderAnswer(answer: Answer) {
+  switch (answer.fieldType) {
+    case "RATING": {
+      const ratingValue =
+        answer.value.type === "rating" ? answer.value.rating : 0;
+      return (
+        <div className="answer-card answer-card--rating">
+          <div className="answer-header">
+            <StarIcon fontSize="1rem" style={{ color: COLORS.iconWarning }} />
+            <span className="answer-label">{answer.question.label}</span>
+          </div>
+          <div className="answer-content">
+            <div className="expanded-rating-bar">
+              {[1, 2, 3, 4, 5].map((n) => (
+                <span
+                  key={n}
+                  className={`expanded-rating-dot ${n <= ratingValue ? "filled" : ""}`}
+                  data-rating={n}
+                >
+                  {ratingToEmoji(n)}
+                </span>
+              ))}
+            </div>
+            <span className="rating-answer-score">{ratingValue}/5</span>
+          </div>
+        </div>
+      );
+    }
+    case "TEXT":
+      return (
+        <div className="answer-card answer-card--text">
+          <div className="answer-header">
+            <ChatIcon fontSize="1rem" style={{ color: COLORS.iconInfo }} />
+            <span className="answer-label">
+              {answer.question.label}
+              {answer.question.description && (
+                <span className="answer-description">
+                  {" "}— {answer.question.description}
+                </span>
+              )}
+            </span>
+          </div>
+          <div className="answer-content answer-content--text">
+            {answer.value.type === "text" && answer.value.text ? (
+              answer.value.text
+            ) : (
+              <span className="answer-empty">Ikke utfylt</span>
+            )}
+          </div>
+        </div>
+      );
+    case "SINGLE_CHOICE":
+    case "MULTI_CHOICE": {
+      const selectedIds =
+        answer.value.type === "singleChoice"
+          ? [answer.value.selectedOptionId]
+          : answer.value.type === "multiChoice"
+            ? answer.value.selectedOptionIds
+            : [];
+      const options = answer.question.options || [];
+
+      return (
+        <div className="answer-card answer-card--choice">
+          <div className="answer-header">
+            <span className="answer-type-icon">☑️</span>
+            <span className="answer-label">{answer.question.label}</span>
+          </div>
+          <div className="answer-content answer-content--choice">
+            {options.length > 0 ? (
+              <div className="choice-options">
+                {options.map((opt) => (
+                  <span
+                    key={opt.id}
+                    className={`choice-option ${selectedIds.includes(opt.id) ? "choice-option--selected" : ""}`}
+                  >
+                    {selectedIds.includes(opt.id) ? "✓ " : ""}
+                    {opt.label}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <span>{selectedIds.join(", ") || "Ingen valgt"}</span>
+            )}
+          </div>
+        </div>
+      );
+    }
+    case "DATE":
+      return (
+        <div className="answer-card answer-card--date">
+          <div className="answer-header">
+            <span className="answer-type-icon">📅</span>
+            <span className="answer-label">{answer.question.label}</span>
+          </div>
+          <div className="answer-content">
+            {answer.value.type === "date" ? answer.value.date : "—"}
+          </div>
+        </div>
+      );
+    default:
+      return null;
+  }
 }
 
 function formatAnswerValue(answer: Answer): string {
