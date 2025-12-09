@@ -271,3 +271,16 @@ export async function deleteSurvey(surveyId: string): Promise<DeleteSurveyResult
   }
   return response.json();
 }
+
+// Delete single feedback
+export async function deleteFeedback(feedbackId: string): Promise<void> {
+  const response = await fetch(
+    `/api/backend/api/v1/intern/feedback/${encodeURIComponent(feedbackId)}`,
+    {
+      method: "DELETE",
+    },
+  );
+  if (!response.ok) {
+    throw new Error("Failed to delete feedback");
+  }
+}

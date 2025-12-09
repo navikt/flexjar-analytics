@@ -5,6 +5,7 @@ import {
 } from "@navikt/oasis";
 import { createFileRoute } from "@tanstack/react-router";
 import {
+  deleteMockFeedback,
   deleteMockSurvey,
   getMockFeedback,
   getMockStats,
@@ -38,6 +39,22 @@ function handleMockRequest(
       const result = deleteMockSurvey(decodeURIComponent(surveyId));
       return new Response(JSON.stringify(result), {
         status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+  }
+
+  // Handle DELETE for single feedback
+  if (method === "DELETE" && path.match(/api\/v1\/intern\/feedback\/[^/]+$/)) {
+    const feedbackId = path.split("/").pop();
+    if (feedbackId && !feedbackId.includes("survey")) {
+      console.log("[Mock] Deleting feedback:", feedbackId);
+      const success = deleteMockFeedback(decodeURIComponent(feedbackId));
+      if (success) {
+        return new Response(null, { status: 204 });
+      }
+      return new Response(JSON.stringify({ error: "Not found" }), {
+        status: 404,
         headers: { "Content-Type": "application/json" },
       });
     }

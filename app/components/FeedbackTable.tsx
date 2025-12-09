@@ -26,8 +26,10 @@ import {
 import dayjs from "dayjs";
 import React, { useState, useRef, useEffect } from "react";
 import type { Answer, FeedbackDto } from "~/lib/api";
+import { useDeleteFeedback } from "~/lib/useDeleteFeedback";
 import { useFeedback } from "~/lib/useFeedback";
 import { useSearchParams } from "~/lib/useSearchParams";
+import { DeleteFeedbackDialog } from "./DeleteFeedbackDialog";
 import { DeleteSurveyDialog } from "./DeleteSurveyDialog";
 import { TagEditor } from "./TagEditor";
 
@@ -44,6 +46,8 @@ export function FeedbackTable() {
   const { data, isLoading, error } = useFeedback();
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [feedbackToDelete, setFeedbackToDelete] = useState<string | null>(null);
+  const deleteFeedbackMutation = useDeleteFeedback();
 
   const toggleExpanded = (id: string) => {
     setExpandedRows((prev) => {
@@ -219,10 +223,17 @@ export function FeedbackTable() {
                             <Detail textColor="subtle">
                               {feedback.surveyId}
                             </Detail>
-                            {getAnswerSummary(feedback) && (
-                              <Detail textColor="subtle">
-                                • {getAnswerSummary(feedback)}
-                              </Detail>
+                            {feedback.tags && feedback.tags.length > 0 && (
+                              <HStack gap="1" wrap>
+                                {feedback.tags.slice(0, 3).map((tag) => (
+                                  <Tag key={tag} variant="neutral" size="xsmall">
+                                    {tag}
+                                  </Tag>
+                                ))}
+                                {feedback.tags.length > 3 && (
+                                  <Detail textColor="subtle">+{feedback.tags.length - 3}</Detail>
+                                )}
+                              </HStack>
                             )}
                             {feedback.sensitiveDataRedacted && (
                               <Tooltip content="Sensitiv data har blitt fjernet">
@@ -238,11 +249,25 @@ export function FeedbackTable() {
                         <BodyShort size="small">{feedback.app}</BodyShort>
                       </Table.DataCell>
                       <Table.DataCell>
-                        <CopyButton
-                          copyText={getMainTextPreview(feedback) || ""}
-                          size="xsmall"
-                          variant="neutral"
-                        />
+                        <HStack gap="1">
+                          <CopyButton
+                            copyText={getMainTextPreview(feedback) || ""}
+                            size="xsmall"
+                            variant="neutral"
+                          />
+                          <Tooltip content="Slett denne tilbakemeldingen">
+                            <Button
+                              variant="tertiary-neutral"
+                              size="xsmall"
+                              icon={<TrashIcon aria-hidden />}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setFeedbackToDelete(feedback.id);
+                              }}
+                              loading={deleteFeedbackMutation.isPending && feedbackToDelete === feedback.id}
+                            />
+                          </Tooltip>
+                        </HStack>
                       </Table.DataCell>
                     </Table.Row>
                       {expandedRows.has(feedback.id) && (
@@ -372,6 +397,20 @@ export function FeedbackTable() {
           onDeleted={() => setParam("feedbackId", undefined)}
         />
       )}
+
+      {/* Delete single feedback confirmation dialog */}
+      <DeleteFeedbackDialog
+        feedbackId={feedbackToDelete}
+        onClose={() => setFeedbackToDelete(null)}
+        onConfirm={() => {
+          if (feedbackToDelete) {
+            deleteFeedbackMutation.mutate(feedbackToDelete, {
+              onSuccess: () => setFeedbackToDelete(null),
+            });
+          }
+        }}
+        isPending={deleteFeedbackMutation.isPending}
+      />
     </div>
   );
 }
@@ -427,23 +466,6 @@ function getMainTextPreview(feedback: FeedbackDto): string | null {
     return textAnswer.value.text;
   }
   return null;
-}
-
-// Get a summary of answer types
-function getAnswerSummary(feedback: FeedbackDto): string | null {
-  const ratingCount = feedback.answers.filter(
-    (a) => a.fieldType === "RATING",
-  ).length;
-  const textCount = feedback.answers.filter(
-    (a) => a.fieldType === "TEXT" && a.value.type === "text" && a.value.text,
-  ).length;
-
-  const parts: string[] = [];
-  if (ratingCount > 1) parts.push(`${ratingCount} vurderinger`);
-  if (textCount > 0)
-    parts.push(`${textCount} kommentar${textCount > 1 ? "er" : ""}`);
-
-  return parts.length > 0 ? parts.join(", ") : null;
 }
 
 // Render expanded view - preserves original form order
@@ -633,22 +655,5 @@ function renderAnswer(answer: Answer) {
       );
     default:
       return null;
-  }
-}
-
-function formatAnswerValue(answer: Answer): string {
-  switch (answer.value.type) {
-    case "rating":
-      return `${ratingToEmoji(answer.value.rating)} (${answer.value.rating})`;
-    case "text":
-      return answer.value.text || "—";
-    case "singleChoice":
-      return answer.value.selectedOptionId;
-    case "multiChoice":
-      return answer.value.selectedOptionIds.join(", ") || "—";
-    case "date":
-      return answer.value.date;
-    default:
-      return "—";
   }
 }

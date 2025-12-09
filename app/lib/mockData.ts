@@ -1222,3 +1222,20 @@ export function deleteMockSurvey(surveyId: string): { deletedCount: number; surv
   
   return { deletedCount, surveyId };
 }
+
+// Delete single feedback item (mock implementation)
+export function deleteMockFeedback(feedbackId: string): boolean {
+  const initialLength = mockFeedbackItems.length;
+  
+  // Filter out item with matching id
+  const itemsToKeep = mockFeedbackItems.filter(item => item.id !== feedbackId);
+  const deleted = initialLength !== itemsToKeep.length;
+  
+  // Replace the array contents
+  mockFeedbackItems.length = 0;
+  mockFeedbackItems.push(...itemsToKeep);
+  
+  console.log(`[Mock] ${deleted ? "Deleted" : "Not found"} feedback "${feedbackId}"`);
+  
+  return deleted;
+}
