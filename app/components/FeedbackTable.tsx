@@ -226,7 +226,7 @@ export function FeedbackTable() {
                             {feedback.tags && feedback.tags.length > 0 && (
                               <HStack gap="1" wrap>
                                 {feedback.tags.slice(0, 2).map((tag) => (
-                                  <Tag key={tag} variant="neutral" size="xsmall">
+                                  <Tag key={tag} variant="neutral" size="small">
                                     {getTagLabel(tag)}
                                   </Tag>
                                 ))}
@@ -237,7 +237,7 @@ export function FeedbackTable() {
                             )}
                             {feedback.sensitiveDataRedacted && (
                               <Tooltip content="Sensitiv data har blitt fjernet">
-                                <Tag variant="warning" size="xsmall">
+                                <Tag variant="warning" size="small">
                                   <ShieldLockIcon /> Redigert
                                 </Tag>
                               </Tooltip>
