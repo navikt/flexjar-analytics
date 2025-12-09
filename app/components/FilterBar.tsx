@@ -3,8 +3,6 @@ import {
   ExclamationmarkTriangleIcon,
   LaptopIcon,
   MobileIcon,
-  StarIcon,
-  TagIcon,
   XMarkIcon,
 } from "@navikt/aksel-icons";
 import {
@@ -141,7 +139,6 @@ export function FilterBar({ showTextFilter = false }: FilterBarProps) {
     params.from ||
     params.to ||
     params.fritekst ||
-    params.stjerne ||
     params.feedbackId ||
     params.app ||
     params.lavRating ||
@@ -247,7 +244,7 @@ export function FilterBar({ showTextFilter = false }: FilterBarProps) {
             Hurtigfiltre:
           </Label>
 
-          <Tooltip content="Vis kun tilbakemeldinger med kommentarer">
+          <Tooltip content="Vis kun tilbakemeldinger med tekstsvar">
             <Button
               variant={params.medTekst === "true" ? "primary" : "secondary"}
               size="small"
@@ -263,7 +260,7 @@ export function FilterBar({ showTextFilter = false }: FilterBarProps) {
             </Button>
           </Tooltip>
 
-          <Tooltip content="Vis kun tilbakemeldinger med lav score (1-2 stjerner)">
+          <Tooltip content="Vis kun tilbakemeldinger med lav score (1-2)">
             <Button
               variant={params.lavRating === "true" ? "danger" : "secondary"}
               size="small"
@@ -275,23 +272,7 @@ export function FilterBar({ showTextFilter = false }: FilterBarProps) {
                 )
               }
             >
-              Wall of Shame
-            </Button>
-          </Tooltip>
-
-          <Tooltip content="Vis stjernemerkede tilbakemeldinger">
-            <Button
-              variant={params.stjerne === "true" ? "primary" : "secondary"}
-              size="small"
-              icon={<StarIcon />}
-              onClick={() =>
-                setParam(
-                  "stjerne",
-                  params.stjerne === "true" ? undefined : "true",
-                )
-              }
-            >
-              Stjerne
+              Lav score
             </Button>
           </Tooltip>
 

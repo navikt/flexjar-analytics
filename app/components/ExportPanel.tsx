@@ -39,10 +39,10 @@ export function ExportPanel() {
       if (params.from) queryParams.set("from", params.from);
       if (params.to) queryParams.set("to", params.to);
       if (params.medTekst) queryParams.set("medTekst", params.medTekst);
-      if (params.stjerne) queryParams.set("stjerne", params.stjerne);
       if (params.fritekst) queryParams.set("fritekst", params.fritekst);
       if (params.lavRating) queryParams.set("lavRating", params.lavRating);
       if (params.deviceType) queryParams.set("deviceType", params.deviceType);
+      if (params.tags) queryParams.set("tags", params.tags);
 
       const response = await fetch(
         `/api/backend/api/v1/intern/export?${queryParams.toString()}`,

@@ -8,13 +8,12 @@ export interface SearchParams {
   from?: string;
   to?: string;
   medTekst?: string;
-  stjerne?: string;
   fritekst?: string;
   tags?: string;
   feedbackId?: string;
   /** Filter by pathname (from context) */
   pathname?: string;
-  /** Filter by low ratings (1-2 stars) - "Wall of Shame" */
+  /** Filter by low ratings (1-2) */
   lavRating?: string;
   /** Filter by device type */
   deviceType?: string;
