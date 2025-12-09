@@ -1205,3 +1205,20 @@ export function getMockSurveysByApp(): Record<string, string[]> {
 
   return surveysByApp;
 }
+
+// Delete all feedback for a survey (mock implementation)
+export function deleteMockSurvey(surveyId: string): { deletedCount: number; surveyId: string } {
+  const initialLength = mockFeedbackItems.length;
+  
+  // Filter out items with matching surveyId
+  const itemsToKeep = mockFeedbackItems.filter(item => item.surveyId !== surveyId);
+  const deletedCount = initialLength - itemsToKeep.length;
+  
+  // Replace the array contents (mutate in place since it's a module-level variable)
+  mockFeedbackItems.length = 0;
+  mockFeedbackItems.push(...itemsToKeep);
+  
+  console.log(`[Mock] Deleted ${deletedCount} items for survey "${surveyId}"`);
+  
+  return { deletedCount, surveyId };
+}

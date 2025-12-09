@@ -5,6 +5,7 @@ import {
 } from "@navikt/oasis";
 import { createFileRoute } from "@tanstack/react-router";
 import {
+  deleteMockSurvey,
   getMockFeedback,
   getMockStats,
   getMockSurveysByApp,
@@ -23,10 +24,24 @@ const USE_MOCK_DATA = !process.env.NAIS_CLUSTER_NAME;
 function handleMockRequest(
   path: string,
   params: URLSearchParams,
+  method = "GET",
 ): Response | null {
   if (!USE_MOCK_DATA) return null;
 
-  console.log("[Mock] Checking path:", path);
+  console.log("[Mock] Checking path:", path, "method:", method);
+
+  // Handle DELETE for survey
+  if (method === "DELETE" && path.includes("api/v1/intern/feedback/survey/")) {
+    const surveyId = path.split("/").pop();
+    if (surveyId) {
+      console.log("[Mock] Deleting survey:", surveyId);
+      const result = deleteMockSurvey(decodeURIComponent(surveyId));
+      return new Response(JSON.stringify(result), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+  }
 
   // Match API paths and return mock data
   // Path comes as "api/v1/intern/stats" (without leading slash)
@@ -204,7 +219,7 @@ async function proxyToBackend(
   const url = new URL(request.url);
 
   // Try mock data first (for local development)
-  const mockResponse = handleMockRequest(path, url.searchParams);
+  const mockResponse = handleMockRequest(path, url.searchParams, request.method);
   if (mockResponse) {
     return mockResponse;
   }

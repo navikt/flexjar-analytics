@@ -252,3 +252,22 @@ export async function removeTag(
     throw new Error("Failed to remove tag");
   }
 }
+
+// Bulk delete survey
+export interface DeleteSurveyResult {
+  deletedCount: number;
+  surveyId: string;
+}
+
+export async function deleteSurvey(surveyId: string): Promise<DeleteSurveyResult> {
+  const response = await fetch(
+    `/api/backend/api/v1/intern/feedback/survey/${encodeURIComponent(surveyId)}`,
+    {
+      method: "DELETE",
+    },
+  );
+  if (!response.ok) {
+    throw new Error("Failed to delete survey");
+  }
+  return response.json();
+}

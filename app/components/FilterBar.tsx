@@ -4,6 +4,7 @@ import {
   LaptopIcon,
   MobileIcon,
   StarIcon,
+  TrashIcon,
   XMarkIcon,
 } from "@navikt/aksel-icons";
 import {
@@ -17,10 +18,11 @@ import {
   Tooltip,
   useDatepicker,
 } from "@navikt/ds-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useFilterOptions } from "~/lib/useFilterOptions";
 import { useSearchParams } from "~/lib/useSearchParams";
 import { useSurveysByApp } from "~/lib/useSurveysByApp";
+import { DeleteSurveyDialog } from "./DeleteSurveyDialog";
 
 interface FilterBarProps {
   showTextFilter?: boolean;
@@ -38,6 +40,7 @@ export function FilterBar({ showTextFilter = false }: FilterBarProps) {
   // Use separate query for filter options so they don't change when filtering
   const { data: filterOptions } = useFilterOptions();
   const { data: surveysByApp } = useSurveysByApp();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const {
     datepickerProps: fromDateProps,
@@ -180,6 +183,21 @@ export function FilterBar({ showTextFilter = false }: FilterBarProps) {
           ))}
         </Select>
 
+        {/* Delete survey button - only show when a specific survey is selected */}
+        {params.feedbackId && (
+          <Tooltip content={`Slett alle svar for "${params.feedbackId}"`}>
+            <Button
+              variant="danger"
+              size="small"
+              icon={<TrashIcon />}
+              onClick={() => setDeleteDialogOpen(true)}
+              style={{ alignSelf: "end", marginBottom: "2px" }}
+            >
+              Slett survey
+            </Button>
+          </Tooltip>
+        )}
+
         <DatePicker {...fromDateProps}>
           <DatePicker.Input {...fromInputProps} label="Fra dato" size="small" />
         </DatePicker>
@@ -296,6 +314,17 @@ export function FilterBar({ showTextFilter = false }: FilterBarProps) {
             <ToggleGroup.Item value="mobile" icon={<MobileIcon />} />
           </ToggleGroup>
         </HStack>
+      )}
+
+      {/* Delete survey confirmation dialog */}
+      {params.feedbackId && (
+        <DeleteSurveyDialog
+          surveyId={params.feedbackId}
+          feedbackCount={filterOptions?.byFeedbackId?.[params.feedbackId] || 0}
+          isOpen={deleteDialogOpen}
+          onClose={() => setDeleteDialogOpen(false)}
+          onDeleted={() => setParam("feedbackId", undefined)}
+        />
       )}
     </div>
   );
