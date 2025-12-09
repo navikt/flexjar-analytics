@@ -70,7 +70,7 @@ describe("TagEditor utilities", () => {
 
   describe("TAG_PRESETS", () => {
     it("has expected structure for all presets", () => {
-      Object.entries(TAG_PRESETS).forEach(([key, value]) => {
+      Object.entries(TAG_PRESETS).forEach(([_key, value]) => {
         expect(value).toHaveProperty("label");
         expect(value).toHaveProperty("category");
         expect(typeof value.label).toBe("string");

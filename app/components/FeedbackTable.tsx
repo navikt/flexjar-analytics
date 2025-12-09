@@ -219,21 +219,21 @@ export function FeedbackTable() {
                         />
                       </Table.DataCell>
                     </Table.Row>
-                    {expandedRows.has(feedback.id) && (
+                      {expandedRows.has(feedback.id) && (
                       <Table.Row>
                         <Table.DataCell colSpan={5}>
                           <Box.New
-                            padding="4"
+                            padding="5"
                             background="neutral-soft"
                             borderRadius="medium"
                           >
-                            <VStack gap="4">
+                            <VStack gap="5">
                               {/* Grupper svar etter type for bedre oversikt */}
                               {renderExpandedAnswers(feedback.answers)}
 
                               {/* Tags - editable */}
-                              <VStack gap="1">
-                                <Label size="small">
+                              <div className="expanded-section">
+                                <Label size="small" className="expanded-section-label">
                                   <HStack gap="1" align="center">
                                     <TagIcon fontSize="1rem" />
                                     Tags
@@ -243,39 +243,58 @@ export function FeedbackTable() {
                                   feedbackId={feedback.id}
                                   currentTags={feedback.tags || []}
                                 />
-                              </VStack>
+                              </div>
 
                               {/* Context info */}
                               {feedback.context && (
-                                <HStack gap="4" wrap>
-                                  {feedback.context.pathname && (
-                                    <Tag variant="neutral" size="xsmall">
-                                      📍 {feedback.context.pathname}
-                                    </Tag>
-                                  )}
-                                  {feedback.context.deviceType && (
-                                    <Tag variant="neutral" size="xsmall">
-                                      {feedback.context.deviceType === "mobile"
-                                        ? "📱"
-                                        : feedback.context.deviceType ===
-                                            "tablet"
-                                          ? "📱"
-                                          : "🖥️"}{" "}
-                                      {feedback.context.deviceType}
-                                    </Tag>
-                                  )}
-                                  {(feedback.context.viewportWidth ||
-                                    feedback.context.viewportHeight) && (
-                                    <Tag variant="neutral" size="xsmall">
-                                      🖼️ {feedback.context.viewportWidth || "?"}×
-                                      {feedback.context.viewportHeight || "?"}px
-                                    </Tag>
-                                  )}
-                                </HStack>
+                                <div className="expanded-section">
+                                  <Label size="small" className="expanded-section-label">
+                                    Kontekst
+                                  </Label>
+                                  <div className="context-grid">
+                                    {feedback.context.pathname && (
+                                      <div className="context-item">
+                                        <span className="context-icon">📍</span>
+                                        <div className="context-content">
+                                          <span className="context-label">Side</span>
+                                          <span className="context-value">{feedback.context.pathname}</span>
+                                        </div>
+                                      </div>
+                                    )}
+                                    {feedback.context.deviceType && (
+                                      <div className="context-item">
+                                        <span className="context-icon">
+                                          {feedback.context.deviceType === "mobile"
+                                            ? "📱"
+                                            : feedback.context.deviceType === "tablet"
+                                              ? "📱"
+                                              : "🖥️"}
+                                        </span>
+                                        <div className="context-content">
+                                          <span className="context-label">Enhet</span>
+                                          <span className="context-value">{feedback.context.deviceType}</span>
+                                        </div>
+                                      </div>
+                                    )}
+                                    {(feedback.context.viewportWidth ||
+                                      feedback.context.viewportHeight) && (
+                                      <div className="context-item">
+                                        <span className="context-icon">🖼️</span>
+                                        <div className="context-content">
+                                          <span className="context-label">Skjermstørrelse</span>
+                                          <span className="context-value">
+                                            {feedback.context.viewportWidth || "?"}×
+                                            {feedback.context.viewportHeight || "?"}
+                                          </span>
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
                               )}
 
                               {/* Metadata */}
-                              <HStack gap="4">
+                              <div className="expanded-metadata">
                                 <Detail textColor="subtle">
                                   ID: {feedback.id}
                                 </Detail>
@@ -287,7 +306,7 @@ export function FeedbackTable() {
                                     v{feedback.surveyVersion}
                                   </Detail>
                                 )}
-                              </HStack>
+                              </div>
                             </VStack>
                           </Box.New>
                         </Table.DataCell>
@@ -402,88 +421,92 @@ function renderExpandedAnswers(answers: Answer[]) {
     <>
       {/* Ratings med visuell bar */}
       {ratingAnswers.length > 0 && (
-        <VStack gap="3">
-          {ratingAnswers.map((answer) => {
-            const ratingValue =
-              answer.value.type === "rating" ? answer.value.rating : 0;
-            return (
-              <VStack key={answer.fieldId} gap="1">
-                <HStack gap="2" align="center">
-                  <StarIcon
-                    fontSize="1rem"
-                    style={{ color: COLORS.iconWarning }}
-                  />
-                  <Label size="small">{answer.question.label}</Label>
-                </HStack>
-                <HStack gap="2" align="center">
-                  <div className="expanded-rating-bar">
-                    {[1, 2, 3, 4, 5].map((n) => (
-                      <span
-                        key={n}
-                        className={`expanded-rating-dot ${n <= ratingValue ? "filled" : ""}`}
-                        data-rating={n}
-                      >
-                        {ratingToEmoji(n)}
-                      </span>
-                    ))}
+        <div className="expanded-section">
+          <Label size="small" className="expanded-section-label">
+            Vurderinger
+          </Label>
+          <VStack gap="3">
+            {ratingAnswers.map((answer) => {
+              const ratingValue =
+                answer.value.type === "rating" ? answer.value.rating : 0;
+              return (
+                <div key={answer.fieldId} className="rating-answer-card">
+                  <div className="rating-answer-header">
+                    <StarIcon
+                      fontSize="1rem"
+                      style={{ color: COLORS.iconWarning }}
+                    />
+                    <span className="rating-answer-label">{answer.question.label}</span>
                   </div>
-                  <BodyShort weight="semibold">{ratingValue}/5</BodyShort>
-                </HStack>
-              </VStack>
-            );
-          })}
-        </VStack>
+                  <div className="rating-answer-content">
+                    <div className="expanded-rating-bar">
+                      {[1, 2, 3, 4, 5].map((n) => (
+                        <span
+                          key={n}
+                          className={`expanded-rating-dot ${n <= ratingValue ? "filled" : ""}`}
+                          data-rating={n}
+                        >
+                          {ratingToEmoji(n)}
+                        </span>
+                      ))}
+                    </div>
+                    <span className="rating-answer-score">{ratingValue}/5</span>
+                  </div>
+                </div>
+              );
+            })}
+          </VStack>
+        </div>
       )}
 
       {/* Tekstsvar */}
       {textAnswers.length > 0 && (
-        <VStack gap="3">
-          {textAnswers.map((answer) => (
-            <VStack key={answer.fieldId} gap="1">
-              <HStack gap="2" align="center">
-                <ChatIcon fontSize="1rem" style={{ color: COLORS.iconInfo }} />
-                <Label size="small">
-                  {answer.question.label}
-                  {answer.question.description && (
-                    <span
-                      style={{ color: COLORS.textMuted, fontWeight: "normal" }}
-                    >
-                      {" "}
-                      ({answer.question.description})
-                    </span>
-                  )}
-                </Label>
-              </HStack>
-              <Box.New
-                background="default"
-                padding="3"
-                borderRadius="medium"
-                borderWidth="1"
-                borderColor="neutral-subtle"
-              >
-                <BodyShort style={{ whiteSpace: "pre-wrap" }}>
+        <div className="expanded-section">
+          <Label size="small" className="expanded-section-label">
+            Kommentarer
+          </Label>
+          <VStack gap="3">
+            {textAnswers.map((answer) => (
+              <div key={answer.fieldId} className="text-answer-card">
+                <div className="text-answer-header">
+                  <ChatIcon fontSize="1rem" style={{ color: COLORS.iconInfo }} />
+                  <span className="text-answer-label">
+                    {answer.question.label}
+                    {answer.question.description && (
+                      <span className="text-answer-description">
+                        {" "}— {answer.question.description}
+                      </span>
+                    )}
+                  </span>
+                </div>
+                <div className="text-answer-content">
                   {answer.value.type === "text" && answer.value.text ? (
                     answer.value.text
                   ) : (
-                    <span style={{ color: COLORS.textMuted }}>Ikke utfylt</span>
+                    <span className="text-answer-empty">Ikke utfylt</span>
                   )}
-                </BodyShort>
-              </Box.New>
-            </VStack>
-          ))}
-        </VStack>
+                </div>
+              </div>
+            ))}
+          </VStack>
+        </div>
       )}
 
       {/* Valgsvar */}
       {choiceAnswers.length > 0 && (
-        <VStack gap="3">
-          {choiceAnswers.map((answer) => (
-            <VStack key={answer.fieldId} gap="1">
-              <Label size="small">{answer.question.label}</Label>
-              <BodyShort>{formatAnswerValue(answer)}</BodyShort>
-            </VStack>
-          ))}
-        </VStack>
+        <div className="expanded-section">
+          <Label size="small" className="expanded-section-label">
+            Valg
+          </Label>
+          <VStack gap="3">
+            {choiceAnswers.map((answer) => (
+              <VStack key={answer.fieldId} gap="1">
+                <Label size="small">{answer.question.label}</Label>
+                <BodyShort>{formatAnswerValue(answer)}</BodyShort>
+              </VStack>
+            ))}
+          </VStack>
+        </div>
       )}
     </>
   );

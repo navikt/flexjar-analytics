@@ -528,6 +528,229 @@ body {
   background: #14161a;
 }
 
+/* =============================================
+ * Expanded Row Design - Context & Metadata
+ * ============================================= */
+
+/* Section wrapper for expanded content */
+.expanded-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.expanded-section-label {
+  color: var(--ax-text-neutral-subtle);
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 0.6875rem;
+  letter-spacing: 0.05em;
+}
+
+/* Context grid layout */
+.context-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+}
+
+/* Individual context item card */
+.context-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  background: var(--ax-bg-default);
+  border-radius: 8px;
+  border: 1px solid var(--ax-border-neutral-subtle);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.context-item:hover {
+  border-color: var(--ax-border-neutral);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.context-icon {
+  font-size: 1.25rem;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.context-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.context-label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--ax-text-neutral-subtle);
+}
+
+.context-value {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--ax-text-neutral);
+  word-break: break-word;
+}
+
+/* Metadata row at bottom */
+.expanded-metadata {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--ax-border-neutral-subtle);
+}
+
+/* Dark mode enhancements for context items */
+[data-theme="dark"] .context-item {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .context-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .context-value {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .context-label {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+[data-theme="dark"] .expanded-section-label {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+[data-theme="dark"] .expanded-metadata {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+/* =============================================
+ * Rating Answer Cards
+ * ============================================= */
+
+.rating-answer-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem 1.25rem;
+  background: var(--ax-bg-default);
+  border-radius: 8px;
+  border: 1px solid var(--ax-border-neutral-subtle);
+}
+
+.rating-answer-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.rating-answer-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ax-text-neutral);
+}
+
+.rating-answer-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.rating-answer-score {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ax-text-neutral);
+  background: var(--ax-bg-neutral-soft);
+  padding: 0.25rem 0.625rem;
+  border-radius: 6px;
+}
+
+/* =============================================
+ * Text Answer Cards
+ * ============================================= */
+
+.text-answer-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  background: var(--ax-bg-default);
+  border-radius: 8px;
+  border: 1px solid var(--ax-border-neutral-subtle);
+}
+
+.text-answer-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.text-answer-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ax-text-neutral);
+}
+
+.text-answer-description {
+  font-weight: 400;
+  color: var(--ax-text-neutral-subtle);
+}
+
+.text-answer-content {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--ax-text-neutral);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.text-answer-empty {
+  font-style: italic;
+  color: var(--ax-text-neutral-subtle);
+}
+
+/* Dark mode for answer cards */
+[data-theme="dark"] .rating-answer-card,
+[data-theme="dark"] .text-answer-card {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .rating-answer-label,
+[data-theme="dark"] .text-answer-label {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .rating-answer-score {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+[data-theme="dark"] .text-answer-content {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+[data-theme="dark"] .text-answer-description {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+[data-theme="dark"] .text-answer-empty {
+  color: rgba(255, 255, 255, 0.4);
+}
+
 /* Header title visibility */
 [data-theme="dark"] .header-title {
   color: #ffffff;
