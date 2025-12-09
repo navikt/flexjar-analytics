@@ -1,43 +1,26 @@
-import { requestAzureOboToken } from "@navikt/oasis";
-
-const BACKEND_URL = process.env.FLEXJAR_BACKEND_URL || "http://localhost:8080";
-const BACKEND_AUDIENCE = process.env.FLEXJAR_BACKEND_AUDIENCE || "api://dev-gcp.flex.flexjar-analytics-api/.default";
+const PROXY_BASE_PATH = "/api/backend";
 
 // Utility function to proxy API calls to the backend with OBO token
-async function fetchFromBackend(path: string, params?: Record<string, string>): Promise<unknown> {
-  // Build URL with query params
-  const url = new URL(path, BACKEND_URL);
+async function fetchFromBackend(
+  path: string,
+  params?: Record<string, string>,
+): Promise<unknown> {
+  const searchParams = new URLSearchParams();
   if (params) {
-    Object.entries(params).forEach(([key, value]) => {
+    for (const [key, value] of Object.entries(params)) {
       if (value !== undefined && value !== null && value !== "") {
-        url.searchParams.set(key, String(value));
+        searchParams.set(key, String(value));
       }
-    });
-  }
-
-  // In production, get OBO token
-  // For local dev, skip auth
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
-
-  if (process.env.NAIS_CLUSTER_NAME) {
-    // We're in NAIS - need to do OBO token exchange
-    try {
-      const oboResult = await requestAzureOboToken(
-        "", // Token from request
-        BACKEND_AUDIENCE
-      );
-      if (oboResult.ok) {
-        headers["Authorization"] = `Bearer ${oboResult.token}`;
-      }
-    } catch (e) {
-      console.error("OBO token exchange failed:", e);
     }
   }
 
-  const response = await fetch(url.toString(), { headers });
-  
+  const queryString = searchParams.toString();
+  const targetUrl = `${PROXY_BASE_PATH}${path}${queryString ? `?${queryString}` : ""}`;
+
+  const response = await fetch(targetUrl, {
+    headers: { "Content-Type": "application/json" },
+  });
+
   if (!response.ok) {
     throw new Error(`Backend request failed: ${response.status}`);
   }
@@ -49,7 +32,12 @@ async function fetchFromBackend(path: string, params?: Record<string, string>): 
 // Answer Types - Den nye strukturen
 // ============================================
 
-export type FieldType = "RATING" | "TEXT" | "SINGLE_CHOICE" | "MULTI_CHOICE" | "DATE";
+export type FieldType =
+  | "RATING"
+  | "TEXT"
+  | "SINGLE_CHOICE"
+  | "MULTI_CHOICE"
+  | "DATE";
 
 export interface ChoiceOption {
   id: string;
@@ -59,7 +47,7 @@ export interface ChoiceOption {
 export interface Question {
   label: string;
   description?: string;
-  options?: ChoiceOption[];  // For choice-typer
+  options?: ChoiceOption[]; // For choice-typer
 }
 
 export interface BaseAnswer {
@@ -93,7 +81,12 @@ export interface DateAnswer extends BaseAnswer {
   value: { type: "date"; date: string };
 }
 
-export type Answer = RatingAnswer | TextAnswer | SingleChoiceAnswer | MultiChoiceAnswer | DateAnswer;
+export type Answer =
+  | RatingAnswer
+  | TextAnswer
+  | SingleChoiceAnswer
+  | MultiChoiceAnswer
+  | DateAnswer;
 
 // ============================================
 // Field Stats Types - Statistikk per felt
@@ -102,18 +95,21 @@ export type Answer = RatingAnswer | TextAnswer | SingleChoiceAnswer | MultiChoic
 export interface RatingStats {
   type: "rating";
   average: number;
-  distribution: Record<number, number>;  // 1-5 -> count
+  distribution: Record<number, number>; // 1-5 -> count
 }
 
 export interface TextStats {
   type: "text";
   responseCount: number;
-  responseRate: number;  // 0-1
+  responseRate: number; // 0-1
 }
 
 export interface ChoiceStats {
   type: "choice";
-  distribution: Record<string, { label: string; count: number; percentage: number }>;
+  distribution: Record<
+    string,
+    { label: string; count: number; percentage: number }
+  >;
 }
 
 export type FieldStats = RatingStats | TextStats | ChoiceStats;
@@ -151,6 +147,7 @@ export interface FeedbackDto {
   surveyVersion?: string;
   context?: SubmissionContext;
   answers: Answer[];
+  tags?: string[];
   sensitiveDataRedacted: boolean;
 }
 
@@ -168,24 +165,24 @@ export interface FeedbackStats {
   totalCount: number;
   countWithText: number;
   countWithoutText: number;
-  
+
   // Legacy aggregations (backwards compat)
   byRating: Record<string, number>;
   byApp: Record<string, number>;
   byDate: Record<string, number>;
   byFeedbackId: Record<string, number>;
   averageRating: number | null;
-  
+
   // Rating trend over time
   ratingByDate: Record<string, { average: number; count: number }>;
-  
+
   // Device & context stats
   byDevice: Record<string, { count: number; averageRating: number }>;
   byPathname: Record<string, { count: number; averageRating: number }>;
-  
+
   // New: per-field statistics
   fieldStats: FieldStat[];
-  
+
   period: {
     from: string | null;
     to: string | null;
@@ -198,18 +195,60 @@ export interface TeamsAndApps {
 }
 
 // API functions
-export async function fetchStats(params: Record<string, string>): Promise<FeedbackStats> {
-  return fetchFromBackend("/api/v1/intern/stats", params) as Promise<FeedbackStats>;
+export async function fetchStats(
+  params: Record<string, string>,
+): Promise<FeedbackStats> {
+  return fetchFromBackend(
+    "/api/v1/intern/stats",
+    params,
+  ) as Promise<FeedbackStats>;
 }
 
-export async function fetchFeedback(params: Record<string, string>): Promise<FeedbackPage> {
-  return fetchFromBackend("/api/v1/intern/feedback", params) as Promise<FeedbackPage>;
+export async function fetchFeedback(
+  params: Record<string, string>,
+): Promise<FeedbackPage> {
+  return fetchFromBackend(
+    "/api/v1/intern/feedback",
+    params,
+  ) as Promise<FeedbackPage>;
 }
 
 export async function fetchTeams(): Promise<TeamsAndApps> {
-  return fetchFromBackend("/api/v1/intern/feedback/teams") as Promise<TeamsAndApps>;
+  return fetchFromBackend(
+    "/api/v1/intern/feedback/teams",
+  ) as Promise<TeamsAndApps>;
 }
 
 export async function fetchTags(): Promise<string[]> {
   return fetchFromBackend("/api/v1/intern/feedback/tags") as Promise<string[]>;
+}
+
+// Tag management
+export async function addTag(feedbackId: string, tag: string): Promise<void> {
+  const response = await fetch(
+    `/api/backend/api/v1/intern/feedback/${feedbackId}/tags`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tag }),
+    },
+  );
+  if (!response.ok) {
+    throw new Error("Failed to add tag");
+  }
+}
+
+export async function removeTag(
+  feedbackId: string,
+  tag: string,
+): Promise<void> {
+  const response = await fetch(
+    `/api/backend/api/v1/intern/feedback/${feedbackId}/tags?tag=${encodeURIComponent(tag)}`,
+    {
+      method: "DELETE",
+    },
+  );
+  if (!response.ok) {
+    throw new Error("Failed to remove tag");
+  }
 }

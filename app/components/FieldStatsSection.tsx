@@ -1,8 +1,15 @@
-import { HStack, VStack, BodyShort, Heading, Label, Skeleton } from "@navikt/ds-react";
-import { StarIcon, ChatExclamationmarkIcon } from "@navikt/aksel-icons";
-import { useStats } from "~/lib/useStats";
-import { useSearchParams } from "~/lib/useSearchParams";
+import { ChatExclamationmarkIcon, StarIcon } from "@navikt/aksel-icons";
+import {
+  BodyShort,
+  HStack,
+  Heading,
+  Label,
+  Skeleton,
+  VStack,
+} from "@navikt/ds-react";
 import type { FieldStat, RatingStats, TextStats } from "~/lib/api";
+import { useSearchParams } from "~/lib/useSearchParams";
+import { useStats } from "~/lib/useStats";
 
 function FieldStatCardSkeleton() {
   return (
@@ -53,8 +60,8 @@ export function FieldStatsSection() {
     return null;
   }
 
-  const ratingFields = stats.fieldStats.filter(f => f.fieldType === "RATING");
-  const textFields = stats.fieldStats.filter(f => f.fieldType === "TEXT");
+  const ratingFields = stats.fieldStats.filter((f) => f.fieldType === "RATING");
+  const textFields = stats.fieldStats.filter((f) => f.fieldType === "TEXT");
 
   return (
     <div className="field-stats-section">
@@ -64,10 +71,18 @@ export function FieldStatsSection() {
 
       <div className="field-stats-grid">
         {ratingFields.map((field) => (
-          <RatingFieldCard key={field.fieldId} field={field} totalCount={stats.totalCount} />
+          <RatingFieldCard
+            key={field.fieldId}
+            field={field}
+            totalCount={stats.totalCount}
+          />
         ))}
         {textFields.map((field) => (
-          <TextFieldCard key={field.fieldId} field={field} totalCount={stats.totalCount} />
+          <TextFieldCard
+            key={field.fieldId}
+            field={field}
+            totalCount={stats.totalCount}
+          />
         ))}
       </div>
     </div>
@@ -82,9 +97,12 @@ interface FieldCardProps {
 function RatingFieldCard({ field, totalCount }: FieldCardProps) {
   const stats = field.stats as RatingStats;
   const distribution = stats.distribution;
-  
+
   // Regn ut totalt antall svar for dette feltet
-  const fieldTotalResponses = Object.values(distribution).reduce((sum, count) => sum + count, 0);
+  const fieldTotalResponses = Object.values(distribution).reduce(
+    (sum, count) => sum + count,
+    0,
+  );
   // Finn max antall for å skalere barene
   const maxCount = Math.max(...Object.values(distribution), 1);
 
@@ -93,13 +111,19 @@ function RatingFieldCard({ field, totalCount }: FieldCardProps) {
       <HStack gap="2" wrap align="start" className="field-card-header">
         <StarIcon fontSize="1.25rem" aria-hidden />
         <VStack gap="0">
-          <Label size="small" className="field-card-label">{field.label}</Label>
-          <BodyShort size="small" style={{ color: "var(--ax-text-neutral-subtle)" }}>
-            {fieldTotalResponses} av {totalCount} har svart ({Math.round((fieldTotalResponses / totalCount) * 100)}%)
+          <Label size="small" className="field-card-label">
+            {field.label}
+          </Label>
+          <BodyShort
+            size="small"
+            style={{ color: "var(--ax-text-neutral-subtle)" }}
+          >
+            {fieldTotalResponses} av {totalCount} har svart (
+            {Math.round((fieldTotalResponses / totalCount) * 100)}%)
           </BodyShort>
         </VStack>
       </HStack>
-      
+
       <div className="rating-average">
         <span className="rating-value">{stats.average.toFixed(1)}</span>
         <span className="rating-emoji">{getRatingEmoji(stats.average)}</span>
@@ -111,12 +135,17 @@ function RatingFieldCard({ field, totalCount }: FieldCardProps) {
           // Skalér barene relativt til høyeste verdi, ikke prosent
           const barWidth = maxCount > 0 ? (count / maxCount) * 100 : 0;
           return (
-            <HStack key={rating} gap="2" align="center" className="rating-bar-row">
+            <HStack
+              key={rating}
+              gap="2"
+              align="center"
+              className="rating-bar-row"
+            >
               <span className="rating-label">{rating}</span>
               <div className="rating-bar">
-                <div 
-                  className="rating-bar-fill" 
-                  style={{ 
+                <div
+                  className="rating-bar-fill"
+                  style={{
                     width: `${barWidth}%`,
                     backgroundColor: getRatingColor(rating),
                   }}
@@ -134,31 +163,35 @@ function RatingFieldCard({ field, totalCount }: FieldCardProps) {
 function TextFieldCard({ field, totalCount }: FieldCardProps) {
   const stats = field.stats as TextStats;
   // Beregn prosent basert på responseCount og totalCount
-  const responseRate = totalCount > 0 ? Math.round((stats.responseCount / totalCount) * 100) : 0;
+  const responseRate =
+    totalCount > 0 ? Math.round((stats.responseCount / totalCount) * 100) : 0;
 
   return (
     <div className="dashboard-card field-stat-card text-field-card">
       <HStack gap="2" wrap align="start" className="field-card-header">
         <ChatExclamationmarkIcon fontSize="1.25rem" aria-hidden />
         <VStack gap="0">
-          <Label size="small" className="field-card-label">{field.label}</Label>
-          <BodyShort size="small" style={{ color: "var(--ax-text-neutral-subtle)" }}>
+          <Label size="small" className="field-card-label">
+            {field.label}
+          </Label>
+          <BodyShort
+            size="small"
+            style={{ color: "var(--ax-text-neutral-subtle)" }}
+          >
             {stats.responseCount} av {totalCount} har svart ({responseRate}%)
           </BodyShort>
         </VStack>
       </HStack>
-      
-      <div className="text-stat-value">
-        {stats.responseCount} svar
-      </div>
-      
+
+      <div className="text-stat-value">{stats.responseCount} svar</div>
+
       <div className="response-rate-bar" style={{ marginTop: "0.75rem" }}>
-        <div 
-          className="response-rate-fill" 
-          style={{ 
+        <div
+          className="response-rate-fill"
+          style={{
             width: `${responseRate}%`,
             backgroundColor: getResponseRateColor(responseRate),
-          }} 
+          }}
         />
       </div>
     </div>
@@ -184,11 +217,17 @@ function getRatingEmoji(rating: number): string {
 // Konsistent farge per rating - ikke "progress bar" stil
 function getRatingColor(rating: number): string {
   switch (rating) {
-    case 5: return "#22C55E"; // Grønn
-    case 4: return "#84CC16"; // Lime
-    case 3: return "#EAB308"; // Gul
-    case 2: return "#F97316"; // Oransje
-    case 1: return "#EF4444"; // Rød
-    default: return "#9CA3AF";
+    case 5:
+      return "#22C55E"; // Grønn
+    case 4:
+      return "#84CC16"; // Lime
+    case 3:
+      return "#EAB308"; // Gul
+    case 2:
+      return "#F97316"; // Oransje
+    case 1:
+      return "#EF4444"; // Rød
+    default:
+      return "#9CA3AF";
   }
 }

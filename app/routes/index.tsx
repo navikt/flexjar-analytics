@@ -1,14 +1,14 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { VStack, HStack, Heading, Button, Alert } from "@navikt/ds-react";
-import { BarChartIcon, TableIcon, DownloadIcon } from "@navikt/aksel-icons";
-import { StatsCards } from "~/components/StatsCards";
-import { RatingChart } from "~/components/charts/RatingChart";
-import { TimelineChart } from "~/components/charts/TimelineChart";
-import { RatingTrendChart } from "~/components/charts/RatingTrendChart";
-import { DeviceBreakdownChart } from "~/components/charts/DeviceBreakdownChart";
-import { TopAppsChart } from "~/components/charts/TopAppsChart";
+import { BarChartIcon, DownloadIcon, TableIcon } from "@navikt/aksel-icons";
+import { Alert, Button, HStack, Heading, VStack } from "@navikt/ds-react";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { FieldStatsSection } from "~/components/FieldStatsSection";
 import { FilterBar } from "~/components/FilterBar";
+import { StatsCards } from "~/components/StatsCards";
+import { DeviceBreakdownChart } from "~/components/charts/DeviceBreakdownChart";
+import { RatingChart } from "~/components/charts/RatingChart";
+import { RatingTrendChart } from "~/components/charts/RatingTrendChart";
+import { TimelineChart } from "~/components/charts/TimelineChart";
+import { TopAppsChart } from "~/components/charts/TopAppsChart";
 import { useSearchParams } from "~/lib/useSearchParams";
 
 export const Route = createFileRoute("/")({
@@ -28,12 +28,21 @@ function DashboardPage() {
     <>
       <header className="app-header">
         <div className="header-content">
-          <button type="button" onClick={handleResetAndNavigate} className="header-title">
+          <button
+            type="button"
+            onClick={handleResetAndNavigate}
+            className="header-title"
+          >
             <img src="/static/flexjar.png" alt="" className="header-logo" />
             Flexjar Analytics
           </button>
           <HStack gap="4">
-            <Button variant="tertiary" size="small" icon={<BarChartIcon />} onClick={handleResetAndNavigate}>
+            <Button
+              variant="tertiary"
+              size="small"
+              icon={<BarChartIcon />}
+              onClick={handleResetAndNavigate}
+            >
               Dashboard
             </Button>
             <Link to="/feedback">
@@ -60,7 +69,8 @@ function DashboardPage() {
 
           {!hasSurveyFilter && (
             <Alert variant="info" size="small">
-              Velg en spesifikk survey for å se detaljert statistikk per spørsmål
+              Velg en spesifikk survey for å se detaljert statistikk per
+              spørsmål
             </Alert>
           )}
 

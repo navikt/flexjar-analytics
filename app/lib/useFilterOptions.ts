@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { FeedbackStats } from "./api";
 
 /**
- * Hook to fetch all available filter options (apps, surveys) 
+ * Hook to fetch all available filter options (apps, surveys)
  * without being affected by current filter selections.
  * This ensures dropdowns always show all available options.
  */

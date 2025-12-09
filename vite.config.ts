@@ -1,7 +1,7 @@
-import { defineConfig } from 'vite'
-import { tanstackStart } from '@tanstack/react-start/plugin/vite'
-import viteReact from '@vitejs/plugin-react'
-import tsconfigPaths from 'vite-tsconfig-paths'
+import { tanstackStart } from "@tanstack/react-start/plugin/vite";
+import viteReact from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
+import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
   server: {
@@ -9,13 +9,13 @@ export default defineConfig({
   },
   plugins: [
     tsconfigPaths({
-      projects: ['./tsconfig.json'],
+      projects: ["./tsconfig.json"],
     }),
     tanstackStart({
       // Use app directory as source (non-standard but keeps our structure)
-      srcDirectory: 'app',
+      srcDirectory: "app",
     }),
     // React plugin must come after TanStack Start plugin
     viteReact(),
   ],
-})
+});

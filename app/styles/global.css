@@ -466,7 +466,7 @@ body {
   /* Stronger border contrast for cards */
   --dashboard-card-border: var(--ax-border-neutral);
   --dashboard-card-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-  
+
   /* Ensure page background is darker than cards */
   --page-bg: #0f1114;
   --card-bg: #1a1d21;

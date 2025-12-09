@@ -1,9 +1,14 @@
-import { HStack, BodyShort, Skeleton } from "@navikt/ds-react";
-import { ChatIcon, StarIcon, CalendarIcon, ChatExclamationmarkIcon } from "@navikt/aksel-icons";
-import { useStats } from "~/lib/useStats";
-import { useSearchParams } from "~/lib/useSearchParams";
+import {
+  CalendarIcon,
+  ChatExclamationmarkIcon,
+  ChatIcon,
+  StarIcon,
+} from "@navikt/aksel-icons";
+import { BodyShort, HStack, Skeleton } from "@navikt/ds-react";
 import type { ReactNode } from "react";
 import type { RatingStats, TextStats } from "~/lib/api";
+import { useSearchParams } from "~/lib/useSearchParams";
+import { useStats } from "~/lib/useStats";
 
 interface StatCardProps {
   icon: ReactNode;
@@ -31,7 +36,9 @@ function StatCard({ icon, label, value, subtitle, isLoading }: StatCardProps) {
         <BodyShort className="stat-label">{label}</BodyShort>
       </HStack>
       <div className="stat-value">{value}</div>
-      <BodyShort size="small" className="stat-subtitle">{subtitle}</BodyShort>
+      <BodyShort size="small" className="stat-subtitle">
+        {subtitle}
+      </BodyShort>
     </div>
   );
 }
@@ -64,17 +71,21 @@ export function StatsCards() {
   const totalCount = stats?.totalCount || 0;
   const periodDays = stats?.period?.days || 30;
   const countWithText = stats?.countWithText || 0;
-  const textPercentage = totalCount > 0 ? Math.round((countWithText / totalCount) * 100) : 0;
+  const textPercentage =
+    totalCount > 0 ? Math.round((countWithText / totalCount) * 100) : 0;
 
   // Kun vis detaljert felt-statistikk når én survey er valgt
   if (hasSurveyFilter) {
     // Find first rating field from fieldStats
-    const ratingField = stats?.fieldStats?.find(f => f.fieldType === "RATING");
+    const ratingField = stats?.fieldStats?.find(
+      (f) => f.fieldType === "RATING",
+    );
     const ratingStats = ratingField?.stats as RatingStats | undefined;
     const avgRating = ratingStats?.average?.toFixed(1) || "–";
 
     // Count text fields with responses
-    const textFields = stats?.fieldStats?.filter(f => f.fieldType === "TEXT") || [];
+    const textFields =
+      stats?.fieldStats?.filter((f) => f.fieldType === "TEXT") || [];
     const totalTextResponses = textFields.reduce((sum, f) => {
       const textStats = f.stats as TextStats;
       return sum + textStats.responseCount;

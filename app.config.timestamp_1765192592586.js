@@ -3,14 +3,12 @@ import { defineConfig } from "@tanstack/start/config";
 import viteTsConfigPaths from "vite-tsconfig-paths";
 var app_config_default = defineConfig({
   server: {
-    preset: "node-server"
+    preset: "node-server",
     // Enable for NAIS
     // preset: 'vercel',
   },
   vite: {
-    plugins: [viteTsConfigPaths()]
-  }
+    plugins: [viteTsConfigPaths()],
+  },
 });
-export {
-  app_config_default as default
-};
+export { app_config_default as default };

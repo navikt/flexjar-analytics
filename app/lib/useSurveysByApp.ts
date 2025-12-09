@@ -8,7 +8,9 @@ export function useSurveysByApp() {
   return useQuery<Record<string, string[]>>({
     queryKey: ["surveysByApp"],
     queryFn: async () => {
-      const response = await fetch(`/api/backend/api/v1/intern/feedback/surveys`);
+      const response = await fetch(
+        `/api/backend/api/v1/intern/feedback/surveys`,
+      );
       if (!response.ok) {
         throw new Error("Failed to fetch surveys");
       }

@@ -1,5 +1,20 @@
-import { Button, VStack, HStack, BodyShort, Box, Heading, RadioGroup, Radio, Alert } from "@navikt/ds-react";
-import { DownloadIcon, FileExcelIcon, FilesIcon, ArrowsCirclepathIcon } from "@navikt/aksel-icons";
+import {
+  ArrowsCirclepathIcon,
+  DownloadIcon,
+  FileExcelIcon,
+  FilesIcon,
+} from "@navikt/aksel-icons";
+import {
+  Alert,
+  BodyShort,
+  Box,
+  Button,
+  HStack,
+  Heading,
+  Radio,
+  RadioGroup,
+  VStack,
+} from "@navikt/ds-react";
 import { useState } from "react";
 import { useSearchParams } from "~/lib/useSearchParams";
 
@@ -14,7 +29,7 @@ export function ExportPanel() {
     setIsExporting(true);
     setError(null);
     setSuccess(false);
-    
+
     try {
       const queryParams = new URLSearchParams();
       queryParams.set("format", format);
@@ -29,14 +44,18 @@ export function ExportPanel() {
       if (params.lavRating) queryParams.set("lavRating", params.lavRating);
       if (params.deviceType) queryParams.set("deviceType", params.deviceType);
 
-      const response = await fetch(`/api/backend/api/v1/intern/export?${queryParams.toString()}`);
-      
+      const response = await fetch(
+        `/api/backend/api/v1/intern/export?${queryParams.toString()}`,
+      );
+
       if (!response.ok) {
         if (response.status === 401 || response.status === 403) {
           throw new Error("Du har ikke tilgang til å eksportere data");
         }
         if (response.status === 504 || response.status === 408) {
-          throw new Error("Forespørselen tok for lang tid. Prøv å begrense tidsperioden.");
+          throw new Error(
+            "Forespørselen tok for lang tid. Prøv å begrense tidsperioden.",
+          );
         }
         throw new Error(`Eksport feilet (${response.status})`);
       }
@@ -45,10 +64,10 @@ export function ExportPanel() {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      
+
       const extension = format === "excel" ? "xlsx" : format;
       a.download = `flexjar-export-${new Date().toISOString().split("T")[0]}.${extension}`;
-      
+
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -66,12 +85,17 @@ export function ExportPanel() {
   return (
     <div className="dashboard-grid">
       {error && (
-        <Alert variant="error" className="export-alert" closeButton onClose={() => setError(null)}>
+        <Alert
+          variant="error"
+          className="export-alert"
+          closeButton
+          onClose={() => setError(null)}
+        >
           {error}
-          <Button 
-            variant="tertiary" 
-            size="small" 
-            icon={<ArrowsCirclepathIcon />} 
+          <Button
+            variant="tertiary"
+            size="small"
+            icon={<ArrowsCirclepathIcon />}
             onClick={handleExport}
             style={{ marginLeft: "0.5rem" }}
           >
@@ -87,7 +111,7 @@ export function ExportPanel() {
       <div className="dashboard-card">
         <VStack gap="4">
           <Heading size="small">Velg format</Heading>
-          
+
           <RadioGroup
             legend="Eksportformat"
             hideLegend
@@ -99,7 +123,9 @@ export function ExportPanel() {
                 <FilesIcon />
                 <VStack gap="0">
                   <BodyShort weight="semibold">CSV</BodyShort>
-                  <BodyShort size="small">Kommaseparert fil, fungerer med Excel og andre verktøy</BodyShort>
+                  <BodyShort size="small">
+                    Kommaseparert fil, fungerer med Excel og andre verktøy
+                  </BodyShort>
                 </VStack>
               </HStack>
             </Radio>
@@ -108,7 +134,9 @@ export function ExportPanel() {
                 <FileExcelIcon />
                 <VStack gap="0">
                   <BodyShort weight="semibold">Excel (XLSX)</BodyShort>
-                  <BodyShort size="small">Native Excel-format med formatering</BodyShort>
+                  <BodyShort size="small">
+                    Native Excel-format med formatering
+                  </BodyShort>
                 </VStack>
               </HStack>
             </Radio>
@@ -117,7 +145,9 @@ export function ExportPanel() {
                 <FilesIcon />
                 <VStack gap="0">
                   <BodyShort weight="semibold">JSON</BodyShort>
-                  <BodyShort size="small">Maskinlesbart format for videre prosessering</BodyShort>
+                  <BodyShort size="small">
+                    Maskinlesbart format for videre prosessering
+                  </BodyShort>
                 </VStack>
               </HStack>
             </Radio>
@@ -136,7 +166,7 @@ export function ExportPanel() {
       <div className="dashboard-card">
         <VStack gap="4">
           <Heading size="small">Aktive filtre</Heading>
-          
+
           <Box>
             {params.app && (
               <BodyShort size="small" spacing>
@@ -175,13 +205,19 @@ export function ExportPanel() {
             )}
             {params.deviceType && (
               <BodyShort size="small" spacing>
-                <strong>Enhet:</strong> {params.deviceType === "mobile" ? "Mobil" : params.deviceType === "desktop" ? "Desktop" : "Alle"}
+                <strong>Enhet:</strong>{" "}
+                {params.deviceType === "mobile"
+                  ? "Mobil"
+                  : params.deviceType === "desktop"
+                    ? "Desktop"
+                    : "Alle"}
               </BodyShort>
             )}
           </Box>
 
           <BodyShort size="small" textColor="subtle">
-            Eksporten inkluderer alle svar med metadata (enhet, side, tidspunkt) som matcher filtrene (maks 10 000).
+            Eksporten inkluderer alle svar med metadata (enhet, side, tidspunkt)
+            som matcher filtrene (maks 10 000).
           </BodyShort>
         </VStack>
       </div>

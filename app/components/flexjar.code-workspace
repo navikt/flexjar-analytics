@@ -1,14 +1,14 @@
 {
-	"folders": [
-		{
-			"path": "../../../flexjar-widget"
-		},
-		{
-			"path": "../.."
-		},
-		{
-			"path": "../../../flexjar-analytics-api"
-		}
-	],
-	"settings": {}
+  "folders": [
+    {
+      "path": "../../../flexjar-widget"
+    },
+    {
+      "path": "../.."
+    },
+    {
+      "path": "../../../flexjar-analytics-api"
+    }
+  ],
+  "settings": {}
 }

@@ -1,6 +1,13 @@
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-import { useStats } from "~/lib/useStats";
 import { Skeleton } from "@navikt/ds-react";
+import {
+  Bar,
+  BarChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import { useStats } from "~/lib/useStats";
 
 // Chart colors for dark mode
 const CHART_COLORS = {
@@ -10,7 +17,7 @@ const CHART_COLORS = {
   tooltip: {
     bg: "#1c1f24",
     border: "rgba(255, 255, 255, 0.15)",
-  }
+  },
 };
 
 export function TopAppsChart() {
@@ -21,7 +28,7 @@ export function TopAppsChart() {
   }
 
   const byApp = stats?.byApp || {};
-  
+
   // Transform and sort by count, take top 10
   const data = Object.entries(byApp)
     .map(([app, count]) => ({ app, count }))
@@ -30,13 +37,15 @@ export function TopAppsChart() {
 
   if (data.length === 0) {
     return (
-      <div style={{ 
-        height: "100%", 
-        display: "flex", 
-        alignItems: "center", 
-        justifyContent: "center",
-        color: CHART_COLORS.textMuted
-      }}>
+      <div
+        style={{
+          height: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: CHART_COLORS.textMuted,
+        }}
+      >
         Ingen app-data tilgjengelig
       </div>
     );
@@ -44,22 +53,22 @@ export function TopAppsChart() {
 
   return (
     <ResponsiveContainer width="100%" height="100%">
-      <BarChart 
-        data={data} 
+      <BarChart
+        data={data}
         layout="vertical"
         margin={{ top: 10, right: 30, left: 100, bottom: 10 }}
         role="img"
         aria-label={`Horisontalt søylediagram som viser antall tilbakemeldinger per app. ${data.length} apper vist.`}
       >
-        <XAxis 
+        <XAxis
           type="number"
           axisLine={false}
           tickLine={false}
           tick={{ fill: CHART_COLORS.textMuted, fontSize: 12 }}
         />
-        <YAxis 
+        <YAxis
           type="category"
-          dataKey="app" 
+          dataKey="app"
           axisLine={false}
           tickLine={false}
           tick={{ fill: CHART_COLORS.text, fontSize: 12 }}
@@ -70,24 +79,30 @@ export function TopAppsChart() {
             if (active && payload && payload.length) {
               const data = payload[0].payload;
               return (
-                <div style={{
-                  background: CHART_COLORS.tooltip.bg,
-                  color: "#ffffff",
-                  padding: "0.75rem",
-                  borderRadius: "4px",
-                  border: `1px solid ${CHART_COLORS.tooltip.border}`,
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.4)"
-                }}>
-                  <div style={{ fontWeight: 600, marginBottom: "0.25rem" }}>{data.app}</div>
-                  <div>{data.count.toLocaleString("no-NO")} tilbakemeldinger</div>
+                <div
+                  style={{
+                    background: CHART_COLORS.tooltip.bg,
+                    color: "#ffffff",
+                    padding: "0.75rem",
+                    borderRadius: "4px",
+                    border: `1px solid ${CHART_COLORS.tooltip.border}`,
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
+                  }}
+                >
+                  <div style={{ fontWeight: 600, marginBottom: "0.25rem" }}>
+                    {data.app}
+                  </div>
+                  <div>
+                    {data.count.toLocaleString("no-NO")} tilbakemeldinger
+                  </div>
                 </div>
               );
             }
             return null;
           }}
         />
-        <Bar 
-          dataKey="count" 
+        <Bar
+          dataKey="count"
           fill={CHART_COLORS.primary}
           radius={[0, 4, 4, 0]}
         />

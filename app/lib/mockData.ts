@@ -1,4 +1,13 @@
-import type { FeedbackDto, FeedbackPage, FeedbackStats, Answer, FieldStat, RatingAnswer, TextAnswer, SubmissionContext } from "./api";
+import type {
+  Answer,
+  FeedbackDto,
+  FeedbackPage,
+  FeedbackStats,
+  FieldStat,
+  RatingAnswer,
+  SubmissionContext,
+  TextAnswer,
+} from "./api";
 
 // ============================================
 // Helper functions for creating answers
@@ -8,7 +17,7 @@ function createRatingAnswer(
   fieldId: string,
   label: string,
   rating: number,
-  description?: string
+  description?: string,
 ): RatingAnswer {
   return {
     fieldId,
@@ -22,7 +31,7 @@ function createTextAnswer(
   fieldId: string,
   label: string,
   text: string,
-  description?: string
+  description?: string,
 ): TextAnswer {
   return {
     fieldId,
@@ -37,7 +46,7 @@ function createContext(
   pathname: string,
   deviceType: "mobile" | "tablet" | "desktop" = "desktop",
   viewportWidth?: number,
-  viewportHeight?: number
+  viewportHeight?: number,
 ): SubmissionContext {
   const defaultWidths = { mobile: 375, tablet: 768, desktop: 1440 };
   const defaultHeights = { mobile: 812, tablet: 1024, desktop: 900 };
@@ -67,9 +76,19 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-sykmeldt",
     context: createContext("/syk/oppfolgingsplaner/1234/sykmeldt", "desktop"),
+    tags: ["good-feedback"],
     answers: [
-      createRatingAnswer("hovedsporsmal", "Er oppfølgingsplanen til hjelp for deg?", 5),
-      createTextAnswer("begrunnelse", "Legg gjerne til en begrunnelse", "Veldig nyttig å ha alt samlet på ett sted. Enkelt å fylle ut sammen med leder.", "Valgfritt"),
+      createRatingAnswer(
+        "hovedsporsmal",
+        "Er oppfølgingsplanen til hjelp for deg?",
+        5,
+      ),
+      createTextAnswer(
+        "begrunnelse",
+        "Legg gjerne til en begrunnelse",
+        "Veldig nyttig å ha alt samlet på ett sted. Enkelt å fylle ut sammen med leder.",
+        "Valgfritt",
+      ),
     ],
     sensitiveDataRedacted: false,
   },
@@ -79,9 +98,19 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-sykmeldt",
     context: createContext("/syk/oppfolgingsplaner/5678/sykmeldt", "mobile"),
+    tags: ["ux", "feature"],
     answers: [
-      createRatingAnswer("hovedsporsmal", "Er oppfølgingsplanen til hjelp for deg?", 4),
-      createTextAnswer("begrunnelse", "Legg gjerne til en begrunnelse", "Greit verktøy, men skulle ønske det var enklere å legge til egne tiltak.", "Valgfritt"),
+      createRatingAnswer(
+        "hovedsporsmal",
+        "Er oppfølgingsplanen til hjelp for deg?",
+        4,
+      ),
+      createTextAnswer(
+        "begrunnelse",
+        "Legg gjerne til en begrunnelse",
+        "Greit verktøy, men skulle ønske det var enklere å legge til egne tiltak.",
+        "Valgfritt",
+      ),
     ],
     sensitiveDataRedacted: false,
   },
@@ -90,9 +119,19 @@ const mockFeedbackItems: FeedbackDto[] = [
     submittedAt: "2025-12-07T14:45:00Z",
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-sykmeldt",
-    context: createContext("/syk/oppfolgingsplaner/9012/sykmeldt", "desktop", 1920, 1080),
+    context: createContext(
+      "/syk/oppfolgingsplaner/9012/sykmeldt",
+      "desktop",
+      1920,
+      1080,
+    ),
+    tags: ["bug", "urgent"],
     answers: [
-      createRatingAnswer("hovedsporsmal", "Er oppfølgingsplanen til hjelp for deg?", 5),
+      createRatingAnswer(
+        "hovedsporsmal",
+        "Er oppfølgingsplanen til hjelp for deg?",
+        5,
+      ),
     ],
     sensitiveDataRedacted: false,
   },
@@ -101,10 +140,24 @@ const mockFeedbackItems: FeedbackDto[] = [
     submittedAt: "2025-12-07T11:20:00Z",
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-sykmeldt",
-    context: createContext("/syk/oppfolgingsplaner/3456/sykmeldt", "mobile", 390, 844),
+    context: createContext(
+      "/syk/oppfolgingsplaner/3456/sykmeldt",
+      "mobile",
+      390,
+      844,
+    ),
     answers: [
-      createRatingAnswer("hovedsporsmal", "Er oppfølgingsplanen til hjelp for deg?", 3),
-      createTextAnswer("begrunnelse", "Legg gjerne til en begrunnelse", "Litt forvirrende i starten, men ble bedre etter hvert. Kunne hatt bedre forklaringer.", "Valgfritt"),
+      createRatingAnswer(
+        "hovedsporsmal",
+        "Er oppfølgingsplanen til hjelp for deg?",
+        3,
+      ),
+      createTextAnswer(
+        "begrunnelse",
+        "Legg gjerne til en begrunnelse",
+        "Litt forvirrende i starten, men ble bedre etter hvert. Kunne hatt bedre forklaringer.",
+        "Valgfritt",
+      ),
     ],
     sensitiveDataRedacted: false,
   },
@@ -113,10 +166,24 @@ const mockFeedbackItems: FeedbackDto[] = [
     submittedAt: "2025-12-06T16:00:00Z",
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-sykmeldt",
-    context: createContext("/syk/oppfolgingsplaner/7890/sykmeldt", "tablet", 820, 1180),
+    context: createContext(
+      "/syk/oppfolgingsplaner/7890/sykmeldt",
+      "tablet",
+      820,
+      1180,
+    ),
     answers: [
-      createRatingAnswer("hovedsporsmal", "Er oppfølgingsplanen til hjelp for deg?", 2),
-      createTextAnswer("begrunnelse", "Legg gjerne til en begrunnelse", "Vanskelig å forstå hva jeg skulle fylle ut. Trengte hjelp fra arbeidsgiveren min.", "Valgfritt"),
+      createRatingAnswer(
+        "hovedsporsmal",
+        "Er oppfølgingsplanen til hjelp for deg?",
+        2,
+      ),
+      createTextAnswer(
+        "begrunnelse",
+        "Legg gjerne til en begrunnelse",
+        "Vanskelig å forstå hva jeg skulle fylle ut. Trengte hjelp fra arbeidsgiveren min.",
+        "Valgfritt",
+      ),
     ],
     sensitiveDataRedacted: false,
   },
@@ -125,10 +192,24 @@ const mockFeedbackItems: FeedbackDto[] = [
     submittedAt: "2025-12-06T10:30:00Z",
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-sykmeldt",
-    context: createContext("/syk/oppfolgingsplaner/2345/sykmeldt", "desktop", 2560, 1440),
+    context: createContext(
+      "/syk/oppfolgingsplaner/2345/sykmeldt",
+      "desktop",
+      2560,
+      1440,
+    ),
     answers: [
-      createRatingAnswer("hovedsporsmal", "Er oppfølgingsplanen til hjelp for deg?", 5),
-      createTextAnswer("begrunnelse", "Legg gjerne til en begrunnelse", "Perfekt! Mye bedre enn den gamle løsningen.", "Valgfritt"),
+      createRatingAnswer(
+        "hovedsporsmal",
+        "Er oppfølgingsplanen til hjelp for deg?",
+        5,
+      ),
+      createTextAnswer(
+        "begrunnelse",
+        "Legg gjerne til en begrunnelse",
+        "Perfekt! Mye bedre enn den gamle løsningen.",
+        "Valgfritt",
+      ),
     ],
     sensitiveDataRedacted: false,
   },
@@ -137,9 +218,18 @@ const mockFeedbackItems: FeedbackDto[] = [
     submittedAt: "2025-12-03T16:45:00Z",
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-sykmeldt",
-    context: createContext("/syk/oppfolgingsplaner/6789/sykmeldt", "mobile", 375, 667),
+    context: createContext(
+      "/syk/oppfolgingsplaner/6789/sykmeldt",
+      "mobile",
+      375,
+      667,
+    ),
     answers: [
-      createRatingAnswer("hovedsporsmal", "Er oppfølgingsplanen til hjelp for deg?", 5),
+      createRatingAnswer(
+        "hovedsporsmal",
+        "Er oppfølgingsplanen til hjelp for deg?",
+        5,
+      ),
     ],
     sensitiveDataRedacted: false,
   },
@@ -148,10 +238,24 @@ const mockFeedbackItems: FeedbackDto[] = [
     submittedAt: "2025-12-03T12:00:00Z",
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-sykmeldt",
-    context: createContext("/syk/oppfolgingsplaner/1122/sykmeldt", "mobile", 414, 896),
+    context: createContext(
+      "/syk/oppfolgingsplaner/1122/sykmeldt",
+      "mobile",
+      414,
+      896,
+    ),
     answers: [
-      createRatingAnswer("hovedsporsmal", "Er oppfølgingsplanen til hjelp for deg?", 4),
-      createTextAnswer("begrunnelse", "Legg gjerne til en begrunnelse", "Oversiktlig og greit å bruke på mobil også.", "Valgfritt"),
+      createRatingAnswer(
+        "hovedsporsmal",
+        "Er oppfølgingsplanen til hjelp for deg?",
+        4,
+      ),
+      createTextAnswer(
+        "begrunnelse",
+        "Legg gjerne til en begrunnelse",
+        "Oversiktlig og greit å bruke på mobil også.",
+        "Valgfritt",
+      ),
     ],
     sensitiveDataRedacted: false,
   },
@@ -160,9 +264,18 @@ const mockFeedbackItems: FeedbackDto[] = [
     submittedAt: "2025-12-02T09:30:00Z",
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-sykmeldt",
-    context: createContext("/syk/oppfolgingsplaner/3344/sykmeldt", "desktop", 1366, 768),
+    context: createContext(
+      "/syk/oppfolgingsplaner/3344/sykmeldt",
+      "desktop",
+      1366,
+      768,
+    ),
     answers: [
-      createRatingAnswer("hovedsporsmal", "Er oppfølgingsplanen til hjelp for deg?", 3),
+      createRatingAnswer(
+        "hovedsporsmal",
+        "Er oppfølgingsplanen til hjelp for deg?",
+        3,
+      ),
     ],
     sensitiveDataRedacted: false,
   },
@@ -171,10 +284,24 @@ const mockFeedbackItems: FeedbackDto[] = [
     submittedAt: "2025-12-01T14:15:00Z",
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-sykmeldt",
-    context: createContext("/syk/oppfolgingsplaner/5566/sykmeldt", "desktop", 1440, 900),
+    context: createContext(
+      "/syk/oppfolgingsplaner/5566/sykmeldt",
+      "desktop",
+      1440,
+      900,
+    ),
     answers: [
-      createRatingAnswer("hovedsporsmal", "Er oppfølgingsplanen til hjelp for deg?", 5),
-      createTextAnswer("begrunnelse", "Legg gjerne til en begrunnelse", "Veldig bra! Føler meg mer involvert i min egen oppfølging nå.", "Valgfritt"),
+      createRatingAnswer(
+        "hovedsporsmal",
+        "Er oppfølgingsplanen til hjelp for deg?",
+        5,
+      ),
+      createTextAnswer(
+        "begrunnelse",
+        "Legg gjerne til en begrunnelse",
+        "Veldig bra! Føler meg mer involvert i min egen oppfølging nå.",
+        "Valgfritt",
+      ),
     ],
     sensitiveDataRedacted: false,
   },
@@ -183,9 +310,18 @@ const mockFeedbackItems: FeedbackDto[] = [
     submittedAt: "2025-11-29T15:30:00Z",
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-sykmeldt",
-    context: createContext("/syk/oppfolgingsplaner/7788/sykmeldt", "mobile", 360, 800),
+    context: createContext(
+      "/syk/oppfolgingsplaner/7788/sykmeldt",
+      "mobile",
+      360,
+      800,
+    ),
     answers: [
-      createRatingAnswer("hovedsporsmal", "Er oppfølgingsplanen til hjelp for deg?", 4),
+      createRatingAnswer(
+        "hovedsporsmal",
+        "Er oppfølgingsplanen til hjelp for deg?",
+        4,
+      ),
     ],
     sensitiveDataRedacted: false,
   },
@@ -194,10 +330,24 @@ const mockFeedbackItems: FeedbackDto[] = [
     submittedAt: "2025-12-04T14:00:00Z",
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-sykmeldt",
-    context: createContext("/syk/oppfolgingsplaner/9900/sykmeldt", "desktop", 1920, 1200),
+    context: createContext(
+      "/syk/oppfolgingsplaner/9900/sykmeldt",
+      "desktop",
+      1920,
+      1200,
+    ),
     answers: [
-      createRatingAnswer("hovedsporsmal", "Er oppfølgingsplanen til hjelp for deg?", 4),
-      createTextAnswer("begrunnelse", "Legg gjerne til en begrunnelse", "Bra verktøy. [PERSONNUMMER FJERNET] har hjulpet meg med å fylle ut.", "Valgfritt"),
+      createRatingAnswer(
+        "hovedsporsmal",
+        "Er oppfølgingsplanen til hjelp for deg?",
+        4,
+      ),
+      createTextAnswer(
+        "begrunnelse",
+        "Legg gjerne til en begrunnelse",
+        "Bra verktøy. [PERSONNUMMER FJERNET] har hjulpet meg med å fylle ut.",
+        "Valgfritt",
+      ),
     ],
     sensitiveDataRedacted: true,
   },
@@ -212,9 +362,21 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-arbeidsgiver",
     answers: [
-      createRatingAnswer("hovedsporsmal", "Hvordan var det å bruke oppfølgingsplanen?", 4),
-      createTextAnswer("nytte", "Opplever du at oppfølgingsplanen er et nyttig verktøy?", "Ja, det gir god struktur på samtalene med den ansatte. Lettere å dokumentere hva vi har blitt enige om."),
-      createTextAnswer("forbedringer", "Hvis du kunne endre på noe, hva ville det vært?", "Mulighet til å legge til flere deltakere i planen, f.eks. verneombud eller HR."),
+      createRatingAnswer(
+        "hovedsporsmal",
+        "Hvordan var det å bruke oppfølgingsplanen?",
+        4,
+      ),
+      createTextAnswer(
+        "nytte",
+        "Opplever du at oppfølgingsplanen er et nyttig verktøy?",
+        "Ja, det gir god struktur på samtalene med den ansatte. Lettere å dokumentere hva vi har blitt enige om.",
+      ),
+      createTextAnswer(
+        "forbedringer",
+        "Hvis du kunne endre på noe, hva ville det vært?",
+        "Mulighet til å legge til flere deltakere i planen, f.eks. verneombud eller HR.",
+      ),
     ],
     sensitiveDataRedacted: false,
   },
@@ -224,8 +386,16 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-arbeidsgiver",
     answers: [
-      createRatingAnswer("hovedsporsmal", "Hvordan var det å bruke oppfølgingsplanen?", 5),
-      createTextAnswer("nytte", "Opplever du at oppfølgingsplanen er et nyttig verktøy?", "Veldig bra! Oversiktlig og enkelt å bruke. Sparer tid sammenlignet med gamle rutiner."),
+      createRatingAnswer(
+        "hovedsporsmal",
+        "Hvordan var det å bruke oppfølgingsplanen?",
+        5,
+      ),
+      createTextAnswer(
+        "nytte",
+        "Opplever du at oppfølgingsplanen er et nyttig verktøy?",
+        "Veldig bra! Oversiktlig og enkelt å bruke. Sparer tid sammenlignet med gamle rutiner.",
+      ),
     ],
     sensitiveDataRedacted: false,
   },
@@ -235,9 +405,21 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-arbeidsgiver",
     answers: [
-      createRatingAnswer("hovedsporsmal", "Hvordan var det å bruke oppfølgingsplanen?", 3),
-      createTextAnswer("nytte", "Opplever du at oppfølgingsplanen er et nyttig verktøy?", "Ok, men ikke alltid relevant for alle typer sykefravær."),
-      createTextAnswer("forbedringer", "Hvis du kunne endre på noe, hva ville det vært?", "Enklere å hoppe over deler som ikke er relevante. Noen ganger føles det påtvunget."),
+      createRatingAnswer(
+        "hovedsporsmal",
+        "Hvordan var det å bruke oppfølgingsplanen?",
+        3,
+      ),
+      createTextAnswer(
+        "nytte",
+        "Opplever du at oppfølgingsplanen er et nyttig verktøy?",
+        "Ok, men ikke alltid relevant for alle typer sykefravær.",
+      ),
+      createTextAnswer(
+        "forbedringer",
+        "Hvis du kunne endre på noe, hva ville det vært?",
+        "Enklere å hoppe over deler som ikke er relevante. Noen ganger føles det påtvunget.",
+      ),
     ],
     sensitiveDataRedacted: false,
   },
@@ -247,9 +429,21 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-arbeidsgiver",
     answers: [
-      createRatingAnswer("hovedsporsmal", "Hvordan var det å bruke oppfølgingsplanen?", 4),
-      createTextAnswer("nytte", "Opplever du at oppfølgingsplanen er et nyttig verktøy?", "Fungerer fint for det meste. Godt at den ansatte også kan se og bidra."),
-      createTextAnswer("forbedringer", "Hvis du kunne endre på noe, hva ville det vært?", "Bedre varsling når den ansatte har gjort endringer."),
+      createRatingAnswer(
+        "hovedsporsmal",
+        "Hvordan var det å bruke oppfølgingsplanen?",
+        4,
+      ),
+      createTextAnswer(
+        "nytte",
+        "Opplever du at oppfølgingsplanen er et nyttig verktøy?",
+        "Fungerer fint for det meste. Godt at den ansatte også kan se og bidra.",
+      ),
+      createTextAnswer(
+        "forbedringer",
+        "Hvis du kunne endre på noe, hva ville det vært?",
+        "Bedre varsling når den ansatte har gjort endringer.",
+      ),
     ],
     sensitiveDataRedacted: false,
   },
@@ -259,8 +453,16 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-arbeidsgiver",
     answers: [
-      createRatingAnswer("hovedsporsmal", "Hvordan var det å bruke oppfølgingsplanen?", 5),
-      createTextAnswer("nytte", "Opplever du at oppfølgingsplanen er et nyttig verktøy?", "Topp! Har brukt den med flere ansatte nå og det fungerer kjempebra."),
+      createRatingAnswer(
+        "hovedsporsmal",
+        "Hvordan var det å bruke oppfølgingsplanen?",
+        5,
+      ),
+      createTextAnswer(
+        "nytte",
+        "Opplever du at oppfølgingsplanen er et nyttig verktøy?",
+        "Topp! Har brukt den med flere ansatte nå og det fungerer kjempebra.",
+      ),
     ],
     sensitiveDataRedacted: false,
   },
@@ -270,9 +472,21 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-arbeidsgiver",
     answers: [
-      createRatingAnswer("hovedsporsmal", "Hvordan var det å bruke oppfølgingsplanen?", 1),
-      createTextAnswer("nytte", "Opplever du at oppfølgingsplanen er et nyttig verktøy?", "Vanskelig å forstå. Fikk ikke til å sende den til den ansatte."),
-      createTextAnswer("forbedringer", "Hvis du kunne endre på noe, hva ville det vært?", "Enklere brukergrensesnitt og bedre hjelpetekster."),
+      createRatingAnswer(
+        "hovedsporsmal",
+        "Hvordan var det å bruke oppfølgingsplanen?",
+        1,
+      ),
+      createTextAnswer(
+        "nytte",
+        "Opplever du at oppfølgingsplanen er et nyttig verktøy?",
+        "Vanskelig å forstå. Fikk ikke til å sende den til den ansatte.",
+      ),
+      createTextAnswer(
+        "forbedringer",
+        "Hvis du kunne endre på noe, hva ville det vært?",
+        "Enklere brukergrensesnitt og bedre hjelpetekster.",
+      ),
     ],
     sensitiveDataRedacted: false,
   },
@@ -282,8 +496,16 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-arbeidsgiver",
     answers: [
-      createRatingAnswer("hovedsporsmal", "Hvordan var det å bruke oppfølgingsplanen?", 4),
-      createTextAnswer("nytte", "Opplever du at oppfølgingsplanen er et nyttig verktøy?", "Bra verktøy for strukturert oppfølging."),
+      createRatingAnswer(
+        "hovedsporsmal",
+        "Hvordan var det å bruke oppfølgingsplanen?",
+        4,
+      ),
+      createTextAnswer(
+        "nytte",
+        "Opplever du at oppfølgingsplanen er et nyttig verktøy?",
+        "Bra verktøy for strukturert oppfølging.",
+      ),
     ],
     sensitiveDataRedacted: false,
   },
@@ -293,8 +515,16 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-arbeidsgiver",
     answers: [
-      createRatingAnswer("hovedsporsmal", "Hvordan var det å bruke oppfølgingsplanen?", 4),
-      createTextAnswer("nytte", "Opplever du at oppfølgingsplanen er et nyttig verktøy?", "Fungerer bra. Kontaktet [E-POST FJERNET] for support og fikk god hjelp."),
+      createRatingAnswer(
+        "hovedsporsmal",
+        "Hvordan var det å bruke oppfølgingsplanen?",
+        4,
+      ),
+      createTextAnswer(
+        "nytte",
+        "Opplever du at oppfølgingsplanen er et nyttig verktøy?",
+        "Fungerer bra. Kontaktet [E-POST FJERNET] for support og fikk god hjelp.",
+      ),
     ],
     sensitiveDataRedacted: true,
   },
@@ -309,8 +539,17 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "oppfolgingsplan-frontend",
     surveyId: "oppfolgingsplan-gammel-sykmeldt",
     answers: [
-      createRatingAnswer("hovedsporsmal", "Er oppfølgingsplanen til hjelp for deg?", 3),
-      createTextAnswer("begrunnelse", "Legg gjerne til en begrunnelse", "Litt tungvint å navigere, men får gjort det jeg må.", "Valgfritt"),
+      createRatingAnswer(
+        "hovedsporsmal",
+        "Er oppfølgingsplanen til hjelp for deg?",
+        3,
+      ),
+      createTextAnswer(
+        "begrunnelse",
+        "Legg gjerne til en begrunnelse",
+        "Litt tungvint å navigere, men får gjort det jeg må.",
+        "Valgfritt",
+      ),
     ],
     sensitiveDataRedacted: false,
   },
@@ -320,8 +559,17 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "oppfolgingsplan-frontend",
     surveyId: "oppfolgingsplan-gammel-sykmeldt",
     answers: [
-      createRatingAnswer("hovedsporsmal", "Er oppfølgingsplanen til hjelp for deg?", 2),
-      createTextAnswer("begrunnelse", "Legg gjerne til en begrunnelse", "Gammel løsning som er vanskelig å bruke. Håper det kommer noe nytt snart!", "Valgfritt"),
+      createRatingAnswer(
+        "hovedsporsmal",
+        "Er oppfølgingsplanen til hjelp for deg?",
+        2,
+      ),
+      createTextAnswer(
+        "begrunnelse",
+        "Legg gjerne til en begrunnelse",
+        "Gammel løsning som er vanskelig å bruke. Håper det kommer noe nytt snart!",
+        "Valgfritt",
+      ),
     ],
     sensitiveDataRedacted: false,
   },
@@ -331,7 +579,11 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "oppfolgingsplan-frontend",
     surveyId: "oppfolgingsplan-gammel-sykmeldt",
     answers: [
-      createRatingAnswer("hovedsporsmal", "Er oppfølgingsplanen til hjelp for deg?", 3),
+      createRatingAnswer(
+        "hovedsporsmal",
+        "Er oppfølgingsplanen til hjelp for deg?",
+        3,
+      ),
     ],
     sensitiveDataRedacted: false,
   },
@@ -341,8 +593,17 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "oppfolgingsplan-frontend",
     surveyId: "oppfolgingsplan-gammel-sykmeldt",
     answers: [
-      createRatingAnswer("hovedsporsmal", "Er oppfølgingsplanen til hjelp for deg?", 4),
-      createTextAnswer("begrunnelse", "Legg gjerne til en begrunnelse", "Funker greit nok, men ser litt utdatert ut.", "Valgfritt"),
+      createRatingAnswer(
+        "hovedsporsmal",
+        "Er oppfølgingsplanen til hjelp for deg?",
+        4,
+      ),
+      createTextAnswer(
+        "begrunnelse",
+        "Legg gjerne til en begrunnelse",
+        "Funker greit nok, men ser litt utdatert ut.",
+        "Valgfritt",
+      ),
     ],
     sensitiveDataRedacted: false,
   },
@@ -352,8 +613,17 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "oppfolgingsplan-frontend",
     surveyId: "oppfolgingsplan-gammel-sykmeldt",
     answers: [
-      createRatingAnswer("hovedsporsmal", "Er oppfølgingsplanen til hjelp for deg?", 2),
-      createTextAnswer("begrunnelse", "Legg gjerne til en begrunnelse", "Treg og uoversiktlig. Måtte prøve flere ganger før jeg fikk sendt inn.", "Valgfritt"),
+      createRatingAnswer(
+        "hovedsporsmal",
+        "Er oppfølgingsplanen til hjelp for deg?",
+        2,
+      ),
+      createTextAnswer(
+        "begrunnelse",
+        "Legg gjerne til en begrunnelse",
+        "Treg og uoversiktlig. Måtte prøve flere ganger før jeg fikk sendt inn.",
+        "Valgfritt",
+      ),
     ],
     sensitiveDataRedacted: false,
   },
@@ -368,9 +638,21 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "oppfolgingsplan-frontend",
     surveyId: "oppfolgingsplan-gammel-arbeidsgiver",
     answers: [
-      createRatingAnswer("hovedsporsmal", "Hvordan var det å bruke oppfølgingsplanen?", 3),
-      createTextAnswer("nytte", "Opplever du at oppfølgingsplanen er et nyttig verktøy?", "OK, men burde vært enklere å finne frem."),
-      createTextAnswer("forbedringer", "Hvis du kunne endre på noe, hva ville det vært?", "Bedre design og mer moderne utseende."),
+      createRatingAnswer(
+        "hovedsporsmal",
+        "Hvordan var det å bruke oppfølgingsplanen?",
+        3,
+      ),
+      createTextAnswer(
+        "nytte",
+        "Opplever du at oppfølgingsplanen er et nyttig verktøy?",
+        "OK, men burde vært enklere å finne frem.",
+      ),
+      createTextAnswer(
+        "forbedringer",
+        "Hvis du kunne endre på noe, hva ville det vært?",
+        "Bedre design og mer moderne utseende.",
+      ),
     ],
     sensitiveDataRedacted: false,
   },
@@ -380,9 +662,21 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "oppfolgingsplan-frontend",
     surveyId: "oppfolgingsplan-gammel-arbeidsgiver",
     answers: [
-      createRatingAnswer("hovedsporsmal", "Hvordan var det å bruke oppfølgingsplanen?", 2),
-      createTextAnswer("nytte", "Opplever du at oppfølgingsplanen er et nyttig verktøy?", "Nei, den gamle løsningen er for komplisert. Vanskelig å vite hva som forventes."),
-      createTextAnswer("forbedringer", "Hvis du kunne endre på noe, hva ville det vært?", "Alt! Trenger fullstendig redesign."),
+      createRatingAnswer(
+        "hovedsporsmal",
+        "Hvordan var det å bruke oppfølgingsplanen?",
+        2,
+      ),
+      createTextAnswer(
+        "nytte",
+        "Opplever du at oppfølgingsplanen er et nyttig verktøy?",
+        "Nei, den gamle løsningen er for komplisert. Vanskelig å vite hva som forventes.",
+      ),
+      createTextAnswer(
+        "forbedringer",
+        "Hvis du kunne endre på noe, hva ville det vært?",
+        "Alt! Trenger fullstendig redesign.",
+      ),
     ],
     sensitiveDataRedacted: false,
   },
@@ -392,8 +686,16 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "oppfolgingsplan-frontend",
     surveyId: "oppfolgingsplan-gammel-arbeidsgiver",
     answers: [
-      createRatingAnswer("hovedsporsmal", "Hvordan var det å bruke oppfølgingsplanen?", 3),
-      createTextAnswer("nytte", "Opplever du at oppfølgingsplanen er et nyttig verktøy?", "Middels. Gjør jobben, men ikke noe mer."),
+      createRatingAnswer(
+        "hovedsporsmal",
+        "Hvordan var det å bruke oppfølgingsplanen?",
+        3,
+      ),
+      createTextAnswer(
+        "nytte",
+        "Opplever du at oppfølgingsplanen er et nyttig verktøy?",
+        "Middels. Gjør jobben, men ikke noe mer.",
+      ),
     ],
     sensitiveDataRedacted: false,
   },
@@ -403,9 +705,21 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "oppfolgingsplan-frontend",
     surveyId: "oppfolgingsplan-gammel-arbeidsgiver",
     answers: [
-      createRatingAnswer("hovedsporsmal", "Hvordan var det å bruke oppfølgingsplanen?", 4),
-      createTextAnswer("nytte", "Opplever du at oppfølgingsplanen er et nyttig verktøy?", "Greit nok når man først har lært seg systemet."),
-      createTextAnswer("forbedringer", "Hvis du kunne endre på noe, hva ville det vært?", "Enklere onboarding for nye brukere."),
+      createRatingAnswer(
+        "hovedsporsmal",
+        "Hvordan var det å bruke oppfølgingsplanen?",
+        4,
+      ),
+      createTextAnswer(
+        "nytte",
+        "Opplever du at oppfølgingsplanen er et nyttig verktøy?",
+        "Greit nok når man først har lært seg systemet.",
+      ),
+      createTextAnswer(
+        "forbedringer",
+        "Hvis du kunne endre på noe, hva ville det vært?",
+        "Enklere onboarding for nye brukere.",
+      ),
     ],
     sensitiveDataRedacted: false,
   },
@@ -415,9 +729,21 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "oppfolgingsplan-frontend",
     surveyId: "oppfolgingsplan-gammel-arbeidsgiver",
     answers: [
-      createRatingAnswer("hovedsporsmal", "Hvordan var det å bruke oppfølgingsplanen?", 1),
-      createTextAnswer("nytte", "Opplever du at oppfølgingsplanen er et nyttig verktøy?", "Forferdelig! Brukte en time på å finne ut hvordan jeg skulle logge inn."),
-      createTextAnswer("forbedringer", "Hvis du kunne endre på noe, hva ville det vært?", "Enklere innlogging og bedre feilmeldinger."),
+      createRatingAnswer(
+        "hovedsporsmal",
+        "Hvordan var det å bruke oppfølgingsplanen?",
+        1,
+      ),
+      createTextAnswer(
+        "nytte",
+        "Opplever du at oppfølgingsplanen er et nyttig verktøy?",
+        "Forferdelig! Brukte en time på å finne ut hvordan jeg skulle logge inn.",
+      ),
+      createTextAnswer(
+        "forbedringer",
+        "Hvis du kunne endre på noe, hva ville det vært?",
+        "Enklere innlogging og bedre feilmeldinger.",
+      ),
     ],
     sensitiveDataRedacted: false,
   },
@@ -428,7 +754,7 @@ const mockFeedbackItems: FeedbackDto[] = [
 // ============================================
 
 function getRating(item: FeedbackDto): number | null {
-  const ratingAnswer = item.answers.find(a => a.fieldType === "RATING");
+  const ratingAnswer = item.answers.find((a) => a.fieldType === "RATING");
   if (ratingAnswer && ratingAnswer.value.type === "rating") {
     return ratingAnswer.value.rating;
   }
@@ -437,8 +763,10 @@ function getRating(item: FeedbackDto): number | null {
 
 function getTextResponses(item: FeedbackDto): string[] {
   return item.answers
-    .filter(a => a.fieldType === "TEXT" && a.value.type === "text" && a.value.text)
-    .map(a => (a.value as { type: "text"; text: string }).text);
+    .filter(
+      (a) => a.fieldType === "TEXT" && a.value.type === "text" && a.value.text,
+    )
+    .map((a) => (a.value as { type: "text"; text: string }).text);
 }
 
 function hasTextResponse(item: FeedbackDto): boolean {
@@ -451,12 +779,15 @@ function hasTextResponse(item: FeedbackDto): boolean {
 
 function calculateFieldStats(items: FeedbackDto[]): FieldStat[] {
   // Collect all unique fields across all items
-  const fieldMap = new Map<string, { 
-    fieldId: string; 
-    fieldType: string;
-    label: string;
-    values: Answer["value"][];
-  }>();
+  const fieldMap = new Map<
+    string,
+    {
+      fieldId: string;
+      fieldType: string;
+      label: string;
+      values: Answer["value"][];
+    }
+  >();
 
   for (const item of items) {
     for (const answer of item.answers) {
@@ -475,20 +806,26 @@ function calculateFieldStats(items: FeedbackDto[]): FieldStat[] {
 
   // Calculate stats for each field
   const fieldStats: FieldStat[] = [];
-  
+
   for (const [, field] of fieldMap) {
     if (field.fieldType === "RATING") {
       const ratings = field.values
-        .filter(v => v.type === "rating")
-        .map(v => (v as { type: "rating"; rating: number }).rating);
-      
-      const distribution: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+        .filter((v) => v.type === "rating")
+        .map((v) => (v as { type: "rating"; rating: number }).rating);
+
+      const distribution: Record<number, number> = {
+        1: 0,
+        2: 0,
+        3: 0,
+        4: 0,
+        5: 0,
+      };
       let sum = 0;
       for (const r of ratings) {
         distribution[r] = (distribution[r] || 0) + 1;
         sum += r;
       }
-      
+
       fieldStats.push({
         fieldId: field.fieldId,
         fieldType: "RATING",
@@ -501,11 +838,11 @@ function calculateFieldStats(items: FeedbackDto[]): FieldStat[] {
       });
     } else if (field.fieldType === "TEXT") {
       const texts = field.values
-        .filter(v => v.type === "text")
-        .map(v => (v as { type: "text"; text: string }).text);
-      
-      const nonEmpty = texts.filter(t => t && t.trim().length > 0);
-      
+        .filter((v) => v.type === "text")
+        .map((v) => (v as { type: "text"; text: string }).text);
+
+      const nonEmpty = texts.filter((t) => t && t.trim().length > 0);
+
       fieldStats.push({
         fieldId: field.fieldId,
         fieldType: "TEXT",
@@ -520,45 +857,55 @@ function calculateFieldStats(items: FeedbackDto[]): FieldStat[] {
       });
     }
   }
-  
+
   return fieldStats;
 }
 
-function calculateStats(items: FeedbackDto[], params: URLSearchParams): FeedbackStats {
+function calculateStats(
+  items: FeedbackDto[],
+  params: URLSearchParams,
+): FeedbackStats {
   // Filter items based on params
   let filtered = [...items];
-  
+
   const app = params.get("app");
   const from = params.get("from");
   const to = params.get("to");
   const surveyId = params.get("feedbackId"); // Keep old param name for backwards compat
-  
+
   if (app) {
-    filtered = filtered.filter(item => item.app === app);
+    filtered = filtered.filter((item) => item.app === app);
   }
   if (from) {
-    filtered = filtered.filter(item => item.submittedAt >= from);
+    filtered = filtered.filter((item) => item.submittedAt >= from);
   }
   if (to) {
-    filtered = filtered.filter(item => item.submittedAt <= to + "T23:59:59Z");
+    filtered = filtered.filter((item) => item.submittedAt <= to + "T23:59:59Z");
   }
   if (surveyId) {
-    filtered = filtered.filter(item => item.surveyId === surveyId);
+    filtered = filtered.filter((item) => item.surveyId === surveyId);
   }
 
   // Legacy aggregations
-  const byRating: Record<string, number> = { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 };
+  const byRating: Record<string, number> = {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0,
+  };
   const byApp: Record<string, number> = {};
   const byDate: Record<string, number> = {};
   const byFeedbackId: Record<string, number> = {};
-  const ratingByDateAccum: Record<string, { total: number; count: number }> = {};
+  const ratingByDateAccum: Record<string, { total: number; count: number }> =
+    {};
   const byDeviceAccum: Record<string, { total: number; count: number }> = {};
   const byPathnameAccum: Record<string, { total: number; count: number }> = {};
-  
+
   let totalRating = 0;
   let ratingCount = 0;
   let countWithText = 0;
-  
+
   for (const item of filtered) {
     // Rating
     const rating = getRating(item);
@@ -566,7 +913,7 @@ function calculateStats(items: FeedbackDto[], params: URLSearchParams): Feedback
       byRating[String(rating)]++;
       totalRating += rating;
       ratingCount++;
-      
+
       // Rating by date
       const date = item.submittedAt.split("T")[0];
       if (!ratingByDateAccum[date]) {
@@ -574,7 +921,7 @@ function calculateStats(items: FeedbackDto[], params: URLSearchParams): Feedback
       }
       ratingByDateAccum[date].total += rating;
       ratingByDateAccum[date].count++;
-      
+
       // Device stats
       const device = item.context?.deviceType || "unknown";
       if (!byDeviceAccum[device]) {
@@ -582,7 +929,7 @@ function calculateStats(items: FeedbackDto[], params: URLSearchParams): Feedback
       }
       byDeviceAccum[device].total += rating;
       byDeviceAccum[device].count++;
-      
+
       // Pathname stats
       const pathname = item.context?.pathname || "unknown";
       if (!byPathnameAccum[pathname]) {
@@ -591,25 +938,25 @@ function calculateStats(items: FeedbackDto[], params: URLSearchParams): Feedback
       byPathnameAccum[pathname].total += rating;
       byPathnameAccum[pathname].count++;
     }
-    
+
     // App
     const appName = item.app || "unknown";
     byApp[appName] = (byApp[appName] || 0) + 1;
-    
+
     // Date
     const date = item.submittedAt.split("T")[0];
     byDate[date] = (byDate[date] || 0) + 1;
-    
+
     // Survey (feedbackId for backwards compat)
     const fbId = item.surveyId || "unknown";
     byFeedbackId[fbId] = (byFeedbackId[fbId] || 0) + 1;
-    
+
     // Text
     if (hasTextResponse(item)) {
       countWithText++;
     }
   }
-  
+
   // Convert ratingByDateAccum to ratingByDate with averages
   const ratingByDate: Record<string, { average: number; count: number }> = {};
   for (const [date, data] of Object.entries(ratingByDateAccum)) {
@@ -618,7 +965,7 @@ function calculateStats(items: FeedbackDto[], params: URLSearchParams): Feedback
       count: data.count,
     };
   }
-  
+
   // Convert device accum to byDevice
   const byDevice: Record<string, { count: number; averageRating: number }> = {};
   for (const [device, data] of Object.entries(byDeviceAccum)) {
@@ -627,9 +974,10 @@ function calculateStats(items: FeedbackDto[], params: URLSearchParams): Feedback
       averageRating: Math.round((data.total / data.count) * 10) / 10,
     };
   }
-  
+
   // Convert pathname accum to byPathname (top 10)
-  const byPathname: Record<string, { count: number; averageRating: number }> = {};
+  const byPathname: Record<string, { count: number; averageRating: number }> =
+    {};
   const sortedPathnames = Object.entries(byPathnameAccum)
     .sort((a, b) => b[1].count - a[1].count)
     .slice(0, 10);
@@ -639,10 +987,10 @@ function calculateStats(items: FeedbackDto[], params: URLSearchParams): Feedback
       averageRating: Math.round((data.total / data.count) * 10) / 10,
     };
   }
-  
+
   // Calculate new field stats
   const fieldStats = calculateFieldStats(filtered);
-  
+
   return {
     totalCount: filtered.length,
     countWithText,
@@ -660,18 +1008,21 @@ function calculateStats(items: FeedbackDto[], params: URLSearchParams): Feedback
   };
 }
 
-function calculatePeriod(from: string | null, to: string | null): { from: string | null; to: string | null; days: number } {
+function calculatePeriod(
+  from: string | null,
+  to: string | null,
+): { from: string | null; to: string | null; days: number } {
   const today = new Date().toISOString().split("T")[0];
   const defaultFrom = "2025-11-01";
-  
+
   const actualFrom = from || defaultFrom;
   const actualTo = to || today;
-  
+
   const fromDate = new Date(actualFrom);
   const toDate = new Date(actualTo);
   const diffTime = Math.abs(toDate.getTime() - fromDate.getTime());
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-  
+
   return {
     from: actualFrom,
     to: actualTo,
@@ -683,9 +1034,12 @@ function calculatePeriod(from: string | null, to: string | null): { from: string
 // Feedback filtering and pagination
 // ============================================
 
-function filterFeedback(items: FeedbackDto[], params: URLSearchParams): FeedbackPage {
+function filterFeedback(
+  items: FeedbackDto[],
+  params: URLSearchParams,
+): FeedbackPage {
   let filtered = [...items];
-  
+
   const app = params.get("app");
   const from = params.get("from");
   const to = params.get("to");
@@ -695,23 +1049,23 @@ function filterFeedback(items: FeedbackDto[], params: URLSearchParams): Feedback
   const lavRating = params.get("lavRating");
   const pathname = params.get("pathname");
   const deviceType = params.get("deviceType");
-  
+
   if (app) {
-    filtered = filtered.filter(item => item.app === app);
+    filtered = filtered.filter((item) => item.app === app);
   }
   if (from) {
-    filtered = filtered.filter(item => item.submittedAt >= from);
+    filtered = filtered.filter((item) => item.submittedAt >= from);
   }
   if (to) {
-    filtered = filtered.filter(item => item.submittedAt <= to + "T23:59:59Z");
+    filtered = filtered.filter((item) => item.submittedAt <= to + "T23:59:59Z");
   }
   if (medTekst === "true") {
-    filtered = filtered.filter(item => hasTextResponse(item));
+    filtered = filtered.filter((item) => hasTextResponse(item));
   }
   // "Wall of Shame" - filter for low ratings (1-2)
   if (lavRating === "true") {
-    filtered = filtered.filter(item => {
-      const ratingAnswer = item.answers.find(a => a.fieldType === "RATING");
+    filtered = filtered.filter((item) => {
+      const ratingAnswer = item.answers.find((a) => a.fieldType === "RATING");
       if (ratingAnswer && ratingAnswer.value.type === "rating") {
         return ratingAnswer.value.rating <= 2;
       }
@@ -719,35 +1073,42 @@ function filterFeedback(items: FeedbackDto[], params: URLSearchParams): Feedback
     });
   }
   if (pathname) {
-    filtered = filtered.filter(item => item.context?.pathname?.includes(pathname));
+    filtered = filtered.filter((item) =>
+      item.context?.pathname?.includes(pathname),
+    );
   }
   if (deviceType) {
-    filtered = filtered.filter(item => item.context?.deviceType === deviceType);
+    filtered = filtered.filter(
+      (item) => item.context?.deviceType === deviceType,
+    );
   }
   if (fritekst) {
     const search = fritekst.toLowerCase();
-    filtered = filtered.filter(item => 
-      item.answers.some(a => {
+    filtered = filtered.filter((item) =>
+      item.answers.some((a) => {
         if (a.value.type === "text") {
           return a.value.text.toLowerCase().includes(search);
         }
         return false;
-      })
+      }),
     );
   }
   if (surveyId) {
-    filtered = filtered.filter(item => item.surveyId === surveyId);
+    filtered = filtered.filter((item) => item.surveyId === surveyId);
   }
-  
+
   // Sort by date descending
-  filtered.sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime());
-  
+  filtered.sort(
+    (a, b) =>
+      new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime(),
+  );
+
   // Paginate
-  const page = parseInt(params.get("page") || "0");
-  const size = parseInt(params.get("size") || "20");
+  const page = Number.parseInt(params.get("page") || "0");
+  const size = Number.parseInt(params.get("size") || "20");
   const start = page * size;
   const content = filtered.slice(start, start + size);
-  
+
   return {
     content,
     totalPages: Math.ceil(filtered.length / size),
@@ -774,7 +1135,10 @@ export function getMockFeedback(params: URLSearchParams): FeedbackPage {
 export function getMockTeams() {
   return {
     teams: {
-      "team-esyfo": ["syfo-oppfolgingsplan-frontend", "oppfolgingsplan-frontend"],
+      "team-esyfo": [
+        "syfo-oppfolgingsplan-frontend",
+        "oppfolgingsplan-frontend",
+      ],
     },
   };
 }
@@ -790,11 +1154,11 @@ export function getMockTags() {
 
 export function getMockSurveysByApp(): Record<string, string[]> {
   const surveysByApp: Record<string, string[]> = {};
-  
+
   for (const item of mockFeedbackItems) {
     const app = item.app || "unknown";
     const surveyId = item.surveyId;
-    
+
     if (!surveysByApp[app]) {
       surveysByApp[app] = [];
     }
@@ -802,6 +1166,6 @@ export function getMockSurveysByApp(): Record<string, string[]> {
       surveysByApp[app].push(surveyId);
     }
   }
-  
+
   return surveysByApp;
 }

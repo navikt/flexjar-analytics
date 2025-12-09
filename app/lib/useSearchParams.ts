@@ -25,14 +25,14 @@ let listeners: Array<() => void> = [];
 
 function subscribe(listener: () => void) {
   listeners.push(listener);
-  
+
   // Also listen to browser events
   if (typeof window !== "undefined") {
     window.addEventListener("popstate", listener);
   }
-  
+
   return () => {
-    listeners = listeners.filter(l => l !== listener);
+    listeners = listeners.filter((l) => l !== listener);
     if (typeof window !== "undefined") {
       window.removeEventListener("popstate", listener);
     }
@@ -49,34 +49,41 @@ function getServerSnapshot(): string {
 }
 
 function notifyListeners() {
-  listeners.forEach(listener => listener());
+  listeners.forEach((listener) => listener());
 }
 
 export function useSearchParams() {
   // Use useSyncExternalStore for SSR-safe reactive URL params
-  const search = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-  
+  const search = useSyncExternalStore(
+    subscribe,
+    getSnapshot,
+    getServerSnapshot,
+  );
+
   // Parse params from the search string
-  const params: SearchParams = search 
-    ? Object.fromEntries(new URLSearchParams(search)) as SearchParams
+  const params: SearchParams = search
+    ? (Object.fromEntries(new URLSearchParams(search)) as SearchParams)
     : {};
 
-  const setParam = useCallback((key: keyof SearchParams, value: string | undefined) => {
-    if (typeof window === "undefined") return;
-    
-    const url = new URL(window.location.href);
-    if (value === undefined || value === "") {
-      url.searchParams.delete(key);
-    } else {
-      url.searchParams.set(key, value);
-    }
-    window.history.pushState({}, "", url.toString());
-    notifyListeners();
-  }, []);
+  const setParam = useCallback(
+    (key: keyof SearchParams, value: string | undefined) => {
+      if (typeof window === "undefined") return;
+
+      const url = new URL(window.location.href);
+      if (value === undefined || value === "") {
+        url.searchParams.delete(key);
+      } else {
+        url.searchParams.set(key, value);
+      }
+      window.history.pushState({}, "", url.toString());
+      notifyListeners();
+    },
+    [],
+  );
 
   const setParams = useCallback((newParams: Partial<SearchParams>) => {
     if (typeof window === "undefined") return;
-    
+
     const url = new URL(window.location.href);
     Object.entries(newParams).forEach(([key, value]) => {
       if (value === undefined || value === "") {
@@ -91,7 +98,7 @@ export function useSearchParams() {
 
   const resetParams = useCallback(() => {
     if (typeof window === "undefined") return;
-    
+
     const url = new URL(window.location.href);
     url.search = "";
     window.history.pushState({}, "", url.toString());

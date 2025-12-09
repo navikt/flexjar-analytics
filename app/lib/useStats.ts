@@ -1,12 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
-import { useSearchParams } from "./useSearchParams";
 import type { FeedbackStats } from "./api";
+import { useSearchParams } from "./useSearchParams";
 
 export function useStats() {
   const { params } = useSearchParams();
 
   return useQuery<FeedbackStats>({
-    queryKey: ["stats", params.app, params.from, params.to, params.feedbackId, params.deviceType],
+    queryKey: [
+      "stats",
+      params.app,
+      params.from,
+      params.to,
+      params.feedbackId,
+      params.deviceType,
+    ],
     queryFn: async () => {
       const queryParams = new URLSearchParams();
       // Note: team filtering is done server-side based on user's Azure AD groups
@@ -16,7 +23,9 @@ export function useStats() {
       if (params.feedbackId) queryParams.set("feedbackId", params.feedbackId);
       if (params.deviceType) queryParams.set("deviceType", params.deviceType);
 
-      const response = await fetch(`/api/backend/api/v1/intern/stats?${queryParams.toString()}`);
+      const response = await fetch(
+        `/api/backend/api/v1/intern/stats?${queryParams.toString()}`,
+      );
       if (!response.ok) {
         throw new Error("Failed to fetch stats");
       }

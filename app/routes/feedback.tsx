@@ -1,8 +1,8 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Button, HStack, VStack, Heading } from "@navikt/ds-react";
-import { BarChartIcon, TableIcon, DownloadIcon } from "@navikt/aksel-icons";
-import { FilterBar } from "~/components/FilterBar";
+import { BarChartIcon, DownloadIcon, TableIcon } from "@navikt/aksel-icons";
+import { Button, HStack, Heading, VStack } from "@navikt/ds-react";
+import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { FeedbackTable } from "~/components/FeedbackTable";
+import { FilterBar } from "~/components/FilterBar";
 import { useSearchParams } from "~/lib/useSearchParams";
 
 export const Route = createFileRoute("/feedback")({
@@ -22,12 +22,21 @@ function FeedbackPage() {
     <>
       <header className="app-header">
         <div className="header-content">
-          <button type="button" onClick={handleResetAndNavigate} className="header-title">
+          <button
+            type="button"
+            onClick={handleResetAndNavigate}
+            className="header-title"
+          >
             <img src="/static/flexjar.png" alt="" className="header-logo" />
             Flexjar Analytics
           </button>
           <HStack gap="4">
-            <Button variant="tertiary" size="small" icon={<BarChartIcon />} onClick={handleResetAndNavigate}>
+            <Button
+              variant="tertiary"
+              size="small"
+              icon={<BarChartIcon />}
+              onClick={handleResetAndNavigate}
+            >
               Dashboard
             </Button>
             <Link to="/feedback" className="[&.active]:font-bold">

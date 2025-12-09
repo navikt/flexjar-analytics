@@ -1,11 +1,19 @@
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
+import { BodyShort, HStack, Label, Skeleton, VStack } from "@navikt/ds-react";
+import {
+  Bar,
+  BarChart,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { useStats } from "~/lib/useStats";
-import { Skeleton, HStack, VStack, BodyShort, Label } from "@navikt/ds-react";
 
 const DEVICE_COLORS: Record<string, string> = {
   desktop: "#60A5FA", // Blue
-  mobile: "#34D399",  // Green
-  tablet: "#FBBF24",  // Yellow
+  mobile: "#34D399", // Green
+  tablet: "#FBBF24", // Yellow
   unknown: "#9CA3AF", // Gray
 };
 
@@ -29,7 +37,7 @@ const CHART_COLORS = {
   tooltip: {
     bg: "#1c1f24",
     border: "rgba(255, 255, 255, 0.15)",
-  }
+  },
 };
 
 export function DeviceBreakdownChart() {
@@ -40,7 +48,7 @@ export function DeviceBreakdownChart() {
   }
 
   const byDevice = stats?.byDevice || {};
-  
+
   // Transform to array and sort by count
   const data = Object.entries(byDevice)
     .filter(([device]) => device !== "unknown")
@@ -56,13 +64,15 @@ export function DeviceBreakdownChart() {
 
   if (data.length === 0) {
     return (
-      <div style={{ 
-        height: "100%", 
-        display: "flex", 
-        alignItems: "center", 
-        justifyContent: "center",
-        color: CHART_COLORS.textMuted
-      }}>
+      <div
+        style={{
+          height: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: CHART_COLORS.textMuted,
+        }}
+      >
         Ingen enhetsdata tilgjengelig
       </div>
     );
@@ -75,7 +85,7 @@ export function DeviceBreakdownChart() {
       {/* Summary cards */}
       <HStack gap="4" wrap>
         {data.map((d) => (
-          <div 
+          <div
             key={d.device}
             style={{
               display: "flex",
@@ -91,11 +101,26 @@ export function DeviceBreakdownChart() {
             <VStack gap="0">
               <Label size="small">{d.label}</Label>
               <HStack gap="2" align="center">
-                <BodyShort size="small" weight="semibold">{d.count}</BodyShort>
-                <BodyShort size="small" style={{ color: CHART_COLORS.textMuted }}>
+                <BodyShort size="small" weight="semibold">
+                  {d.count}
+                </BodyShort>
+                <BodyShort
+                  size="small"
+                  style={{ color: CHART_COLORS.textMuted }}
+                >
                   ({Math.round((d.count / totalCount) * 100)}%)
                 </BodyShort>
-                <BodyShort size="small" style={{ color: d.averageRating >= 4 ? "#34D399" : d.averageRating <= 2 ? "#F87171" : CHART_COLORS.text }}>
+                <BodyShort
+                  size="small"
+                  style={{
+                    color:
+                      d.averageRating >= 4
+                        ? "#34D399"
+                        : d.averageRating <= 2
+                          ? "#F87171"
+                          : CHART_COLORS.text,
+                  }}
+                >
                   ⭐ {d.averageRating.toFixed(1)}
                 </BodyShort>
               </HStack>
@@ -105,13 +130,21 @@ export function DeviceBreakdownChart() {
       </HStack>
 
       {/* Bar chart */}
-      <div style={{ height: "120px" }} role="img" aria-label={`Enhetsfordeling: ${data.map(d => `${d.label} ${d.count} svar`).join(', ')}`}>
+      <div
+        style={{ height: "120px" }}
+        role="img"
+        aria-label={`Enhetsfordeling: ${data.map((d) => `${d.label} ${d.count} svar`).join(", ")}`}
+      >
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} layout="vertical" margin={{ top: 0, right: 30, left: 80, bottom: 0 }}>
+          <BarChart
+            data={data}
+            layout="vertical"
+            margin={{ top: 0, right: 30, left: 80, bottom: 0 }}
+          >
             <XAxis type="number" hide />
-            <YAxis 
-              type="category" 
-              dataKey="label" 
+            <YAxis
+              type="category"
+              dataKey="label"
               axisLine={false}
               tickLine={false}
               tick={{ fill: CHART_COLORS.text, fontSize: 12 }}
@@ -121,18 +154,23 @@ export function DeviceBreakdownChart() {
                 if (active && payload && payload.length) {
                   const d = payload[0].payload;
                   return (
-                    <div style={{
-                      background: CHART_COLORS.tooltip.bg,
-                      color: "#ffffff",
-                      padding: "0.75rem",
-                      borderRadius: "4px",
-                      border: `1px solid ${CHART_COLORS.tooltip.border}`,
-                      boxShadow: "0 4px 12px rgba(0,0,0,0.4)"
-                    }}>
+                    <div
+                      style={{
+                        background: CHART_COLORS.tooltip.bg,
+                        color: "#ffffff",
+                        padding: "0.75rem",
+                        borderRadius: "4px",
+                        border: `1px solid ${CHART_COLORS.tooltip.border}`,
+                        boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
+                      }}
+                    >
                       <div style={{ fontWeight: 600, marginBottom: "0.25rem" }}>
                         {d.icon} {d.label}
                       </div>
-                      <div>{d.count} tilbakemeldinger ({Math.round((d.count / totalCount) * 100)}%)</div>
+                      <div>
+                        {d.count} tilbakemeldinger (
+                        {Math.round((d.count / totalCount) * 100)}%)
+                      </div>
                       <div>Snittrating: {d.averageRating.toFixed(1)} ⭐</div>
                     </div>
                   );

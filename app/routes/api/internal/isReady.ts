@@ -1,11 +1,11 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute('/api/internal/isReady')({
+export const Route = createFileRoute("/api/internal/isReady")({
   server: {
     handlers: {
       GET: async () => {
-        return new Response('OK', { status: 200 })
+        return new Response("OK", { status: 200 });
       },
     },
   },
-})
+});
