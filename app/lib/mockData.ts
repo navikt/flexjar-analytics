@@ -125,7 +125,7 @@ const mockFeedbackItems: FeedbackDto[] = [
       1920,
       1080,
     ),
-    tags: ["bug", "urgent"],
+    tags: ["good-feedback"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -146,6 +146,7 @@ const mockFeedbackItems: FeedbackDto[] = [
       390,
       844,
     ),
+    tags: ["ux", "needs-review"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -172,6 +173,7 @@ const mockFeedbackItems: FeedbackDto[] = [
       820,
       1180,
     ),
+    tags: ["bug", "resolved"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -181,7 +183,7 @@ const mockFeedbackItems: FeedbackDto[] = [
       createTextAnswer(
         "begrunnelse",
         "Legg gjerne til en begrunnelse",
-        "Vanskelig å forstå hva jeg skulle fylle ut. Trengte hjelp fra arbeidsgiveren min.",
+        "Knappen for å sende planen fungerte ikke på iPad. Måtte bytte til PC.",
         "Valgfritt",
       ),
     ],
@@ -361,6 +363,8 @@ const mockFeedbackItems: FeedbackDto[] = [
     submittedAt: "2025-12-08T08:45:00Z",
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-arbeidsgiver",
+    context: createContext("/syk/oppfolgingsplaner/arbeidsgiver/1234", "desktop", 1920, 1080),
+    tags: ["feature"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -385,6 +389,8 @@ const mockFeedbackItems: FeedbackDto[] = [
     submittedAt: "2025-12-07T15:30:00Z",
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-arbeidsgiver",
+    context: createContext("/syk/oppfolgingsplaner/arbeidsgiver/5678", "desktop", 1440, 900),
+    tags: ["good-feedback"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -404,6 +410,8 @@ const mockFeedbackItems: FeedbackDto[] = [
     submittedAt: "2025-12-07T09:00:00Z",
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-arbeidsgiver",
+    context: createContext("/syk/oppfolgingsplaner/arbeidsgiver/9012", "tablet", 768, 1024),
+    tags: ["ux", "needs-review"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -428,6 +436,8 @@ const mockFeedbackItems: FeedbackDto[] = [
     submittedAt: "2025-12-06T13:15:00Z",
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-arbeidsgiver",
+    context: createContext("/syk/oppfolgingsplaner/arbeidsgiver/3456", "desktop", 1366, 768),
+    tags: ["feature"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -452,6 +462,8 @@ const mockFeedbackItems: FeedbackDto[] = [
     submittedAt: "2025-12-05T11:00:00Z",
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-arbeidsgiver",
+    context: createContext("/syk/oppfolgingsplaner/arbeidsgiver/7890", "desktop", 2560, 1440),
+    tags: ["good-feedback"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -471,6 +483,8 @@ const mockFeedbackItems: FeedbackDto[] = [
     submittedAt: "2025-12-05T08:30:00Z",
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-arbeidsgiver",
+    context: createContext("/syk/oppfolgingsplaner/arbeidsgiver/2345", "mobile", 390, 844),
+    tags: ["bug", "urgent"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -495,6 +509,7 @@ const mockFeedbackItems: FeedbackDto[] = [
     submittedAt: "2025-11-30T10:00:00Z",
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-arbeidsgiver",
+    context: createContext("/syk/oppfolgingsplaner/arbeidsgiver/6789", "desktop", 1440, 900),
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -514,6 +529,7 @@ const mockFeedbackItems: FeedbackDto[] = [
     submittedAt: "2025-12-04T10:20:00Z",
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-arbeidsgiver",
+    context: createContext("/syk/oppfolgingsplaner/arbeidsgiver/1122", "desktop", 1920, 1080),
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -538,6 +554,8 @@ const mockFeedbackItems: FeedbackDto[] = [
     submittedAt: "2025-12-07T09:00:00Z",
     app: "oppfolgingsplan-frontend",
     surveyId: "oppfolgingsplan-gammel-sykmeldt",
+    context: createContext("/oppfolgingsplan/sykmeldt", "desktop", 1440, 900),
+    tags: ["wont-fix"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -558,6 +576,8 @@ const mockFeedbackItems: FeedbackDto[] = [
     submittedAt: "2025-12-06T14:30:00Z",
     app: "oppfolgingsplan-frontend",
     surveyId: "oppfolgingsplan-gammel-sykmeldt",
+    context: createContext("/oppfolgingsplan/sykmeldt", "mobile", 375, 812),
+    tags: ["wont-fix"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -578,6 +598,7 @@ const mockFeedbackItems: FeedbackDto[] = [
     submittedAt: "2025-12-05T11:15:00Z",
     app: "oppfolgingsplan-frontend",
     surveyId: "oppfolgingsplan-gammel-sykmeldt",
+    context: createContext("/oppfolgingsplan/sykmeldt", "desktop", 1920, 1080),
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -592,6 +613,7 @@ const mockFeedbackItems: FeedbackDto[] = [
     submittedAt: "2025-12-04T16:45:00Z",
     app: "oppfolgingsplan-frontend",
     surveyId: "oppfolgingsplan-gammel-sykmeldt",
+    context: createContext("/oppfolgingsplan/sykmeldt", "tablet", 768, 1024),
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -612,6 +634,8 @@ const mockFeedbackItems: FeedbackDto[] = [
     submittedAt: "2025-12-03T08:30:00Z",
     app: "oppfolgingsplan-frontend",
     surveyId: "oppfolgingsplan-gammel-sykmeldt",
+    context: createContext("/oppfolgingsplan/sykmeldt", "desktop", 1366, 768),
+    tags: ["bug"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -637,6 +661,8 @@ const mockFeedbackItems: FeedbackDto[] = [
     submittedAt: "2025-12-07T13:00:00Z",
     app: "oppfolgingsplan-frontend",
     surveyId: "oppfolgingsplan-gammel-arbeidsgiver",
+    context: createContext("/oppfolgingsplan/arbeidsgiver", "desktop", 1440, 900),
+    tags: ["wont-fix"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -661,6 +687,8 @@ const mockFeedbackItems: FeedbackDto[] = [
     submittedAt: "2025-12-06T10:00:00Z",
     app: "oppfolgingsplan-frontend",
     surveyId: "oppfolgingsplan-gammel-arbeidsgiver",
+    context: createContext("/oppfolgingsplan/arbeidsgiver", "desktop", 1920, 1080),
+    tags: ["wont-fix"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -685,6 +713,7 @@ const mockFeedbackItems: FeedbackDto[] = [
     submittedAt: "2025-12-05T15:20:00Z",
     app: "oppfolgingsplan-frontend",
     surveyId: "oppfolgingsplan-gammel-arbeidsgiver",
+    context: createContext("/oppfolgingsplan/arbeidsgiver", "tablet", 1024, 768),
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -704,6 +733,7 @@ const mockFeedbackItems: FeedbackDto[] = [
     submittedAt: "2025-12-04T09:45:00Z",
     app: "oppfolgingsplan-frontend",
     surveyId: "oppfolgingsplan-gammel-arbeidsgiver",
+    context: createContext("/oppfolgingsplan/arbeidsgiver", "desktop", 1366, 768),
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -728,6 +758,8 @@ const mockFeedbackItems: FeedbackDto[] = [
     submittedAt: "2025-12-02T12:00:00Z",
     app: "oppfolgingsplan-frontend",
     surveyId: "oppfolgingsplan-gammel-arbeidsgiver",
+    context: createContext("/oppfolgingsplan/arbeidsgiver", "mobile", 375, 812),
+    tags: ["bug"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -1144,12 +1176,16 @@ export function getMockTeams() {
 }
 
 export function getMockTags() {
-  return [
-    "ny-oppfolgingsplan-sykmeldt",
-    "ny-oppfolgingsplan-arbeidsgiver",
-    "oppfolgingsplan-gammel-sykmeldt",
-    "oppfolgingsplan-gammel-arbeidsgiver",
-  ];
+  // Return actual tags used in the feedback, not surveyIds
+  const allTags = new Set<string>();
+  for (const item of mockFeedbackItems) {
+    if (item.tags) {
+      for (const tag of item.tags) {
+        allTags.add(tag);
+      }
+    }
+  }
+  return Array.from(allTags).sort();
 }
 
 export function getMockSurveysByApp(): Record<string, string[]> {
