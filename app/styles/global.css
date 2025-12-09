@@ -130,6 +130,17 @@ body {
   border: 1px solid var(--ax-border-neutral-subtle);
 }
 
+/* Feedback toolbar */
+.feedback-toolbar {
+  padding: 0.75rem 1rem;
+  background: var(--ax-bg-neutral-soft);
+  border-bottom: 1px solid var(--ax-border-neutral-subtle);
+}
+
+[data-theme="dark"] .feedback-toolbar {
+  background: rgba(255, 255, 255, 0.03);
+}
+
 /* Rating emoji display */
 .rating-emoji {
   font-size: 1.25rem;

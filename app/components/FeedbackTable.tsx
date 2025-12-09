@@ -5,6 +5,7 @@ import {
   ShieldLockIcon,
   StarIcon,
   TagIcon,
+  TrashIcon,
 } from "@navikt/aksel-icons";
 import {
   Alert,
@@ -27,6 +28,7 @@ import React, { useState, useRef, useEffect } from "react";
 import type { Answer, FeedbackDto } from "~/lib/api";
 import { useFeedback } from "~/lib/useFeedback";
 import { useSearchParams } from "~/lib/useSearchParams";
+import { DeleteSurveyDialog } from "./DeleteSurveyDialog";
 import { TagEditor } from "./TagEditor";
 
 // Dark mode compatible colors
@@ -41,6 +43,7 @@ export function FeedbackTable() {
   const page = Number.parseInt(params.page || "1", 10);
   const { data, isLoading, error } = useFeedback();
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const toggleExpanded = (id: string) => {
     setExpandedRows((prev) => {
@@ -99,9 +102,32 @@ export function FeedbackTable() {
 
   const feedbackList = data?.content || [];
   const totalPages = data?.totalPages || 1;
+  const totalElements = data?.totalElements || 0;
+  const selectedSurvey = params.feedbackId;
 
   return (
     <div className="feedback-table">
+      {/* Toolbar with actions when survey is selected */}
+      {selectedSurvey && totalElements > 0 && (
+        <div className="feedback-toolbar">
+          <HStack justify="space-between" align="center">
+            <BodyShort size="small" textColor="subtle">
+              Viser {totalElements} svar for <strong>{selectedSurvey}</strong>
+            </BodyShort>
+            <Tooltip content={`Slett alle ${totalElements} svar for denne surveyen`}>
+              <Button
+                variant="danger"
+                size="small"
+                icon={<TrashIcon />}
+                onClick={() => setDeleteDialogOpen(true)}
+              >
+                Slett alle svar
+              </Button>
+            </Tooltip>
+          </HStack>
+        </div>
+      )}
+
       {feedbackList.length === 0 ? (
         <Alert variant="info">
           Ingen tilbakemeldinger funnet med disse filtrene
@@ -334,6 +360,17 @@ export function FeedbackTable() {
             </HStack>
           </Box>
         </>
+      )}
+
+      {/* Delete survey confirmation dialog */}
+      {selectedSurvey && (
+        <DeleteSurveyDialog
+          surveyId={selectedSurvey}
+          feedbackCount={totalElements}
+          isOpen={deleteDialogOpen}
+          onClose={() => setDeleteDialogOpen(false)}
+          onDeleted={() => setParam("feedbackId", undefined)}
+        />
       )}
     </div>
   );
