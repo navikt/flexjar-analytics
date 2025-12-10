@@ -1,16 +1,26 @@
 import { BarChartIcon, DownloadIcon, TableIcon } from "@navikt/aksel-icons";
 import { Button, HStack } from "@navikt/ds-react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 
 import { useSearchParams } from "~/lib/useSearchParams";
 
 export function Header() {
     const { resetParams } = useSearchParams();
     const navigate = useNavigate();
+    const location = useLocation();
+    const currentPath = location.pathname;
 
     const handleResetAndNavigate = () => {
         resetParams();
         navigate({ to: "/" });
+    };
+
+    // Helper to determine button variant based on active path
+    const getVariant = (path: string) => {
+        if (path === "/") {
+            return currentPath === "/" ? "primary" : "tertiary";
+        }
+        return currentPath.startsWith(path) ? "primary" : "tertiary";
     };
 
     return (
@@ -25,38 +35,33 @@ export function Header() {
                     Flexjar Analytics
                 </button>
                 <HStack gap="4">
-                    <Link
-                        to="/"
-                        className="[&.active]:font-bold"
-                        search={(prev) => prev}
-                    >
+                    <Link to="/" search={(prev) => prev}>
                         <Button
-                            variant="tertiary"
+                            variant={getVariant("/")}
                             size="small"
                             icon={<BarChartIcon />}
                         >
                             Dashboard
                         </Button>
                     </Link>
-                    <Link
-                        to="/feedback"
-                        className="[&.active]:font-bold"
-                        search={(prev) => prev}
-                    >
-                        <Button variant="tertiary" size="small" icon={<TableIcon />}>
+                    <Link to="/feedback" search={(prev) => prev}>
+                        <Button
+                            variant={getVariant("/feedback")}
+                            size="small"
+                            icon={<TableIcon />}
+                        >
                             Tilbakemeldinger
                         </Button>
                     </Link>
-                    <Link
-                        to="/export"
-                        className="[&.active]:font-bold"
-                        search={(prev) => prev}
-                    >
-                        <Button variant="tertiary" size="small" icon={<DownloadIcon />}>
+                    <Link to="/export" search={(prev) => prev}>
+                        <Button
+                            variant={getVariant("/export")}
+                            size="small"
+                            icon={<DownloadIcon />}
+                        >
                             Eksporter
                         </Button>
                     </Link>
-
                 </HStack>
             </div>
         </header>
