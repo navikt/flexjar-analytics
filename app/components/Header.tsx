@@ -25,22 +25,33 @@ export function Header() {
                     Flexjar Analytics
                 </button>
                 <HStack gap="4">
-                    <Link to="/" className="[&.active]:font-bold">
+                    <Link
+                        to="/"
+                        className="[&.active]:font-bold"
+                        search={(prev) => prev}
+                    >
                         <Button
                             variant="tertiary"
                             size="small"
                             icon={<BarChartIcon />}
-                            onClick={handleResetAndNavigate}
                         >
                             Dashboard
                         </Button>
                     </Link>
-                    <Link to="/feedback" className="[&.active]:font-bold">
+                    <Link
+                        to="/feedback"
+                        className="[&.active]:font-bold"
+                        search={(prev) => prev}
+                    >
                         <Button variant="tertiary" size="small" icon={<TableIcon />}>
                             Feedback
                         </Button>
                     </Link>
-                    <Link to="/export" className="[&.active]:font-bold">
+                    <Link
+                        to="/export"
+                        className="[&.active]:font-bold"
+                        search={(prev) => prev}
+                    >
                         <Button variant="tertiary" size="small" icon={<DownloadIcon />}>
                             Eksporter
                         </Button>

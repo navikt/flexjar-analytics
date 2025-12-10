@@ -186,12 +186,12 @@ export function FilterBar({ showTextFilter = false }: FilterBarProps) {
     setParam("to", end.format("YYYY-MM-DD"));
   };
 
-  // Set default filters on mount if none are present
+  // Set default filters if none are present
   useEffect(() => {
     if (!params.from && !params.to) {
       setQuickDate(30);
     }
-  }, []);
+  }, [params.from, params.to]);
 
 
 
