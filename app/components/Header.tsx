@@ -1,18 +1,16 @@
 import { BarChartIcon, DownloadIcon, TableIcon } from "@navikt/aksel-icons";
 import { Button, HStack } from "@navikt/ds-react";
-import { Link, useLocation, useNavigate } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
 
-import { useSearchParams } from "~/lib/useSearchParams";
+
 
 export function Header() {
-    const { resetParams } = useSearchParams();
-    const navigate = useNavigate();
     const location = useLocation();
     const currentPath = location.pathname;
 
     const handleResetAndNavigate = () => {
-        resetParams();
-        navigate({ to: "/" });
+        // Force navigation to root and clear search params
+        window.location.href = "/";
     };
 
     // Helper to determine button variant based on active path
