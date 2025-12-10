@@ -11,7 +11,7 @@ import type * as React from "react";
 
 // Import Aksel Darkside styles (supports light/dark mode)
 import akselStyles from "@navikt/ds-css/darkside?url";
-import { ThemeProvider, useTheme } from "~/lib/ThemeContext";
+import { ThemeProvider } from "~/lib/ThemeContext";
 import globalStyles from "~/styles/global.css?url";
 
 // Create QueryClient outside component to avoid recreation on each render
@@ -61,15 +61,16 @@ function RootComponent() {
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
-  const { resolvedTheme } = useTheme();
+  // Hardcoded dark theme optimization
+  const theme = "dark";
 
   return (
-    <html lang="no" data-theme={resolvedTheme}>
+    <html lang="no" data-theme={theme} style={{ backgroundColor: "#0d0f12", colorScheme: "dark" }}>
       <head>
         <HeadContent />
       </head>
-      <body data-theme={resolvedTheme}>
-        <Theme theme={resolvedTheme}>{children}</Theme>
+      <body data-theme={theme} style={{ backgroundColor: "#0d0f12", colorScheme: "dark" }}>
+        <Theme theme={theme}>{children}</Theme>
         <Scripts />
       </body>
     </html>

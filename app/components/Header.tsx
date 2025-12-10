@@ -1,7 +1,7 @@
 import { BarChartIcon, DownloadIcon, TableIcon } from "@navikt/aksel-icons";
 import { Button, HStack } from "@navikt/ds-react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { ThemeToggle } from "~/components/ThemeToggle";
+
 import { useSearchParams } from "~/lib/useSearchParams";
 
 export function Header() {
@@ -45,7 +45,7 @@ export function Header() {
                             Eksporter
                         </Button>
                     </Link>
-                    <ThemeToggle />
+
                 </HStack>
             </div>
         </header>
