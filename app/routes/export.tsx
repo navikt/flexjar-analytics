@@ -17,12 +17,12 @@ function ExportPage() {
         <VStack gap="6">
           <Heading size="large">Eksporter data</Heading>
 
-          <Alert variant="info">
+          <FilterBar />
+
+          <Alert variant="info" size="small">
             Eksporterte data vil automatisk ha sensitiv informasjon fjernet
             (fødselsnummer, e-post, telefonnummer osv.)
           </Alert>
-
-          <FilterBar />
 
           <ExportPanel />
         </VStack>

@@ -110,11 +110,30 @@ body {
   border: 1px solid var(--ax-border-neutral-subtle);
 }
 
-.filter-toggles {
+.filter-bar-secondary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
   padding: 0.75rem 1rem;
   background: var(--ax-bg-raised);
   border-radius: 8px;
   border: 1px solid var(--ax-border-neutral-subtle);
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.filter-divider {
+  width: 1px;
+  height: 24px;
+  background-color: var(--ax-border-neutral-subtle);
+  margin: 0 0.5rem;
 }
 
 /* Export alerts */
