@@ -13,6 +13,7 @@ export function useStats() {
       params.to,
       params.feedbackId,
       params.deviceType,
+      params.ubehandlet,
     ],
     queryFn: async () => {
       const queryParams = new URLSearchParams();
@@ -22,6 +23,7 @@ export function useStats() {
       if (params.to) queryParams.set("to", params.to);
       if (params.feedbackId) queryParams.set("feedbackId", params.feedbackId);
       if (params.deviceType) queryParams.set("deviceType", params.deviceType);
+      if (params.ubehandlet) queryParams.set("ubehandlet", params.ubehandlet);
 
       const response = await fetch(
         `/api/backend/api/v1/intern/stats?${queryParams.toString()}`,

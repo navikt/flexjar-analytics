@@ -11,6 +11,7 @@ import type * as React from "react";
 
 // Import Aksel Darkside styles (supports light/dark mode)
 import akselStyles from "@navikt/ds-css/darkside?url";
+import { ThemeProvider, useTheme } from "~/lib/ThemeContext";
 import globalStyles from "~/styles/global.css?url";
 
 // Create QueryClient outside component to avoid recreation on each render
@@ -45,24 +46,30 @@ export const Route = createRootRoute({
   component: RootComponent,
 });
 
+
+
 function RootComponent() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <RootDocument>
-        <Outlet />
-      </RootDocument>
-    </QueryClientProvider>
+    <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <RootDocument>
+          <Outlet />
+        </RootDocument>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  const { resolvedTheme } = useTheme();
+
   return (
-    <html lang="no" data-theme="dark">
+    <html lang="no" data-theme={resolvedTheme}>
       <head>
         <HeadContent />
       </head>
-      <body data-theme="dark">
-        <Theme theme="dark">{children}</Theme>
+      <body data-theme={resolvedTheme}>
+        <Theme theme={resolvedTheme}>{children}</Theme>
         <Scripts />
       </body>
     </html>

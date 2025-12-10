@@ -179,6 +179,7 @@ export interface FeedbackStats {
   // Device & context stats
   byDevice: Record<string, { count: number; averageRating: number }>;
   byPathname: Record<string, { count: number; averageRating: number }>;
+  lowestRatingPaths: Record<string, { count: number; averageRating: number }>;
 
   // New: per-field statistics
   fieldStats: FieldStat[];

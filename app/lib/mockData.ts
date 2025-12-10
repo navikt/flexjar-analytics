@@ -1031,25 +1031,31 @@ function calculateStats(
     ratingByDate,
     byDevice,
     byPathname,
+    lowestRatingPaths: {},
     fieldStats,
     period: calculatePeriod(from, to),
   };
 }
 
+import dayjs from "dayjs";
+
 function calculatePeriod(
   from: string | null,
   to: string | null,
 ): { from: string | null; to: string | null; days: number } {
-  const today = new Date().toISOString().split("T")[0];
-  const defaultFrom = "2025-11-01";
+  const today = dayjs();
+  // Default to 30 days (start = today - 29 days)
+  const defaultFrom = today.subtract(29, 'day').format("YYYY-MM-DD");
+  const defaultTo = today.format("YYYY-MM-DD");
 
   const actualFrom = from || defaultFrom;
-  const actualTo = to || today;
+  const actualTo = to || defaultTo;
 
-  const fromDate = new Date(actualFrom);
-  const toDate = new Date(actualTo);
-  const diffTime = Math.abs(toDate.getTime() - fromDate.getTime());
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+  const fromDate = dayjs(actualFrom);
+  const toDate = dayjs(actualTo);
+
+  // Diff in days + 1 for inclusive range
+  const diffDays = toDate.diff(fromDate, 'day') + 1;
 
   return {
     from: actualFrom,
@@ -1213,33 +1219,33 @@ export function getMockSurveysByApp(): Record<string, string[]> {
 // Delete all feedback for a survey (mock implementation)
 export function deleteMockSurvey(surveyId: string): { deletedCount: number; surveyId: string } {
   const initialLength = mockFeedbackItems.length;
-  
+
   // Filter out items with matching surveyId
   const itemsToKeep = mockFeedbackItems.filter(item => item.surveyId !== surveyId);
   const deletedCount = initialLength - itemsToKeep.length;
-  
+
   // Replace the array contents (mutate in place since it's a module-level variable)
   mockFeedbackItems.length = 0;
   mockFeedbackItems.push(...itemsToKeep);
-  
+
   console.log(`[Mock] Deleted ${deletedCount} items for survey "${surveyId}"`);
-  
+
   return { deletedCount, surveyId };
 }
 
 // Delete single feedback item (mock implementation)
 export function deleteMockFeedback(feedbackId: string): boolean {
   const initialLength = mockFeedbackItems.length;
-  
+
   // Filter out item with matching id
   const itemsToKeep = mockFeedbackItems.filter(item => item.id !== feedbackId);
   const deleted = initialLength !== itemsToKeep.length;
-  
+
   // Replace the array contents
   mockFeedbackItems.length = 0;
   mockFeedbackItems.push(...itemsToKeep);
-  
+
   console.log(`[Mock] ${deleted ? "Deleted" : "Not found"} feedback "${feedbackId}"`);
-  
+
   return deleted;
 }

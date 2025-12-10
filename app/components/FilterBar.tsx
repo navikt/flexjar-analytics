@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import {
   ChatIcon,
   ExclamationmarkTriangleIcon,
@@ -27,13 +28,6 @@ interface FilterBarProps {
   showTextFilter?: boolean;
 }
 
-// Helper to parse date string to Date object
-function parseDate(dateStr: string | undefined): Date | undefined {
-  if (!dateStr) return undefined;
-  const date = new Date(dateStr + "T00:00:00");
-  return isNaN(date.getTime()) ? undefined : date;
-}
-
 export function FilterBar({ showTextFilter = false }: FilterBarProps) {
   const { params, setParam, resetParams } = useSearchParams();
   // Use separate query for filter options so they don't change when filtering
@@ -49,7 +43,8 @@ export function FilterBar({ showTextFilter = false }: FilterBarProps) {
     inputProps: fromInputProps,
     setSelected: setFromSelected,
   } = useDatepicker({
-    onDateChange: (date) => setParam("from", date?.toISOString().split("T")[0]),
+    onDateChange: (date) =>
+      setParam("from", date ? dayjs(date).format("YYYY-MM-DD") : undefined),
   });
 
   const {
@@ -57,7 +52,8 @@ export function FilterBar({ showTextFilter = false }: FilterBarProps) {
     inputProps: toInputProps,
     setSelected: setToSelected,
   } = useDatepicker({
-    onDateChange: (date) => setParam("to", date?.toISOString().split("T")[0]),
+    onDateChange: (date) =>
+      setParam("to", date ? dayjs(date).format("YYYY-MM-DD") : undefined),
   });
 
   // Use refs to avoid re-running effects when setSelected changes
@@ -69,8 +65,8 @@ export function FilterBar({ showTextFilter = false }: FilterBarProps) {
   // Sync datepickers with URL params (both on mount and when reset)
   useEffect(() => {
     if (params.from) {
-      const fromDate = parseDate(params.from);
-      if (fromDate) {
+      const fromDate = dayjs(params.from).toDate();
+      if (dayjs(fromDate).isValid()) {
         setFromSelectedRef.current(fromDate);
       }
     } else {
@@ -81,8 +77,8 @@ export function FilterBar({ showTextFilter = false }: FilterBarProps) {
 
   useEffect(() => {
     if (params.to) {
-      const toDate = parseDate(params.to);
-      if (toDate) {
+      const toDate = dayjs(params.to).toDate();
+      if (dayjs(toDate).isValid()) {
         setToSelectedRef.current(toDate);
       }
     } else {
@@ -135,16 +131,99 @@ export function FilterBar({ showTextFilter = false }: FilterBarProps) {
     }
   };
 
+  // Calculate selected period for display
+  const getSelectedPeriodValue = () => {
+    if (!params.from || !params.to) return "";
+
+    const start = dayjs(params.from);
+    const end = dayjs(params.to);
+    const today = dayjs();
+
+    // Check if end date is today (allow small wiggle room for time)
+    if (!end.isSame(today, 'day')) return "";
+
+    // Calculate difference in days (inclusive)
+    const diff = end.diff(start, 'day') + 1;
+
+    // Check specific ranges
+    if (diff === 1) return "1";
+    if (diff === 7) return "7";
+    if (diff === 30) return "30";
+    if (diff === 90) return "90";
+
+    // Check "Year to date"
+    if (start.isSame(today.startOf('year'), 'day')) return "year";
+
+    return "";
+  };
+
+  const selectedPeriod = getSelectedPeriodValue();
+
   const hasActiveFilters =
-    params.from ||
-    params.to ||
+    ((params.from || params.to) && selectedPeriod !== "30") ||
     params.fritekst ||
     params.feedbackId ||
     params.app ||
     params.lavRating ||
     params.medTekst ||
     params.deviceType ||
+    params.ubehandlet ||
     params.tags;
+
+  // Date quick selectors
+  const setQuickDate = (days: number | "year") => {
+    const end = dayjs();
+    let start = dayjs();
+
+    if (days === "year") {
+      start = start.startOf("year");
+    } else {
+      // Subtract days - 1 because the range is inclusive (today + previous days)
+      start = start.subtract(days - 1, "day");
+    }
+
+    setParam("from", start.format("YYYY-MM-DD"));
+    setParam("to", end.format("YYYY-MM-DD"));
+  };
+
+  // Set default filters on mount if none are present
+  useEffect(() => {
+    if (!params.from && !params.to) {
+      setQuickDate(30);
+    }
+  }, []);
+
+
+
+  // Reset to default state (Last 30 days)
+  const handleReset = () => {
+    // We want to clear all params EXCEPT dates, which should be reset to default
+    // But since resetParams clears everything, we can just call it and then setQuickDate
+    // actually, setQuickDate depends on setParam which updates URL.
+    // Better: construct the new params manually.
+
+    resetParams();
+
+    // Slight timeout to let the URL clear propagate/batched, or just set strictly after.
+    // Actually, resetParams uses history.pushState.
+    // If we want to set defaults immediately:
+
+    // Let's implement a manual reset that sets exactly what we want.
+    // We can use setParams to set multiple at once if useSearchParams supported it properly-ish
+    // But typically we want to clear key by key or replace the whole search string.
+    // resetParams clears the search string.
+
+    // Note: The Effect that checks (!params.from && !params.to) runs on mount or update.
+    // If we clear params, that effect MIGHT run if we add params dependencies.
+    // currently it has [] dependency.
+
+    // So let's just trigger setQuickDate(30) AFTER reset.
+    // But resetParams might be async in terms of React state updates if it depends on them.
+    // useSearchParams updates URL synchronously.
+
+    // Force set default dates
+    setTimeout(() => setQuickDate(30), 0);
+  };
 
   return (
     <div className="filter-bar-container">
@@ -202,13 +281,34 @@ export function FilterBar({ showTextFilter = false }: FilterBarProps) {
           />
         )}
 
-        <DatePicker {...fromDateProps}>
-          <DatePicker.Input {...fromInputProps} label="Fra dato" size="small" />
-        </DatePicker>
+        <div style={{ display: 'flex', alignItems: 'flex-end', gap: '0.5rem' }}>
+          <DatePicker {...fromDateProps}>
+            <DatePicker.Input {...fromInputProps} label="Fra dato" size="small" />
+          </DatePicker>
+          <DatePicker {...toDateProps}>
+            <DatePicker.Input {...toInputProps} label="Til dato" size="small" />
+          </DatePicker>
 
-        <DatePicker {...toDateProps}>
-          <DatePicker.Input {...toInputProps} label="Til dato" size="small" />
-        </DatePicker>
+          <Select
+            label="Periode"
+            size="small"
+            value={selectedPeriod}
+            onChange={(e) => {
+              const val = e.target.value;
+              if (!val) return;
+              if (val === "year") setQuickDate("year");
+              else setQuickDate(parseInt(val, 10));
+            }}
+            style={{ width: '130px' }}
+          >
+            <option value="">Velg...</option>
+            <option value="1">Hittil i dag</option>
+            <option value="7">Siste 7 dager</option>
+            <option value="30">Siste 30 dager</option>
+            <option value="90">Siste 3 mnd</option>
+            <option value="year">Hittil i år</option>
+          </Select>
+        </div>
 
         {showTextFilter && (
           <TextField
@@ -217,16 +317,18 @@ export function FilterBar({ showTextFilter = false }: FilterBarProps) {
             value={params.fritekst || ""}
             onChange={(e) => setParam("fritekst", e.target.value || undefined)}
             placeholder="Søk i tilbakemeldinger..."
+            style={{ minWidth: 200 }}
           />
         )}
 
         {hasActiveFilters && (
-          <Tooltip content="Nullstill alle filtre">
+          <Tooltip content="Nullstill alle filtre til standard (siste 30 dager)">
             <Button
               variant="tertiary"
               size="small"
               icon={<XMarkIcon />}
-              onClick={resetParams}
+              onClick={handleReset}
+              type="button"
             >
               Nullstill
             </Button>
@@ -244,6 +346,22 @@ export function FilterBar({ showTextFilter = false }: FilterBarProps) {
             Hurtigfiltre:
           </Label>
 
+          <Tooltip content="Vis kun ubehandlede (ikke tagget med 'behandlet')">
+            <Button
+              variant={params.ubehandlet === "true" ? "primary" : "secondary"}
+              size="small"
+              onClick={() =>
+                setParam(
+                  "ubehandlet",
+                  params.ubehandlet === "true" ? undefined : "true",
+                )
+              }
+              type="button"
+            >
+              Ubehandlet
+            </Button>
+          </Tooltip>
+
           <Tooltip content="Vis kun tilbakemeldinger med tekstsvar">
             <Button
               variant={params.medTekst === "true" ? "primary" : "secondary"}
@@ -255,6 +373,7 @@ export function FilterBar({ showTextFilter = false }: FilterBarProps) {
                   params.medTekst === "true" ? undefined : "true",
                 )
               }
+              type="button"
             >
               Med tekst
             </Button>
@@ -271,6 +390,7 @@ export function FilterBar({ showTextFilter = false }: FilterBarProps) {
                   params.lavRating === "true" ? undefined : "true",
                 )
               }
+              type="button"
             >
               Lav score
             </Button>

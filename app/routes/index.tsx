@@ -1,14 +1,15 @@
-import { BarChartIcon, DownloadIcon, TableIcon } from "@navikt/aksel-icons";
-import { Alert, Button, HStack, Heading, VStack } from "@navikt/ds-react";
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { Alert, HStack, Heading, VStack } from "@navikt/ds-react";
+import { createFileRoute } from "@tanstack/react-router";
 import { FieldStatsSection } from "~/components/FieldStatsSection";
 import { FilterBar } from "~/components/FilterBar";
+import { Header } from "~/components/Header";
 import { StatsCards } from "~/components/StatsCards";
 import { DeviceBreakdownChart } from "~/components/charts/DeviceBreakdownChart";
 import { RatingChart } from "~/components/charts/RatingChart";
 import { RatingTrendChart } from "~/components/charts/RatingTrendChart";
 import { TimelineChart } from "~/components/charts/TimelineChart";
 import { TopAppsChart } from "~/components/charts/TopAppsChart";
+import { UrgentUrls } from "~/components/UrgentUrls";
 import { useSearchParams } from "~/lib/useSearchParams";
 
 export const Route = createFileRoute("/")({
@@ -16,48 +17,12 @@ export const Route = createFileRoute("/")({
 });
 
 function DashboardPage() {
-  const { params, resetParams } = useSearchParams();
+  const { params } = useSearchParams();
   const hasSurveyFilter = !!params.feedbackId;
-
-  const handleResetAndNavigate = () => {
-    // Just reset params - we're already on the dashboard
-    resetParams();
-  };
 
   return (
     <>
-      <header className="app-header">
-        <div className="header-content">
-          <button
-            type="button"
-            onClick={handleResetAndNavigate}
-            className="header-title"
-          >
-            <img src="/static/flexjar.png" alt="" className="header-logo" />
-            Flexjar Analytics
-          </button>
-          <HStack gap="4">
-            <Button
-              variant="tertiary"
-              size="small"
-              icon={<BarChartIcon />}
-              onClick={handleResetAndNavigate}
-            >
-              Dashboard
-            </Button>
-            <Link to="/feedback">
-              <Button variant="tertiary" size="small" icon={<TableIcon />}>
-                Feedback
-              </Button>
-            </Link>
-            <Link to="/export">
-              <Button variant="tertiary" size="small" icon={<DownloadIcon />}>
-                Eksporter
-              </Button>
-            </Link>
-          </HStack>
-        </div>
-      </header>
+      <Header />
 
       <main className="main-content">
         <VStack gap="6">
@@ -95,6 +60,10 @@ function DashboardPage() {
                 <RatingTrendChart />
               </div>
             </div>
+          </div>
+
+          <div className="dashboard-grid">
+            <UrgentUrls />
           </div>
 
           {/* Survey-spesifikk statistikk - kun når én survey er valgt */}

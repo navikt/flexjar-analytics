@@ -1,57 +1,17 @@
-import { BarChartIcon, DownloadIcon, TableIcon } from "@navikt/aksel-icons";
-import { Button, HStack, Heading, VStack } from "@navikt/ds-react";
-import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Heading, VStack } from "@navikt/ds-react";
+import { createFileRoute } from "@tanstack/react-router";
 import { FeedbackTable } from "~/components/FeedbackTable";
 import { FilterBar } from "~/components/FilterBar";
-import { useSearchParams } from "~/lib/useSearchParams";
+import { Header } from "~/components/Header";
 
 export const Route = createFileRoute("/feedback")({
   component: FeedbackPage,
 });
 
 function FeedbackPage() {
-  const { resetParams } = useSearchParams();
-  const navigate = useNavigate();
-
-  const handleResetAndNavigate = () => {
-    resetParams();
-    navigate({ to: "/" });
-  };
-
   return (
     <>
-      <header className="app-header">
-        <div className="header-content">
-          <button
-            type="button"
-            onClick={handleResetAndNavigate}
-            className="header-title"
-          >
-            <img src="/static/flexjar.png" alt="" className="header-logo" />
-            Flexjar Analytics
-          </button>
-          <HStack gap="4">
-            <Button
-              variant="tertiary"
-              size="small"
-              icon={<BarChartIcon />}
-              onClick={handleResetAndNavigate}
-            >
-              Dashboard
-            </Button>
-            <Link to="/feedback" className="[&.active]:font-bold">
-              <Button variant="tertiary" size="small" icon={<TableIcon />}>
-                Feedback
-              </Button>
-            </Link>
-            <Link to="/export">
-              <Button variant="tertiary" size="small" icon={<DownloadIcon />}>
-                Eksporter
-              </Button>
-            </Link>
-          </HStack>
-        </div>
-      </header>
+      <Header />
 
       <main className="main-content">
         <VStack gap="6">

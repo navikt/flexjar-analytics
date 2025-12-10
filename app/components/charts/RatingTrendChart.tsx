@@ -9,6 +9,8 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { useNavigate } from "@tanstack/react-router";
+import { useSearchParams } from "~/lib/useSearchParams";
 import { useStats } from "~/lib/useStats";
 
 // Chart colors for dark mode
@@ -26,6 +28,8 @@ const CHART_COLORS = {
 
 export function RatingTrendChart() {
   const { data: stats, isLoading } = useStats();
+  const navigate = useNavigate();
+  const { params } = useSearchParams();
 
   if (isLoading) {
     return <Skeleton variant="rectangle" height={300} />;
@@ -69,6 +73,24 @@ export function RatingTrendChart() {
         margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
         role="img"
         aria-label={`Linjediagram som viser gjennomsnittlig vurdering over tid. Totalt snitt: ${overallAverage.toFixed(1)}`}
+        onClick={(e) => {
+          if (e && e.activePayload && e.activePayload.length > 0) {
+            const clickData = e.activePayload[0].payload;
+            const date = clickData.date;
+            const average = clickData.average;
+
+            navigate({
+              to: "/feedback",
+              search: {
+                ...params,
+                from: date,
+                to: date,
+                lavRating: average < 3 ? "true" : undefined
+              }
+            });
+          }
+        }}
+        style={{ cursor: 'pointer' }}
       >
         <XAxis
           dataKey="displayDate"

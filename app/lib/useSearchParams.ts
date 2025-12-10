@@ -17,6 +17,9 @@ export interface SearchParams {
   lavRating?: string;
   /** Filter by device type */
   deviceType?: string;
+  /** Filter by unprocessed/unread */
+  ubehandlet?: string;
+  stjerne?: string;
 }
 
 // Store for managing search params reactively
