@@ -44,7 +44,7 @@ export function Header() {
                         search={(prev) => prev}
                     >
                         <Button variant="tertiary" size="small" icon={<TableIcon />}>
-                            Feedback
+                            Tilbakemeldinger
                         </Button>
                     </Link>
                     <Link

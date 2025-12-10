@@ -72,7 +72,7 @@ export function FeedbackTable() {
             <Table.Row>
               <Table.HeaderCell />
               <Table.HeaderCell>Dato</Table.HeaderCell>
-              <Table.HeaderCell>Feedback</Table.HeaderCell>
+              <Table.HeaderCell>Tilbakemelding</Table.HeaderCell>
               <Table.HeaderCell>App</Table.HeaderCell>
               <Table.HeaderCell />
             </Table.Row>
@@ -284,11 +284,7 @@ export function FeedbackTable() {
                                   size="small"
                                   className="expanded-section-label"
                                 >
-                                  Svar ({feedback.answers.length}{" "}
-                                  {feedback.answers.length === 1
-                                    ? "felt"
-                                    : "felter"}
-                                  )
+                                  Svar ({feedback.answers.length})
                                 </Label>
                                 <TimelineView answers={feedback.answers} />
                               </div>

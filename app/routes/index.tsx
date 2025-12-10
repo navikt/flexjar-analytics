@@ -45,7 +45,7 @@ function DashboardPage() {
           <div className="dashboard-grid">
             <div className="dashboard-card">
               <div className="dashboard-card-header">
-                <Heading size="small">Tilbakemeldinger over tid</Heading>
+                <Heading size="small">Antall tilbakemeldinger</Heading>
               </div>
               <div className="chart-container">
                 <TimelineChart />
@@ -54,7 +54,7 @@ function DashboardPage() {
 
             <div className="dashboard-card">
               <div className="dashboard-card-header">
-                <Heading size="small">Rating over tid</Heading>
+                <Heading size="small">Gjennomsnittlig vurdering</Heading>
               </div>
               <div className="chart-container">
                 <RatingTrendChart />
@@ -74,7 +74,7 @@ function DashboardPage() {
               <div className="dashboard-grid">
                 <div className="dashboard-card">
                   <div className="dashboard-card-header">
-                    <Heading size="small">Vurderingsfordeling</Heading>
+                    <Heading size="small">Fordeling av vurderinger</Heading>
                   </div>
                   <div className="chart-container">
                     <RatingChart />
@@ -89,7 +89,7 @@ function DashboardPage() {
             <div className="dashboard-grid">
               <div className="dashboard-card">
                 <div className="dashboard-card-header">
-                  <Heading size="small">Svar per app</Heading>
+                  <Heading size="small">Tilbakemeldinger per app</Heading>
                 </div>
                 <div className="chart-container-small">
                   <TopAppsChart />

@@ -4,6 +4,7 @@ import {
   FileExcelIcon,
   FilesIcon,
 } from "@navikt/aksel-icons";
+import dayjs from "dayjs";
 import {
   Alert,
   BodyShort,
@@ -180,12 +181,12 @@ export function ExportPanel() {
             )}
             {params.from && (
               <BodyShort size="small" spacing>
-                <strong>Fra:</strong> {params.from}
+                <strong>Fra:</strong> {dayjs(params.from).format("DD.MM.YYYY")}
               </BodyShort>
             )}
             {params.to && (
               <BodyShort size="small" spacing>
-                <strong>Til:</strong> {params.to}
+                <strong>Til:</strong> {dayjs(params.to).format("DD.MM.YYYY")}
               </BodyShort>
             )}
             {params.medTekst === "true" && (

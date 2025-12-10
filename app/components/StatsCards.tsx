@@ -95,7 +95,7 @@ export function StatsCards() {
       <div className="dashboard-grid">
         <StatCard
           icon={<ChatIcon fontSize="1.5rem" aria-hidden />}
-          label="Totalt tilbakemeldinger"
+          label="Antall tilbakemeldinger"
           value={totalCount.toLocaleString("no-NO")}
           subtitle={`Siste ${periodDays} dager`}
         />
@@ -118,7 +118,7 @@ export function StatsCards() {
 
         <StatCard
           icon={<ChatExclamationmarkIcon fontSize="1.5rem" aria-hidden />}
-          label="Tekstsvar"
+          label="Antall tekstsvar"
           value={totalTextResponses.toLocaleString("no-NO")}
           subtitle={`${textFields.length} tekstfelt`}
         />
@@ -138,14 +138,14 @@ export function StatsCards() {
     <div className="dashboard-grid">
       <StatCard
         icon={<ChatIcon fontSize="1.5rem" aria-hidden />}
-        label="Totalt tilbakemeldinger"
+        label="Antall tilbakemeldinger"
         value={totalCount.toLocaleString("no-NO")}
         subtitle={`Siste ${periodDays} dager`}
       />
 
       <StatCard
         icon={<ChatExclamationmarkIcon fontSize="1.5rem" aria-hidden />}
-        label="Med tekstfeedback"
+        label="Tilbakemeldinger med tekst"
         value={countWithText.toLocaleString("no-NO")}
         subtitle={`${textPercentage}% av totalt`}
       />

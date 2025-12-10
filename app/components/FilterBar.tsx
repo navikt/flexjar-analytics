@@ -299,7 +299,7 @@ export function FilterBar({ showTextFilter = false }: FilterBarProps) {
               if (val === "year") setQuickDate("year");
               else setQuickDate(parseInt(val, 10));
             }}
-            style={{ width: '130px' }}
+            style={{ width: '160px' }}
           >
             <option value="">Velg...</option>
             <option value="1">Hittil i dag</option>
