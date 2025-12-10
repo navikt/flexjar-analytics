@@ -1,6 +1,46 @@
-import { ChatIcon, StarIcon } from "@navikt/aksel-icons";
+import {
+    CalendarIcon,
+    ChatIcon,
+    StarIcon,
+    TasklistIcon,
+} from "@navikt/aksel-icons";
+import { BodyShort, Detail, HStack, Label, VStack } from "@navikt/ds-react";
+import type { ReactNode } from "react";
 import type { Answer } from "~/lib/api";
 import { COLORS, ratingToEmoji } from "./utils";
+
+interface AnswerCardLayoutProps {
+    icon: ReactNode;
+    label: string;
+    description?: string;
+    children: ReactNode;
+    className?: string; // For passing custom classes like "answer-card--rating"
+}
+
+function AnswerCardLayout({
+    icon,
+    label,
+    description,
+    children,
+    className = "",
+}: AnswerCardLayoutProps) {
+    return (
+        <div className={`answer-card ${className}`}>
+            <HStack gap="4" align="start">
+                <div className="answer-icon">{icon}</div>
+                <VStack gap="2" style={{ flex: 1 }}>
+                    <div>
+                        <Label size="small">{label}</Label>
+                        {description && (
+                            <Detail textColor="subtle">{description}</Detail>
+                        )}
+                    </div>
+                    <div className="answer-content">{children}</div>
+                </VStack>
+            </HStack>
+        </div>
+    );
+}
 
 // Render a single answer based on its type
 export function RenderAnswer({ answer }: { answer: Answer }) {
@@ -9,12 +49,18 @@ export function RenderAnswer({ answer }: { answer: Answer }) {
             const ratingValue =
                 answer.value.type === "rating" ? answer.value.rating : 0;
             return (
-                <div className="answer-card answer-card--rating">
-                    <div className="answer-header">
-                        <StarIcon fontSize="1rem" style={{ color: COLORS.iconWarning }} />
-                        <span className="answer-label">{answer.question.label}</span>
-                    </div>
-                    <div className="answer-content">
+                <AnswerCardLayout
+                    className="answer-card--rating"
+                    icon={
+                        <StarIcon
+                            fontSize="1.5rem"
+                            style={{ color: COLORS.iconWarning }}
+                        />
+                    }
+                    label={answer.question.label}
+                    description={answer.question.description}
+                >
+                    <HStack align="center" gap="2">
                         <div className="expanded-rating-bar">
                             {[1, 2, 3, 4, 5].map((n) => (
                                 <span
@@ -27,32 +73,29 @@ export function RenderAnswer({ answer }: { answer: Answer }) {
                             ))}
                         </div>
                         <span className="rating-answer-score">{ratingValue}/5</span>
-                    </div>
-                </div>
+                    </HStack>
+                </AnswerCardLayout>
             );
         }
         case "TEXT":
             return (
-                <div className="answer-card answer-card--text">
-                    <div className="answer-header">
-                        <ChatIcon fontSize="1rem" style={{ color: COLORS.iconInfo }} />
-                        <span className="answer-label">
-                            {answer.question.label}
-                            {answer.question.description && (
-                                <span className="answer-description">
-                                    {" "}— {answer.question.description}
-                                </span>
-                            )}
-                        </span>
-                    </div>
-                    <div className="answer-content answer-content--text">
-                        {answer.value.type === "text" && answer.value.text ? (
-                            answer.value.text
-                        ) : (
-                            <span className="answer-empty">Ikke utfylt</span>
-                        )}
-                    </div>
-                </div>
+                <AnswerCardLayout
+                    className="answer-card--text"
+                    icon={
+                        <ChatIcon
+                            fontSize="1.5rem"
+                            style={{ color: COLORS.iconInfo }}
+                        />
+                    }
+                    label={answer.question.label}
+                    description={answer.question.description}
+                >
+                    {answer.value.type === "text" && answer.value.text ? (
+                        <BodyShort>{answer.value.text}</BodyShort>
+                    ) : (
+                        <span className="answer-empty">Ikke utfylt</span>
+                    )}
+                </AnswerCardLayout>
             );
         case "SINGLE_CHOICE":
         case "MULTI_CHOICE": {
@@ -65,42 +108,44 @@ export function RenderAnswer({ answer }: { answer: Answer }) {
             const options = answer.question.options || [];
 
             return (
-                <div className="answer-card answer-card--choice">
-                    <div className="answer-header">
-                        <span className="answer-type-icon">☑️</span>
-                        <span className="answer-label">{answer.question.label}</span>
-                    </div>
-                    <div className="answer-content answer-content--choice">
-                        {options.length > 0 ? (
-                            <div className="choice-options">
-                                {options.map((opt) => (
-                                    <span
-                                        key={opt.id}
-                                        className={`choice-option ${selectedIds.includes(opt.id) ? "choice-option--selected" : ""}`}
-                                    >
-                                        {selectedIds.includes(opt.id) ? "✓ " : ""}
-                                        {opt.label}
-                                    </span>
-                                ))}
-                            </div>
-                        ) : (
-                            <span>{selectedIds.join(", ") || "Ingen valgt"}</span>
-                        )}
-                    </div>
-                </div>
+                <AnswerCardLayout
+                    className="answer-card--choice"
+                    icon={<TasklistIcon fontSize="1.5rem" aria-hidden />}
+                    label={answer.question.label}
+                    description={answer.question.description}
+                >
+                    {options.length > 0 ? (
+                        <div className="choice-options">
+                            {options.map((opt) => (
+                                <span
+                                    key={opt.id}
+                                    className={`choice-option ${selectedIds.includes(opt.id) ? "choice-option--selected" : ""}`}
+                                >
+                                    {selectedIds.includes(opt.id) ? "✓ " : ""}
+                                    {opt.label}
+                                </span>
+                            ))}
+                        </div>
+                    ) : (
+                        <BodyShort>
+                            {selectedIds.join(", ") || "Ingen valgt"}
+                        </BodyShort>
+                    )}
+                </AnswerCardLayout>
             );
         }
         case "DATE":
             return (
-                <div className="answer-card answer-card--date">
-                    <div className="answer-header">
-                        <span className="answer-type-icon">📅</span>
-                        <span className="answer-label">{answer.question.label}</span>
-                    </div>
-                    <div className="answer-content">
+                <AnswerCardLayout
+                    className="answer-card--date"
+                    icon={<CalendarIcon fontSize="1.5rem" aria-hidden />}
+                    label={answer.question.label}
+                    description={answer.question.description}
+                >
+                    <BodyShort>
                         {answer.value.type === "date" ? answer.value.date : "—"}
-                    </div>
-                </div>
+                    </BodyShort>
+                </AnswerCardLayout>
             );
         default:
             return null;

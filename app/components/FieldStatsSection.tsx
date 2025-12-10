@@ -108,9 +108,9 @@ function RatingFieldCard({ field, totalCount }: FieldCardProps) {
 
   return (
     <div className="dashboard-card field-stat-card">
-      <HStack gap="2" wrap align="start" className="field-card-header">
+      <HStack gap="2" align="start" className="field-card-header">
         <StarIcon fontSize="1.25rem" aria-hidden />
-        <VStack gap="0">
+        <VStack gap="0" style={{ flex: 1 }}>
           <Label size="small" className="field-card-label">
             {field.label}
           </Label>
@@ -168,9 +168,9 @@ function TextFieldCard({ field, totalCount }: FieldCardProps) {
 
   return (
     <div className="dashboard-card field-stat-card text-field-card">
-      <HStack gap="2" wrap align="start" className="field-card-header">
+      <HStack gap="2" align="start" className="field-card-header">
         <ChatExclamationmarkIcon fontSize="1.25rem" aria-hidden />
-        <VStack gap="0">
+        <VStack gap="0" style={{ flex: 1 }}>
           <Label size="small" className="field-card-label">
             {field.label}
           </Label>
