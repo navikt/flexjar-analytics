@@ -171,7 +171,7 @@ const mockFeedbackItems: FeedbackDto[] = [
       820,
       1180,
     ),
-    tags: ["🐛 Bug", "✅ Løst"],
+    tags: ["🐛 Bug", "✅ Behandlet"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -573,7 +573,7 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "oppfolgingsplan-frontend",
     surveyId: "oppfolgingsplan-gammel-sykmeldt",
     context: createContext("/oppfolgingsplan/sykmeldt", "mobile", 375, 812),
-    tags: ["🚫 Fikses ikke"],
+    tags: ["🚫 Fikses ikke", "✅ Behandlet"],
     answers: [
       createRatingAnswer(
         "hovedsporsmal",
@@ -1084,6 +1084,7 @@ function filterFeedback(
   const pathname = params.get("pathname");
   const deviceType = params.get("deviceType");
   const tags = params.get("tags");
+
 
   if (app) {
     filtered = filtered.filter((item) => item.app === app);

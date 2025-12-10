@@ -167,7 +167,6 @@ export function FilterBar({ showTextFilter = false }: FilterBarProps) {
     params.lavRating ||
     params.medTekst ||
     params.deviceType ||
-    params.ubehandlet ||
     params.tags;
 
   // Date quick selectors
@@ -346,21 +345,7 @@ export function FilterBar({ showTextFilter = false }: FilterBarProps) {
             Hurtigfiltre:
           </Label>
 
-          <Tooltip content="Vis kun ubehandlede (ikke tagget med 'behandlet')">
-            <Button
-              variant={params.ubehandlet === "true" ? "primary" : "secondary"}
-              size="small"
-              onClick={() =>
-                setParam(
-                  "ubehandlet",
-                  params.ubehandlet === "true" ? undefined : "true",
-                )
-              }
-              type="button"
-            >
-              Ubehandlet
-            </Button>
-          </Tooltip>
+
 
           <Tooltip content="Vis kun tilbakemeldinger med tekstsvar">
             <Button
