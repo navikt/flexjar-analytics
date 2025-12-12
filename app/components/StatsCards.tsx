@@ -18,7 +18,7 @@ interface StatCardProps {
   isLoading?: boolean;
 }
 
-function StatCard({ icon, label, value, subtitle, isLoading }: StatCardProps) {
+export function StatCard({ icon, label, value, subtitle, isLoading }: StatCardProps) {
   if (isLoading) {
     return (
       <div className="dashboard-card stat-card">

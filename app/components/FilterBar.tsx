@@ -19,22 +19,26 @@ import { useFilterOptions } from "~/lib/useFilterOptions";
 import { useSearchParams } from "~/lib/useSearchParams";
 import { useSurveysByApp } from "~/lib/useSurveysByApp";
 import { useTags } from "~/lib/useTags";
+import { useStats } from "~/lib/useStats";
+import { getSurveyFeatures } from "~/lib/surveyConfig";
 
 interface FilterBarProps {
-  showTextFilter?: boolean;
+  showDetails?: boolean;
 }
 
-export function FilterBar({ showTextFilter = false }: FilterBarProps) {
+export function FilterBar({ showDetails = false }: FilterBarProps) {
   const { params, setParam, resetParams } = useSearchParams();
   // Use separate query for filter options so they don't change when filtering
   const { data: filterOptions } = useFilterOptions();
   const { data: surveysByApp } = useSurveysByApp();
   const { data: allTags = [] } = useTags();
+  const { data: stats } = useStats();
+
+  // Determine active features based on survey type
+  const features = getSurveyFeatures(stats?.surveyType);
 
   // Parse current tag filter (comma-separated)
   const selectedTags = params.tags ? params.tags.split(",") : [];
-
-
 
   // Get available apps (always shows all, not affected by current filters)
   const availableApps = filterOptions?.byApp
@@ -80,29 +84,18 @@ export function FilterBar({ showTextFilter = false }: FilterBarProps) {
     }
   };
 
-
-
   const handleReset = () => {
     resetParams();
     // Default to last 30 days on reset
     const end = dayjs();
     const start = dayjs().subtract(29, "day");
 
-    // We need to use history.pushState or similar if we want to batch this, 
-    // but resetParams uses it too. 
-    // To simplify: we rely on PeriodSelector to show "Velg periode" or similar if params are empty.
-    // BUT the requirement was to set "Siste 30 dager" as default.
-    // Let's manually set it after a timeout or use a dedicated reset function.
     setTimeout(() => {
       setParam("from", start.format("YYYY-MM-DD"));
       setParam("to", end.format("YYYY-MM-DD"));
     }, 0);
   };
 
-  // Check if we active filters (excluding default 30 days if we consider that default, 
-  // but originally 30 days was 'default' and resetting set to it.
-
-  // Actually, we can check if params are present.
   const hasActiveFilters =
     params.from ||
     params.to ||
@@ -177,10 +170,10 @@ export function FilterBar({ showTextFilter = false }: FilterBarProps) {
       </div>
 
       {/* Secondary Row: Page Specific Filters (Feedback only for now) */}
-      {showTextFilter && (
+      {showDetails && (
         <div className="filter-bar-secondary">
           <div className="filter-group">
-            {showTextFilter && (
+            {features.showTextFilter && (
               <TextField
                 label="Søk"
                 hideLabel
@@ -192,7 +185,7 @@ export function FilterBar({ showTextFilter = false }: FilterBarProps) {
               />
             )}
 
-            {showTextFilter && allTags.length > 0 && (
+            {features.showTagsFilter && allTags.length > 0 && (
               <Combobox
                 label="Tags"
                 hideLabel
@@ -213,53 +206,59 @@ export function FilterBar({ showTextFilter = false }: FilterBarProps) {
           </div>
 
           <div className="filter-group">
-            <ToggleGroup
-              size="small"
-              value={params.deviceType || "alle"}
-              onChange={(val) =>
-                setParam("deviceType", val === "alle" ? undefined : val)
-              }
-            >
-              <ToggleGroup.Item value="alle">Alle enheter</ToggleGroup.Item>
-              <ToggleGroup.Item value="desktop" icon={<LaptopIcon title="Desktop" />} />
-              <ToggleGroup.Item value="mobile" icon={<MobileIcon title="Mobil" />} />
-            </ToggleGroup>
+            {features.showDeviceFilter && (
+              <ToggleGroup
+                size="small"
+                value={params.deviceType || "alle"}
+                onChange={(val) =>
+                  setParam("deviceType", val === "alle" ? undefined : val)
+                }
+              >
+                <ToggleGroup.Item value="alle">Alle enheter</ToggleGroup.Item>
+                <ToggleGroup.Item value="desktop" icon={<LaptopIcon title="Desktop" />} />
+                <ToggleGroup.Item value="mobile" icon={<MobileIcon title="Mobil" />} />
+              </ToggleGroup>
+            )}
 
             <div className="filter-divider" />
 
-            <Tooltip content="Vis kun tilbakemeldinger med tekstsvar">
-              <Button
-                variant={params.medTekst === "true" ? "primary" : "secondary"}
-                size="small"
-                icon={<ChatIcon aria-hidden />}
-                onClick={() =>
-                  setParam(
-                    "medTekst",
-                    params.medTekst === "true" ? undefined : "true",
-                  )
-                }
-                type="button"
-              >
-                Med tekst
-              </Button>
-            </Tooltip>
+            {features.showTextFilter && (
+              <Tooltip content="Vis kun tilbakemeldinger med tekstsvar">
+                <Button
+                  variant={params.medTekst === "true" ? "primary" : "secondary"}
+                  size="small"
+                  icon={<ChatIcon aria-hidden />}
+                  onClick={() =>
+                    setParam(
+                      "medTekst",
+                      params.medTekst === "true" ? undefined : "true",
+                    )
+                  }
+                  type="button"
+                >
+                  Med tekst
+                </Button>
+              </Tooltip>
+            )}
 
-            <Tooltip content="Vis kun tilbakemeldinger med lav score (1-2)">
-              <Button
-                variant={params.lavRating === "true" ? "danger" : "secondary"}
-                size="small"
-                icon={<ExclamationmarkTriangleIcon aria-hidden />}
-                onClick={() =>
-                  setParam(
-                    "lavRating",
-                    params.lavRating === "true" ? undefined : "true",
-                  )
-                }
-                type="button"
-              >
-                Lav score
-              </Button>
-            </Tooltip>
+            {features.showRatingFilter && (
+              <Tooltip content="Vis kun tilbakemeldinger med lav score (1-2)">
+                <Button
+                  variant={params.lavRating === "true" ? "danger" : "secondary"}
+                  size="small"
+                  icon={<ExclamationmarkTriangleIcon aria-hidden />}
+                  onClick={() =>
+                    setParam(
+                      "lavRating",
+                      params.lavRating === "true" ? undefined : "true",
+                    )
+                  }
+                  type="button"
+                >
+                  Lav score
+                </Button>
+              </Tooltip>
+            )}
           </div>
         </div>
       )}

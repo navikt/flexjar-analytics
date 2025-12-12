@@ -4,7 +4,7 @@ import {
     StarIcon,
     TasklistIcon,
 } from "@navikt/aksel-icons";
-import { BodyShort, Detail, HStack, Label, VStack } from "@navikt/ds-react";
+import { BodyShort, Detail, HStack, Label, Tooltip, VStack } from "@navikt/ds-react";
 import type { ReactNode } from "react";
 import type { Answer } from "~/lib/api";
 import { COLORS, ratingToEmoji } from "./utils";
@@ -52,10 +52,12 @@ export function RenderAnswer({ answer }: { answer: Answer }) {
                 <AnswerCardLayout
                     className="answer-card--rating"
                     icon={
-                        <StarIcon
-                            fontSize="1.5rem"
-                            style={{ color: COLORS.iconWarning }}
-                        />
+                        <Tooltip content="Vurdering (1-5)">
+                            <StarIcon
+                                fontSize="1.5rem"
+                                style={{ color: COLORS.iconWarning }}
+                            />
+                        </Tooltip>
                     }
                     label={answer.question.label}
                     description={answer.question.description}
@@ -82,10 +84,12 @@ export function RenderAnswer({ answer }: { answer: Answer }) {
                 <AnswerCardLayout
                     className="answer-card--text"
                     icon={
-                        <ChatIcon
-                            fontSize="1.5rem"
-                            style={{ color: COLORS.iconInfo }}
-                        />
+                        <Tooltip content="Fritekst">
+                            <ChatIcon
+                                fontSize="1.5rem"
+                                style={{ color: COLORS.iconInfo }}
+                            />
+                        </Tooltip>
                     }
                     label={answer.question.label}
                     description={answer.question.description}
@@ -110,7 +114,11 @@ export function RenderAnswer({ answer }: { answer: Answer }) {
             return (
                 <AnswerCardLayout
                     className="answer-card--choice"
-                    icon={<TasklistIcon fontSize="1.5rem" aria-hidden />}
+                    icon={
+                        <Tooltip content={answer.fieldType === "MULTI_CHOICE" ? "Flervalg" : "Enkeltvalg"}>
+                            <TasklistIcon fontSize="1.5rem" aria-hidden />
+                        </Tooltip>
+                    }
                     label={answer.question.label}
                     description={answer.question.description}
                 >
@@ -138,7 +146,11 @@ export function RenderAnswer({ answer }: { answer: Answer }) {
             return (
                 <AnswerCardLayout
                     className="answer-card--date"
-                    icon={<CalendarIcon fontSize="1.5rem" aria-hidden />}
+                    icon={
+                        <Tooltip content="Dato">
+                            <CalendarIcon fontSize="1.5rem" aria-hidden />
+                        </Tooltip>
+                    }
                     label={answer.question.label}
                     description={answer.question.description}
                 >

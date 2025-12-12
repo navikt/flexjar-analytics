@@ -39,6 +39,8 @@ export type FieldType =
   | "MULTI_CHOICE"
   | "DATE";
 
+export type SurveyType = "rating" | "topTasks" | "custom";
+
 export interface ChoiceOption {
   id: string;
   label: string;
@@ -145,6 +147,7 @@ export interface FeedbackDto {
   app: string | null;
   surveyId: string;
   surveyVersion?: string;
+  surveyType?: SurveyType;
   context?: SubmissionContext;
   answers: Answer[];
   tags?: string[];
@@ -184,6 +187,8 @@ export interface FeedbackStats {
   // New: per-field statistics
   fieldStats: FieldStat[];
 
+  surveyType?: SurveyType;
+
   period: {
     from: string | null;
     to: string | null;
@@ -195,6 +200,28 @@ export interface TeamsAndApps {
   teams: Record<string, string[]>;
 }
 
+// ============================================
+// Top Tasks Types
+// ============================================
+
+export interface TopTaskStats {
+  task: string;
+  totalCount: number;
+  successCount: number;
+  partialCount: number;
+  failureCount: number;
+  successRate: number;
+  formattedSuccessRate: string;
+  blockerCounts: Record<string, number>;
+}
+
+export interface TopTasksResponse {
+  totalSubmissions: number;
+  tasks: TopTaskStats[];
+  dailyStats: Record<string, { total: number; success: number }>;
+  questionText?: string;
+}
+
 // API functions
 export async function fetchStats(
   params: Record<string, string>,
@@ -203,6 +230,15 @@ export async function fetchStats(
     "/api/v1/intern/stats",
     params,
   ) as Promise<FeedbackStats>;
+}
+
+export async function fetchTopTasksStats(
+  params: Record<string, string>,
+): Promise<TopTasksResponse> {
+  return fetchFromBackend(
+    "/api/v1/intern/stats/top-tasks",
+    params,
+  ) as Promise<TopTasksResponse>;
 }
 
 export async function fetchFeedback(

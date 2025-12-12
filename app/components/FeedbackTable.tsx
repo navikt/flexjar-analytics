@@ -33,6 +33,7 @@ import { DeleteSurveyDialog } from "./DeleteSurveyDialog";
 import { TimelineView } from "./feedback/TimelineView";
 import {
   deviceToIcon,
+  getFeedbackPreview,
   getAllRatings,
   getMainTextPreview,
   ratingToEmoji,
@@ -196,12 +197,25 @@ export function FeedbackTable() {
                                 </span>
                               </Tooltip>
                             ))}
-                            {/* Vis første tekstsvar som preview */}
-                            {getMainTextPreview(feedback) && (
-                              <BodyShort truncate style={{ maxWidth: 350 }}>
-                                {getMainTextPreview(feedback)}
-                              </BodyShort>
-                            )}
+                            {/* Smart preview */}
+                            {(() => {
+                              const preview = getFeedbackPreview(feedback);
+                              if (preview) {
+                                return (
+                                  <VStack gap="0">
+                                    <BodyShort truncate style={{ maxWidth: 350, fontWeight: 500 }}>
+                                      {preview.text}
+                                    </BodyShort>
+                                    {preview.subText && (
+                                      <BodyShort truncate style={{ maxWidth: 350, fontSize: "0.85rem", color: "var(--a-text-subtle)" }}>
+                                        {preview.subText}
+                                      </BodyShort>
+                                    )}
+                                  </VStack>
+                                );
+                              }
+                              return null;
+                            })()}
                           </HStack>
                           {/* Vis survey-type og antall svar */}
                           <HStack gap="2" align="center">

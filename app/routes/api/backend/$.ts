@@ -12,6 +12,7 @@ import {
   getMockSurveysByApp,
   getMockTags,
   getMockTeams,
+  getMockTopTasksStats,
 } from "~/lib/mockData";
 
 const BACKEND_URL = process.env.FLEXJAR_BACKEND_URL || "http://localhost:8080";
@@ -58,6 +59,17 @@ function handleMockRequest(
         headers: { "Content-Type": "application/json" },
       });
     }
+  }
+
+  // Match API paths and return mock data
+  // Path comes as "api/v1/intern/stats" (without leading slash)
+
+  if (path.includes("api/v1/intern/stats/top-tasks")) {
+    console.log("[Mock] Returning top tasks stats");
+    return new Response(JSON.stringify(getMockTopTasksStats(params)), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
   // Match API paths and return mock data

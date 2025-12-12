@@ -60,3 +60,41 @@ export function getMainTextPreview(feedback: FeedbackDto): string | null {
     }
     return null;
 }
+
+export function getFeedbackPreview(feedback: FeedbackDto): { text: string; subText?: string } | null {
+    // Top Tasks logic
+    if (feedback.surveyType === "topTasks") {
+        const taskAnswer = feedback.answers.find(a => a.fieldId === "task" || a.fieldId === "category");
+        const successAnswer = feedback.answers.find(a => a.fieldId === "taskSuccess" || a.fieldId === "success");
+
+        if (taskAnswer && taskAnswer.fieldType === "SINGLE_CHOICE" && taskAnswer.value.type === "singleChoice") {
+            // Resolving label logic duplicated from mock data stats - ideally should be robust
+            const option = taskAnswer.question.options?.find(o => o.id === taskAnswer.value.selectedOptionId);
+            const taskLabel = option ? option.label : taskAnswer.value.selectedOptionId;
+
+            let successLabel = "";
+            if (successAnswer && successAnswer.fieldType === "SINGLE_CHOICE" && successAnswer.value.type === "singleChoice") {
+                const val = successAnswer.value.selectedOptionId;
+                if (val === "yes") successLabel = "✅";
+                else if (val === "no") successLabel = "❌";
+                else if (val === "partial") successLabel = "⚠️";
+            }
+
+            // Check for blocker text if failed
+            const blocker = getMainTextPreview(feedback);
+
+            return {
+                text: `${successLabel} ${taskLabel}`,
+                subText: blocker || undefined
+            };
+        }
+    }
+
+    // Default text logic
+    const mainText = getMainTextPreview(feedback);
+    if (mainText) {
+        return { text: mainText };
+    }
+
+    return null;
+}

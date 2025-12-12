@@ -5,8 +5,11 @@ import type {
   FeedbackStats,
   FieldStat,
   RatingAnswer,
+  SingleChoiceAnswer,
   SubmissionContext,
   TextAnswer,
+  TopTasksResponse,
+  TopTaskStats,
 } from "./api";
 
 // ============================================
@@ -41,6 +44,21 @@ function createTextAnswer(
   };
 }
 
+function createSingleChoiceAnswer(
+  fieldId: string,
+  label: string,
+  selectedOptionId: string,
+  description?: string,
+  options?: { id: string; label: string }[],
+): SingleChoiceAnswer {
+  return {
+    fieldId,
+    fieldType: "SINGLE_CHOICE",
+    question: { label, description, options },
+    value: { type: "singleChoice", selectedOptionId },
+  };
+}
+
 // Helper for context with viewport dimensions
 function createContext(
   pathname: string,
@@ -59,6 +77,79 @@ function createContext(
     viewportWidth: width,
     viewportHeight: height,
   };
+}
+
+function generateTopTasksMockData(): FeedbackDto[] {
+  const items: FeedbackDto[] = [];
+  const tasks = [
+    { id: "lese-om-dialogmote", label: "Lese om dialogmøte", weight: 0.4, successRate: 0.9 },
+    { id: "melde-motebehov", label: "Melde behov for møte", weight: 0.3, successRate: 0.6 }, // Hard path
+    { id: "svare-pa-innkalling", label: "Svare på innkalling", weight: 0.2, successRate: 0.8 },
+    { id: "annet", label: "Noe annet", weight: 0.1, successRate: 0.5 },
+  ];
+
+  const now = new Date();
+  // Generate data for last 14 days
+  for (let i = 0; i < 14; i++) {
+    const date = new Date(now);
+    date.setDate(date.getDate() - i);
+    const dateStr = date.toISOString().split("T")[0];
+
+    // 5-15 submissions per day
+    const dailyCount = Math.floor(Math.random() * 10) + 5;
+
+    for (let j = 0; j < dailyCount; j++) {
+      // Pick task based on weight
+      const rand = Math.random();
+      let cumulativeWeight = 0;
+      const selectedTask = tasks.find(t => {
+        cumulativeWeight += t.weight;
+        return rand <= cumulativeWeight;
+      }) || tasks[0];
+
+      // Determine success
+      const successRand = Math.random();
+      let successValue = "yes";
+      let blocker = undefined;
+
+      if (successRand > selectedTask.successRate) {
+        // Fail or partial
+        if (Math.random() > 0.5) {
+          successValue = "no";
+          blocker = "Skjønte ikke skjemaet";
+        } else {
+          successValue = "partial";
+          blocker = "Fant ikke all info";
+        }
+      }
+
+      // Add variation to time
+      const hour = 8 + Math.floor(Math.random() * 12);
+      const timestamp = `${dateStr}T${hour.toString().padStart(2, '0')}:30:00Z`;
+
+      items.push({
+        id: `tt-gen-${i}-${j}`,
+        submittedAt: timestamp,
+        app: "dialogmote-frontend",
+        surveyId: "meld-motebehov-ag",
+        surveyType: "topTasks",
+        context: createContext("/motebehov/arbeidsgiver", "desktop"),
+        answers: [
+          createSingleChoiceAnswer(
+            "task",
+            "Hva prøvde du å gjøre?",
+            selectedTask.id,
+            undefined,
+            tasks.map(t => ({ id: t.id, label: t.label }))
+          ),
+          createSingleChoiceAnswer("taskSuccess", "Klarte du det?", successValue),
+          ...(blocker ? [createTextAnswer("blocker", "Hva hindret deg?", blocker)] : [])
+        ],
+        sensitiveDataRedacted: false,
+      });
+    }
+  }
+  return items;
 }
 
 // ============================================
@@ -775,6 +866,12 @@ const mockFeedbackItems: FeedbackDto[] = [
     ],
     sensitiveDataRedacted: false,
   },
+
+
+  // Generated Top Tasks for dialogmote-frontend
+  ...generateTopTasksMockData(),
+
+
 ];
 
 // ============================================
@@ -1034,6 +1131,7 @@ function calculateStats(
     lowestRatingPaths: {},
     fieldStats,
     period: calculatePeriod(from, to),
+    surveyType: filtered.length > 0 ? filtered[0].surveyType || "rating" : undefined,
   };
 }
 
@@ -1068,10 +1166,14 @@ function calculatePeriod(
 // Feedback filtering and pagination
 // ============================================
 
-function filterFeedback(
+// ============================================
+// Feedback filtering and pagination
+// ============================================
+
+function applyFilters(
   items: FeedbackDto[],
   params: URLSearchParams,
-): FeedbackPage {
+): FeedbackDto[] {
   let filtered = [...items];
 
   const app = params.get("app");
@@ -1146,6 +1248,15 @@ function filterFeedback(
       new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime(),
   );
 
+  return filtered;
+}
+
+export function filterFeedback(
+  items: FeedbackDto[],
+  params: URLSearchParams,
+): FeedbackPage {
+  const filtered = applyFilters(items, params);
+
   // Paginate
   const page = Number.parseInt(params.get("page") || "0");
   const size = Number.parseInt(params.get("size") || "20");
@@ -1197,6 +1308,91 @@ export function getMockTags() {
     }
   }
   return Array.from(allTags).sort();
+}
+
+// Calculate Top Tasks stats
+export function getMockTopTasksStats(
+  params: URLSearchParams,
+): TopTasksResponse {
+  const filtered = applyFilters(mockFeedbackItems, params);
+  const taskMap = new Map<string, TopTaskStats>();
+  const dailyStats: Record<string, { total: number; success: number }> = {};
+
+  // Initialize from known tasks in mock data to ensure they appear even if count is 0
+  // (In a real DB query we would group by, so we'd only get ones with answers)
+
+  for (const item of filtered) {
+    if (item.surveyType !== "topTasks") continue;
+
+    // Find task answer
+    const taskAnswer = item.answers.find(a => a.fieldId === "task" || a.fieldId === "category"); // Support both likely IDs
+    if (!taskAnswer || taskAnswer.fieldType !== "SINGLE_CHOICE") continue;
+
+    const taskOption = taskAnswer.question.options?.find(o => o.id === taskAnswer.value.selectedOptionId);
+    // Use label if available, otherwise ID
+    const task = taskOption ? taskOption.label : taskAnswer.value.selectedOptionId;
+
+    // Find success answer
+    const successAnswer = item.answers.find(a => a.fieldId === "taskSuccess" || a.fieldId === "success");
+    const successValue = successAnswer?.fieldType === "SINGLE_CHOICE" ? successAnswer.value.selectedOptionId : "unknown";
+
+    // Find blocker
+    const blockerAnswer = item.answers.find(a => a.fieldId === "blocker" || a.fieldId === "hindring");
+    const blocker = blockerAnswer?.fieldType === "TEXT" && blockerAnswer.value.text ? blockerAnswer.value.text : null;
+
+    if (!taskMap.has(task)) {
+      taskMap.set(task, {
+        task,
+        totalCount: 0,
+        successCount: 0,
+        partialCount: 0,
+        failureCount: 0,
+        successRate: 0,
+        formattedSuccessRate: "0%",
+        blockerCounts: {}
+      });
+    }
+
+    const stats = taskMap.get(task)!;
+    stats.totalCount++;
+
+    if (successValue === "yes") stats.successCount++;
+    else if (successValue === "partial") stats.partialCount++;
+    else if (successValue === "no") stats.failureCount++;
+
+    if (blocker) {
+      stats.blockerCounts[blocker] = (stats.blockerCounts[blocker] || 0) + 1;
+    }
+
+    // Daily stats
+    const date = item.submittedAt.split("T")[0];
+    if (!dailyStats[date]) {
+      dailyStats[date] = { total: 0, success: 0 };
+    }
+    dailyStats[date].total++;
+    if (successValue === "yes") {
+      dailyStats[date].success++;
+    }
+  }
+
+  const tasks: TopTaskStats[] = Array.from(taskMap.values()).map(stats => {
+    const rate = stats.totalCount > 0 ? stats.successCount / stats.totalCount : 0;
+    return {
+      ...stats,
+      successRate: rate,
+      formattedSuccessRate: Math.round(rate * 100) + "%"
+    };
+  });
+
+  // Sort by total count desc
+  tasks.sort((a, b) => b.totalCount - a.totalCount);
+
+  return {
+    totalSubmissions: filtered.filter(i => i.surveyType === "topTasks").length,
+    tasks,
+    dailyStats,
+    questionText: filtered.find(i => i.surveyType === "topTasks")?.answers.find(a => a.fieldId === "task")?.question.label
+  };
 }
 
 export function getMockSurveysByApp(): Record<string, string[]> {

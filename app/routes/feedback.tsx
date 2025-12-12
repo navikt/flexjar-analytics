@@ -16,7 +16,7 @@ function FeedbackPage() {
       <main className="main-content">
         <VStack gap="6">
           <Heading size="large">Tilbakemeldinger</Heading>
-          <FilterBar showTextFilter />
+          <FilterBar showDetails />
           <FeedbackTable />
         </VStack>
       </main>

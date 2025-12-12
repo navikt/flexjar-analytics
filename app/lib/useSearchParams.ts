@@ -19,6 +19,7 @@ export interface SearchParams {
   deviceType?: string;
 
   stjerne?: string;
+  ubehandlet?: string;
 }
 
 // Store for managing search params reactively
