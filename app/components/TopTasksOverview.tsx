@@ -68,6 +68,7 @@ export function TopTasksOverview() {
                         <Table>
                             <Table.Header>
                                 <Table.Row>
+                                    <Table.HeaderCell />
                                     <Table.HeaderCell>Svaralternativer</Table.HeaderCell>
                                     <Table.HeaderCell>Suksessrate</Table.HeaderCell>
                                     <Table.HeaderCell align="right">Svar</Table.HeaderCell>
@@ -77,30 +78,54 @@ export function TopTasksOverview() {
                                 </Table.Row>
                             </Table.Header>
                             <Table.Body>
-                                {data.tasks.map((task) => (
-                                    <Table.Row key={task.task}>
-                                        <Table.DataCell><strong>{task.task}</strong></Table.DataCell>
-                                        <Table.DataCell>
-                                            <span
-                                                style={{
-                                                    color:
-                                                        task.successRate >= 0.8
-                                                            ? "var(--a-surface-success)"
-                                                            : task.successRate >= 0.5
-                                                                ? "var(--a-surface-warning)"
-                                                                : "var(--a-surface-danger)",
-                                                    fontWeight: "bold",
-                                                }}
-                                            >
-                                                {task.formattedSuccessRate}
-                                            </span>
-                                        </Table.DataCell>
-                                        <Table.DataCell align="right">{task.totalCount}</Table.DataCell>
-                                        <Table.DataCell align="right">{task.successCount}</Table.DataCell>
-                                        <Table.DataCell align="right">{task.partialCount}</Table.DataCell>
-                                        <Table.DataCell align="right">{task.failureCount}</Table.DataCell>
-                                    </Table.Row>
-                                ))}
+                                {data.tasks.map((task) => {
+                                    const hasBlockers = Object.keys(task.blockerCounts).length > 0;
+
+                                    return (
+                                        <Table.ExpandableRow
+                                            key={task.task}
+                                            togglePlacement="right"
+                                            expansionDisabled={!hasBlockers}
+                                            content={
+                                                hasBlockers ? (
+                                                    <div style={{ padding: "1rem", backgroundColor: "var(--a-surface-subtle)" }}>
+                                                        <Heading size="xsmall" level="4" spacing>Årsaker til at oppgaven stoppet</Heading>
+                                                        <ul style={{ margin: 0, paddingLeft: "1.5rem" }}>
+                                                            {Object.entries(task.blockerCounts)
+                                                                .sort(([, a], [, b]) => b - a)
+                                                                .map(([reason, count]) => (
+                                                                    <li key={reason} style={{ marginBottom: "0.25rem" }}>
+                                                                        <strong>{count}</strong> {count === 1 ? "person" : "personer"}: {reason}
+                                                                    </li>
+                                                                ))}
+                                                        </ul>
+                                                    </div>
+                                                ) : null
+                                            }
+                                        >
+                                            <Table.DataCell><strong>{task.task}</strong></Table.DataCell>
+                                            <Table.DataCell>
+                                                <span
+                                                    style={{
+                                                        color:
+                                                            task.successRate >= 0.8
+                                                                ? "var(--a-surface-success)"
+                                                                : task.successRate >= 0.5
+                                                                    ? "var(--a-surface-warning)"
+                                                                    : "var(--a-surface-danger)",
+                                                        fontWeight: "bold",
+                                                    }}
+                                                >
+                                                    {task.formattedSuccessRate}
+                                                </span>
+                                            </Table.DataCell>
+                                            <Table.DataCell align="right">{task.totalCount}</Table.DataCell>
+                                            <Table.DataCell align="right">{task.successCount}</Table.DataCell>
+                                            <Table.DataCell align="right">{task.partialCount}</Table.DataCell>
+                                            <Table.DataCell align="right">{task.failureCount}</Table.DataCell>
+                                        </Table.ExpandableRow>
+                                    )
+                                })}
                             </Table.Body>
                         </Table>
                     </div>
