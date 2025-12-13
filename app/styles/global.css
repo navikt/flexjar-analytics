@@ -7,7 +7,7 @@
  * Key tokens:
  * - --ax-bg-default: Standard background
  * - --ax-bg-raised: Elevated surfaces (cards)
- * - --ax-bg-sunken: Page background
+ * - --ax-bg-neutral-moderate: Page background (used for better contrast against white cards)
  * - --ax-text-neutral: Standard text
  * - --ax-text-neutral-subtle: Muted text
  * - --ax-border-neutral-subtle: Subtle borders
@@ -22,7 +22,7 @@ body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
-  background-color: var(--ax-bg-sunken);
+  background-color: var(--ax-bg-neutral-moderate);
   color: var(--ax-text-neutral);
 }
 
@@ -303,12 +303,10 @@ body {
 
 /* Loading states */
 .skeleton {
-  background: linear-gradient(
-    90deg,
-    var(--ax-bg-neutral-soft) 25%,
-    var(--ax-bg-neutral-moderate) 50%,
-    var(--ax-bg-neutral-soft) 75%
-  );
+  background: linear-gradient(90deg,
+      var(--ax-bg-neutral-soft) 25%,
+      var(--ax-bg-neutral-moderate) 50%,
+      var(--ax-bg-neutral-soft) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
   border-radius: 4px;
@@ -318,6 +316,7 @@ body {
   0% {
     background-position: -200% 0;
   }
+
   100% {
     background-position: 200% 0;
   }
