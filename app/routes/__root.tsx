@@ -11,7 +11,7 @@ import type * as React from "react";
 
 // Import Aksel Darkside styles (supports light/dark mode)
 import akselStyles from "@navikt/ds-css/darkside?url";
-import { ThemeProvider } from "~/lib/ThemeContext";
+import { ThemeProvider, useTheme } from "~/lib/ThemeContext";
 import globalStyles from "~/styles/global.css?url";
 
 // Create QueryClient outside component to avoid recreation on each render
@@ -60,16 +60,42 @@ function RootComponent() {
   );
 }
 
+declare global {
+  interface Window {
+    __theme: "light" | "dark";
+  }
+}
+
 function RootDocument({ children }: { children: React.ReactNode }) {
-  // Hardcoded dark theme optimization
-  const theme = "dark";
+  const { theme } = useTheme();
 
   return (
-    <html lang="no" data-theme={theme} style={{ backgroundColor: "#0d0f12", colorScheme: "dark" }}>
+    <html lang="no" suppressHydrationWarning>
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  localStorage.removeItem('theme');
+                  var localTheme = localStorage.getItem('flexjar-theme-preference');
+                  var supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+                  if (!localTheme && supportDarkMode) localTheme = 'dark';
+                  if (!localTheme) localTheme = 'light';
+                  
+                  document.documentElement.setAttribute('data-theme', localTheme);
+                  document.documentElement.style.colorScheme = localTheme;
+                  document.body.setAttribute('data-theme', localTheme);
+                  document.body.style.colorScheme = localTheme;
+                  window.__theme = localTheme;
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
         <HeadContent />
       </head>
-      <body data-theme={theme} style={{ backgroundColor: "#0d0f12", colorScheme: "dark" }}>
+      <body>
         <Theme theme={theme}>{children}</Theme>
         <Scripts />
       </body>

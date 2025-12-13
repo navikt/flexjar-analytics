@@ -1,6 +1,7 @@
 import { BarChartIcon, DownloadIcon, TableIcon } from "@navikt/aksel-icons";
 import { Button, HStack } from "@navikt/ds-react";
 import { Link, useLocation } from "@tanstack/react-router";
+import { ThemeToggle } from "~/components/ThemeToggle";
 
 
 
@@ -60,6 +61,8 @@ export function Header() {
                             Eksporter
                         </Button>
                     </Link>
+                    <div style={{ width: "1px", height: "32px", background: "var(--ax-border-neutral-subtle)" }} />
+                    <ThemeToggle />
                 </HStack>
             </div>
         </header>
