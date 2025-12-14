@@ -26,7 +26,8 @@
     "h3": "^2.0.1-rc.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "recharts": "^2.14.1"
+    "recharts": "^2.14.1",
+    "sirv": "^3.0.2"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",

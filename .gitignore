@@ -7,3 +7,12 @@ dist/
 .env
 .env.local
 app.config.timestamp_*.js
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Temporary
+test-h3.js
