@@ -1,6 +1,6 @@
 import { createServer } from "node:http";
 import { H3, eventHandler } from "h3";
-import { defineNodeMiddleware, toNodeHandler } from "h3/node";
+import { toNodeHandler } from "h3/node";
 import sirv from "sirv";
 import handler from "./dist/server/server.js";
 
@@ -14,7 +14,16 @@ const staticHandler = sirv("dist/client", {
   dev: false,
 });
 
-app.use(defineNodeMiddleware(staticHandler));
+app.use(
+  eventHandler((event) => {
+    return new Promise((resolve, reject) => {
+      staticHandler(event.node.req, event.node.res, (err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+  }),
+);
 
 // SSR handler
 app.use(
