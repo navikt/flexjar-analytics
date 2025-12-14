@@ -6,7 +6,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 export default defineConfig({
   base:
     process.env.NODE_ENV === "production"
-      ? "https://cdn.nav.no/team-esyfo/flexjar-analytics"
+      ? "https://cdn.nav.no/team-esyfo/flexjar-analytics/client"
       : undefined,
 
   server: {
