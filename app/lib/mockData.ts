@@ -125,16 +125,16 @@ function generateTopTasksMockData(): FeedbackDto[] {
 
       // Determine success
       const successRand = Math.random();
-      let successValue = "yes";
+      let successValue = "Ja";
       let blocker = undefined;
 
       if (successRand > selectedTask.successRate) {
         // Fail or partial
         if (Math.random() > 0.5) {
-          successValue = "no";
+          successValue = "Nei";
           blocker = "Skjønte ikke skjemaet";
         } else {
-          successValue = "partial";
+          successValue = "Delvis";
           blocker = "Fant ikke all info";
         }
       }
@@ -1085,9 +1085,9 @@ export function getMockTopTasksStats(
     if (stats) {
       stats.totalCount++;
 
-      if (successValue === "yes") stats.successCount++;
-      else if (successValue === "partial") stats.partialCount++;
-      else if (successValue === "no") stats.failureCount++;
+      if (successValue === "Ja") stats.successCount++;
+      else if (successValue === "Delvis") stats.partialCount++;
+      else if (successValue === "Nei") stats.failureCount++;
 
       if (blocker) {
         stats.blockerCounts[blocker] = (stats.blockerCounts[blocker] || 0) + 1;
@@ -1100,7 +1100,7 @@ export function getMockTopTasksStats(
       dailyStats[date] = { total: 0, success: 0 };
     }
     dailyStats[date].total++;
-    if (successValue === "yes") {
+    if (successValue === "Ja") {
       dailyStats[date].success++;
     }
   }
