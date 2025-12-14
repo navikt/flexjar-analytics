@@ -1,4 +1,5 @@
 import { Skeleton } from "@navikt/ds-react";
+import { useNavigate } from "@tanstack/react-router";
 import dayjs from "dayjs";
 import {
   Area,
@@ -9,6 +10,7 @@ import {
   YAxis,
 } from "recharts";
 import { useTheme } from "~/lib/ThemeContext";
+import { useSearchParams } from "~/lib/useSearchParams";
 import { useStats } from "~/lib/useStats";
 
 // Chart colors for dark mode
@@ -39,6 +41,8 @@ const CHART_COLORS_LIGHT = {
 export function TimelineChart() {
   const { data: stats, isLoading } = useStats();
   const { theme } = useTheme();
+  const navigate = useNavigate();
+  const { params } = useSearchParams();
 
   const colors = theme === "light" ? CHART_COLORS_LIGHT : CHART_COLORS;
 
@@ -80,6 +84,22 @@ export function TimelineChart() {
         margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
         role="img"
         aria-label={`Tidslinjediagram som viser ${data.length} datapunkter med tilbakemeldinger over tid`}
+        onClick={(e) => {
+          if (e?.activePayload && e.activePayload.length > 0) {
+            const clickData = e.activePayload[0].payload;
+            const date = clickData.date;
+
+            navigate({
+              to: "/feedback",
+              search: {
+                ...params,
+                from: date,
+                to: date,
+              },
+            });
+          }
+        }}
+        style={{ cursor: "pointer" }}
       >
         <defs>
           <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
