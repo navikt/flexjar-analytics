@@ -183,189 +183,125 @@ function generateTopTasksMockData(): FeedbackDto[] {
 // ============================================
 
 // ============================================
-// Realistic Mock Data Generators
+// Curated Mock Data Scenarios
 // ============================================
 
-const sykmeldtComments = {
-  positive: [
-    "Veldig enkelt og greit å fylle ut.",
-    "Oversiktlig og fint.",
-    "Mye bedre enn papirskjema!",
-    "Liker at jeg kan gjøre dette når det passer meg.",
-    "God veiledning underveis.",
-    "Fikk gjort det jeg skulle uten problemer.",
-    "Tydelig språk og enkel navigering.",
-    "Gikk raskt å fylle ut.",
-    "Dette var en drøm sammenlignet med det gamle systemet. Alt var logisk oppbygd, og jeg trengte ikke å lure på hva jeg skulle svare på noen av punktene. Takk for at dere gjør hverdagen enklere for oss som er sykmeldte!",
-    "Tommel opp for mobilvennlig løsning. Fikk gjort det på bussen på vei hjem.",
-    "Enkelt å finne frem i mylderet av informasjon. Dere har gjort en god jobb her.",
-    "Jeg setter pris på at språket er enkelt å forstå. NAV har ofte vært vanskelig, men dette var bra.",
-  ],
-  neutral: [
-    "Helt greit.",
-    "Litt mye tekst å lese.",
-    "Fungerer som forventet.",
-    "Kunne vært færre klikk.",
-    "Ok, men savner noen valgmuligheter.",
-    "Grei nok, men litt kjedelig design.",
-    "Prosessen var helt ok, men jeg stoppet opp litt underveis da jeg skulle laste opp vedlegg. Det var ikke helt åpenbart hvilke filtyper som var tillatt.",
-    "Savner en 'lagre og fortsett senere' knapp som er tydeligere.",
-    "Det er greit, men jeg måtte logge inn på nytt midt i prosessen. Det var litt irriterende.",
-    "Informasjonen var grei, men jeg følte jeg måtte klikke veldig mange ganger for å komme til poenget.",
-  ],
-  negative: [
-    "Vanskelig å forstå hva jeg skal svare.",
-    "Fikk feilmelding ved innsending.",
-    "Hvorfor må jeg logge inn hele tiden?",
-    "Uoversiktlig på mobil.",
-    "Skjønner ikke hvorfor jeg må fylle ut dette.",
-    "Knappen for å gå videre var gjemt.",
-    "Tungvint løsning.",
-    "Mye byråkratspråk som er vanskelig å forstå.",
-    "Jeg prøvde tre ganger å sende inn skjemaet, men fikk bare en kryptisk feilmelding hver gang. Veldig frustrerende når man allerede er syk og sliten. Dere må fikse dette snarest!",
-    "Hvorfor kan jeg ikke endre svaret mitt etter at jeg har trykket på neste? Måtte starte helt på nytt.",
-    "Teksten er altfor liten på min telefon, og når jeg zoomer blir siden ødelagt.",
-    "Jeg forstår ikke spørsmålet om 'medvirkning'. Hva betyr det i denne sammenhengen?",
-    "Systemet logget meg ut uten forvarsel og jeg mistet alt jeg hadde skrevet. Utrolig dårlig!",
-  ],
+type MockScenario = {
+  rating: number;
+  text?: string;
+  tags?: string[];
+  isRedacted?: boolean;
+  redactedText?: string;
+  customAnswers?: Answer[];
 };
 
-const arbeidsgiverComments = {
-  positive: [
-    "Effektiv måte å følge opp på.",
-    "Sparer oss for mye tid.",
-    "Veldig bra oversikt over sykmeldte.",
-    "Enkelt å invitere til dialogmøte.",
-    "Godt verktøy for oppfølging.",
-    "Liker at vi kan kommunisere digitalt med NAV.",
-    "Oversiktlig dashboard.",
-    "Endelig et system som snakker sammen. Dette sparer meg for mange telefoner og e-poster. Veldig fornøyd med oversikten jeg har fått nå.",
-    "Dette gjør personalarbeidet mye enklere. God oversikt.",
-    "Veldig bra at vi kan se status på sykmeldingene direkte her.",
-  ],
-  neutral: [
-    "Gjør jobben.",
-    "Litt omstendelig prosess.",
-    "Helt ok verktøy.",
-    "Savner mulighet til å lagre utkast enklere.",
-    "Fungerer, men kunne vært raskere.",
-    "Det fungerer greit, men jeg savner muligheten til å sortere listen over ansatte på etternavn. Ellers er funksjonaliteten helt ok.",
-    "Greit nok, men litt vanskelig å finne eldre saker.",
-    "Det ville vært fint med en utskriftsvennlig versjon som ser litt bedre ut.",
-  ],
-  negative: [
-    "Tungvint system.",
-    "Mangler funksjonalitet for oss med mange ansatte.",
-    "Vanskelig å finne frem til riktig skjema.",
-    "Får ikke delegert rettigheter riktig.",
-    "Hvorfor er det så mange trinn?",
-    "Stadig tekniske problemer ved innlogging.",
-    "Ikke intuitivt hvor man skal trykke.",
-    "Systemet henger seg opp hele tiden når vi er flere som bruker det samtidig. Dette er ikke holdbart for en stor bedrift som vår.",
-    "Altfor mange varsler på e-post. Kan vi skru av noen av dem?",
-    "Jeg finner ikke hvor jeg skal laste opp dokumentasjonen dere ber om.",
-    "Hvorfor må jeg bekrefte med BankID hver eneste gang jeg skal inn på en ny side? Det tar altfor lang tid.",
-  ],
-};
+const sykmeldtScenarios: MockScenario[] = [
+  // High quality / Positive
+  {
+    rating: 5,
+    text: "Veldig enkelt og greit å fylle ut på mobilen. Tommel opp!",
+    tags: ["📱 Mobil/Tablet", "❤️ Ros"],
+  },
+  {
+    rating: 5,
+    text: "Mye bedre enn papirskjema! Fikk gjort det på bussen hjem.",
+    tags: ["❤️ Ros", "✨ Feature"],
+  },
+  {
+    rating: 4,
+    text: "Oversiktlig og fint, men litt mye tekst på første side.",
+    tags: ["🎨 UX"],
+  },
+
+  // Login / Technical
+  {
+    rating: 2,
+    text: "Måtte logge inn med BankID tre ganger før jeg fikk sendt inn. Det er for dårlig.",
+    tags: ["🔒 Innlogging", "🐛 Bug"],
+  },
+  {
+    rating: 1,
+    text: "Får feilmelding når jeg prøver å laste opp vedlegg. Har prøvd 3 ganger.",
+    tags: ["🐛 Bug", "🔥 Kritisk", "👀 Til vurdering"],
+  },
+
+  // Specific Feedback
+  {
+    rating: 3,
+    text: "Savner egentlig en mulighet til å lagre utkast så jeg kan fortsette senere.",
+    tags: ["✨ Feature", "👀 Til vurdering"],
+  },
+  {
+    rating: 4,
+    text: "Språket er litt vanskelig å forstå i del 2, men ellers bra.",
+    tags: ["🗣️ Språk"],
+  },
+
+  // Redacted examples
+  {
+    rating: 3,
+    text: "Jeg snakket med saksbehandler som sa jeg skulle...", // Internal text (not shown)
+    isRedacted: true,
+    redactedText: "Jeg snakket med [Navn] som sa jeg skulle...",
+    tags: ["✅ Behandlet"],
+  },
+  {
+    rating: 1,
+    text: "Ringte dere på tlf 99999999 men ingen svarte.",
+    isRedacted: true,
+    redactedText: "Ringte dere på tlf [Tlf] men ingen svarte.",
+    tags: ["🐛 Bug"],
+  },
+
+  // No text
+  { rating: 5, tags: [] },
+  { rating: 4, tags: ["✅ Behandlet"] },
+];
+
+const arbeidsgiverScenarios: MockScenario[] = [
+  {
+    rating: 5,
+    text: "Dette gjør oppfølgingen mye enklere for oss som har mange ansatte.",
+    tags: ["❤️ Ros"],
+  },
+  {
+    rating: 3,
+    text: "Fungerer greit, men savner å kunne sortere listen på avdeling.",
+    tags: ["✨ Feature", "👀 Til vurdering"],
+  },
+  {
+    rating: 2,
+    text: "Hvorfor må jeg bekrefte hver handling med Altinn-rettigheter? Det tar for lang tid.",
+    tags: ["🔒 Innlogging", "🎨 UX"],
+  },
+  {
+    rating: 4,
+    text: "God oversikt, men litt liten skrift på dashbordet.",
+    tags: ["🎨 UX"],
+  },
+  {
+    rating: 1,
+    text: "Systemet henger seg opp når vi prøver å sende inn skjemaet for [Navn].",
+    isRedacted: true,
+    redactedText:
+      "Systemet henger seg opp når vi prøver å sende inn skjemaet for [Navn].",
+    tags: ["🐛 Bug", "🔥 Kritisk"],
+  },
+  // No text
+  { rating: 4 },
+  { rating: 3 },
+];
 
 interface SurveyConfig {
   app: string;
   surveyId: string;
   basePath: string;
-  userType: "sykmeldt" | "arbeidsgiver";
+  scenarios: MockScenario[];
   questions: {
     ratingLabel: string;
     textLabel?: string;
     textLabel2?: string;
   };
-  tagsProbability?: number;
-}
-
-// Generate tags based on text content keywords + rating
-function generateTags(
-  rating: number,
-  text?: string,
-  probability = 0.25,
-): string[] | undefined {
-  const tags: string[] = [];
-  const lowerText = text?.toLowerCase() || "";
-
-  // 1. Keyword-based tags (Prioritized)
-  if (lowerText) {
-    if (lowerText.includes("logg") || lowerText.includes("innlogging"))
-      tags.push("🔒 Innlogging");
-    if (lowerText.includes("mobil") || lowerText.includes("telefon"))
-      tags.push("📱 Mobil/Tablet");
-    if (
-      lowerText.includes("feilmelding") ||
-      lowerText.includes("funker ikke") ||
-      lowerText.includes("ødelagt")
-    )
-      tags.push("🐛 Bug");
-    if (
-      lowerText.includes("språk") ||
-      lowerText.includes("tekst") ||
-      lowerText.includes("forstå")
-    )
-      tags.push("🗣️ Språk");
-    if (lowerText.includes("design") || lowerText.includes("utseende"))
-      tags.push("🎨 UX");
-    if (lowerText.includes("savner") || lowerText.includes("kunne"))
-      tags.push("✨ Feature");
-    if (lowerText.includes("takk") || lowerText.includes("fornøyd"))
-      tags.push("❤️ Ros");
-  }
-
-  // 2. Rating-based heuristics (if no/few tags found or probability hit)
-  if (tags.length === 0 && Math.random() < probability) {
-    const r = Math.random();
-    if (rating <= 2) {
-      if (r < 0.6) tags.push("🐛 Bug");
-      else if (r < 0.8) tags.push("🎨 UX");
-      else tags.push("🔥 Kritisk");
-    } else if (rating === 3) {
-      if (r < 0.4) tags.push("🎨 UX");
-      else tags.push("👀 Til vurdering");
-    } else {
-      if (r < 0.5) tags.push("✨ Feature");
-      else if (r < 0.6) tags.push("❤️ Ros");
-    }
-  }
-
-  // 3. Status tags
-  if (tags.length > 0 || Math.random() > 0.7) {
-    // Already tagged items often have a status
-    if (!tags.includes("✅ Behandlet")) {
-      const statusRand = Math.random();
-      if (statusRand > 0.8) tags.push("✅ Behandlet");
-      else if (statusRand > 0.6) tags.push("👀 Til vurdering");
-    }
-  }
-
-  return tags.length > 0 ? Array.from(new Set(tags)) : undefined;
-}
-
-function generateRedactedText(text: string): string {
-  // Simple heuristic to replace some words with [REDACTED] style markers
-  // to simulate real redaction
-  const words = text.split(" ");
-  return words
-    .map((word) => {
-      // Redact potential names (capitalized words in middle of sentence)
-      if (
-        /^[A-Z][a-z]+$/.test(word) &&
-        Math.random() > 0.85 &&
-        words.length > 5
-      ) {
-        return "[Navn]";
-      }
-      // Redact potential numbers (phone, fnr)
-      if (/\d+/.test(word)) {
-        return "[Fnr]";
-      }
-      return word;
-    })
-    .join(" ");
 }
 
 export function generateSurveyData(
@@ -374,63 +310,39 @@ export function generateSurveyData(
 ): FeedbackDto[] {
   const items: FeedbackDto[] = [];
   const now = new Date();
-  const commentsPool =
-    config.userType === "sykmeldt" ? sykmeldtComments : arbeidsgiverComments;
 
   for (let i = 0; i < count; i++) {
-    // Random date within last 60 days
+    // Cycle through scenarios
+    const scenario = config.scenarios[i % config.scenarios.length];
+
+    // Check if we should use this scenario or skip (to avoid identical patterns if count > scenarios)
+    // Actually, distinct timestamps make them unique enough.
+
+    // Random date within last 60 days to spread them out
     const daysAgo = Math.floor(Math.random() * 60);
     const date = new Date(now);
     date.setDate(date.getDate() - daysAgo);
     const dateStr = date.toISOString().split("T")[0];
-    const hour = 7 + Math.floor(Math.random() * 15); // 07:00 - 22:00
+    const hour = 7 + Math.floor(Math.random() * 15);
     const minute = Math.floor(Math.random() * 60);
     const timestamp = `${dateStr}T${hour.toString().padStart(2, "0")}:${minute
       .toString()
       .padStart(2, "0")}:00Z`;
 
-    // Rating distribution (weighted towards positive)
-    const rand = Math.random();
-    let rating: number;
-    let sentiment: "positive" | "neutral" | "negative";
-
-    if (rand > 0.3) {
-      // 70% positive (4-5)
-      rating = Math.random() > 0.4 ? 5 : 4;
-      sentiment = "positive";
-    } else if (rand > 0.1) {
-      // 20% neutral (3)
-      rating = 3;
-      sentiment = "neutral";
-    } else {
-      // 10% negative (1-2)
-      rating = Math.random() > 0.5 ? 2 : 1;
-      sentiment = "negative";
-    }
-
-    // Occasional mismatch (User gives 5 stars but writes "Bug", or 1 star "Great app")
-    // This adds human error realism
-    if (Math.random() < 0.05) {
-      const sentiments: ("positive" | "neutral" | "negative")[] = [
-        "positive",
-        "neutral",
-        "negative",
-      ];
-      sentiment = sentiments[Math.floor(Math.random() * sentiments.length)];
-    }
-
     // Answers
     const answers: Answer[] = [
-      createRatingAnswer("hovedsporsmal", config.questions.ratingLabel, rating),
+      createRatingAnswer(
+        "hovedsporsmal",
+        config.questions.ratingLabel,
+        scenario.rating,
+      ),
     ];
 
-    let feedbackText: string | undefined;
+    const feedbackText = scenario.isRedacted
+      ? scenario.redactedText
+      : scenario.text;
 
-    // Add text answer probalistically (30% chance)
-    if (Math.random() > 0.7) {
-      const texts = commentsPool[sentiment];
-      feedbackText = texts[Math.floor(Math.random() * texts.length)];
-
+    if (feedbackText) {
       if (config.questions.textLabel) {
         answers.push(
           createTextAnswer(
@@ -441,43 +353,21 @@ export function generateSurveyData(
           ),
         );
       } else if (config.questions.textLabel2) {
-        // Special case for employers with 2 text fields
-        // Randomly pick one or both
-        if (Math.random() > 0.5) {
-          answers.push(
-            createTextAnswer(
-              "nytte",
-              "Opplever du at oppfølgingsplanen er et nyttig verktøy?",
-              feedbackText,
-            ),
-          );
-        } else {
-          answers.push(
-            createTextAnswer(
-              "forbedringer",
-              "Hvis du kunne endre på noe, hva ville det vært?",
-              feedbackText,
-            ),
-          );
-        }
+        // Employer case: put text in one of the fields based on sentiment (rating)
+        // or just randomly if not specified in scenario
+        const field = scenario.rating > 3 ? "nytte" : "forbedringer";
+        const label =
+          scenario.rating > 3
+            ? "Opplever du at oppfølgingsplanen er et nyttig verktøy?"
+            : "Hvis du kunne endre på noe, hva ville det vært?";
+
+        answers.push(createTextAnswer(field, label, feedbackText));
       }
     }
 
-    // Handle redaction
-    const isRedacted = Math.random() > 0.95;
-    if (isRedacted && feedbackText) {
-      // Mutate the text in the answer to be redacted
-      const redactedText = generateRedactedText(feedbackText);
-      // Find and update the text answer
-      for (const a of answers) {
-        if (a.fieldType === "TEXT" && a.value.type === "text") {
-          a.value.text = redactedText;
-        }
-      }
+    if (scenario.customAnswers) {
+      answers.push(...scenario.customAnswers);
     }
-
-    // Generate realistic tags based on rating AND text
-    const tags = generateTags(rating, feedbackText, config.tagsProbability);
 
     // Device
     const deviceRand = Math.random();
@@ -499,7 +389,6 @@ export function generateSurveyData(
       height = 1024;
     }
 
-    // Pathname variation (simple)
     const suffix = Math.floor(Math.random() * 10000);
     const path = `${config.basePath}/${suffix}`;
 
@@ -509,9 +398,9 @@ export function generateSurveyData(
       app: config.app,
       surveyId: config.surveyId,
       context: createContext(path, device, width, height),
-      tags,
+      tags: scenario.tags || [],
       answers,
-      sensitiveDataRedacted: isRedacted,
+      sensitiveDataRedacted: !!scenario.isRedacted,
     });
   }
 
@@ -527,31 +416,29 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-sykmeldt",
     basePath: "/syk/oppfolgingsplaner",
-    userType: "sykmeldt",
+    scenarios: sykmeldtScenarios,
     questions: {
       ratingLabel: "Er oppfølgingsplanen til hjelp for deg?",
       textLabel: "Legg gjerne til en begrunnelse",
     },
-    tagsProbability: 0.15,
   }),
 
   ...generateSurveyData(120, {
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-arbeidsgiver",
     basePath: "/syk/oppfolgingsplaner/arbeidsgiver",
-    userType: "arbeidsgiver",
+    scenarios: arbeidsgiverScenarios,
     questions: {
       ratingLabel: "Hvordan var det å bruke oppfølgingsplanen?",
       textLabel2: "True", // Triggers special handling for 2 text fields
     },
-    tagsProbability: 0.2,
   }),
 
   ...generateSurveyData(110, {
     app: "oppfolgingsplan-frontend",
     surveyId: "oppfolgingsplan-gammel-sykmeldt",
     basePath: "/oppfolgingsplan/sykmeldt",
-    userType: "sykmeldt",
+    scenarios: sykmeldtScenarios,
     questions: {
       ratingLabel: "Er oppfølgingsplanen til hjelp for deg?",
       textLabel: "Legg gjerne til en begrunnelse",
@@ -562,7 +449,7 @@ const mockFeedbackItems: FeedbackDto[] = [
     app: "oppfolgingsplan-frontend",
     surveyId: "oppfolgingsplan-gammel-arbeidsgiver",
     basePath: "/oppfolgingsplan/arbeidsgiver",
-    userType: "arbeidsgiver",
+    scenarios: arbeidsgiverScenarios,
     questions: {
       ratingLabel: "Hvordan var det å bruke oppfølgingsplanen?",
       textLabel: "Legg gjerne til en begrunnelse",

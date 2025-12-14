@@ -12,76 +12,51 @@ import {
 } from "./mockData";
 
 describe("Mock Data Generation", () => {
-  it("should generate tags based on keywords", () => {
-    // We generate a large batch to ensure we hit the probability
-    const data = generateSurveyData(100, {
+  it("should generate items from scenarios", () => {
+    const testScenarios = [
+      { rating: 5, text: "Scenario 1", tags: ["Tag1"] },
+      {
+        rating: 1,
+        text: "Scenario 2",
+        tags: ["Tag2"],
+        isRedacted: true,
+        redactedText: "Redacted",
+      },
+    ];
+
+    const data = generateSurveyData(4, {
       app: "test-app",
       surveyId: "test-survey",
       basePath: "/test",
-      userType: "sykmeldt",
+      scenarios: testScenarios,
       questions: {
         ratingLabel: "Test",
         textLabel: "Test label",
       },
-      tagsProbability: 1.0, // Force tags if possible
     });
 
-    const itemsWithTags = data.filter(
-      (item) => item.tags && item.tags.length > 0,
-    );
-    expect(itemsWithTags.length).toBeGreaterThan(0);
+    expect(data.length).toBe(4);
 
-    // Check specific keywords
-    // We can't easily guarantee keyword matches without mocking Math.random,
-    // but we can check if the tagging logic seems to be working generally.
-  });
+    // Check if it cycles through
+    const item1 = data[0];
+    const item2 = data[1];
+    const item3 = data[2];
 
-  it("should redact text when sensitiveDataRedacted is true", () => {
-    const data = generateSurveyData(100, {
-      app: "test-app",
-      surveyId: "test-survey",
-      basePath: "/test",
-      userType: "sykmeldt",
-      questions: { ratingLabel: "Test", textLabel: "Test label" },
-    });
+    // Item 1 should match Scenario 1
+    const textAnswer1 = item1.answers.find((a) => a.fieldType === "TEXT")
+      ?.value as { text: string };
+    expect(textAnswer1.text).toBe("Scenario 1");
+    expect(item1.tags).toContain("Tag1");
 
-    const redactedItems = data.filter((item) => item.sensitiveDataRedacted);
-    // Default probability is 5%, so in 100 items we expect some, but it's random.
-    // Let's generate enough to be sure, or just inspect the structure if we find one.
+    // Item 2 should match Scenario 2 (redacted)
+    const textAnswer2 = item2.answers.find((a) => a.fieldType === "TEXT")
+      ?.value as { text: string };
+    expect(textAnswer2.text).toBe("Redacted");
+    expect(item2.sensitiveDataRedacted).toBe(true);
 
-    if (redactedItems.length > 0) {
-      const item = redactedItems[0];
-      const textAnswer = item.answers.find(
-        (a) => a.fieldType === "TEXT" && a.value.type === "text",
-      );
-      if (
-        textAnswer &&
-        textAnswer.value.type === "text" &&
-        textAnswer.value.text
-      ) {
-        // It might contain [Navn] or [Fnr] or just be the original text if no entities found
-        // But our goal is to verify the flag is set.
-        expect(item.sensitiveDataRedacted).toBe(true);
-      }
-    }
-  });
-
-  it("should generate realistic tags for specific text inputs", () => {
-    // Since generateTags is internal, we can verify by creating data with very specific behavior if we could control randomness
-    // Instead, let's verify that we have a diverse set of tags in a large sample
-    const data = generateSurveyData(500, {
-      app: "test-app",
-      surveyId: "test-survey",
-      basePath: "/test",
-      userType: "sykmeldt",
-      questions: { ratingLabel: "Test", textLabel: "Test label" },
-      tagsProbability: 0.5,
-    });
-
-    const allTags = new Set(data.flatMap((d) => d.tags || []));
-    // We expect to see multiple types of tags
-    expect(allTags.has("🐛 Bug")).toBeDefined();
-    expect(allTags.has("✨ Feature")).toBeDefined();
-    expect(allTags.size).toBeGreaterThan(2);
+    // Item 3 should loop back to Scenario 1
+    const textAnswer3 = item3.answers.find((a) => a.fieldType === "TEXT")
+      ?.value as { text: string };
+    expect(textAnswer3.text).toBe("Scenario 1");
   });
 });
