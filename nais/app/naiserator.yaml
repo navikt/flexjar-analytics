@@ -1,0 +1,48 @@
+apiVersion: nais.io/v1alpha1
+kind: Application
+metadata:
+  name: flexjar-analytics
+  namespace: team-esyfo
+  labels:
+    team: team-esyfo
+spec:
+  image: {{image}}
+  port: 3000
+  replicas:
+    min: 2
+    max: 4
+  liveness:
+    path: /api/internal/isAlive
+    initialDelay: 10
+  readiness:
+    path: /api/internal/isReady
+    initialDelay: 10
+  resources:
+    limits:
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+  ingresses:
+    - https://flexjar-analytics.intern.nav.no
+  azure:
+    application:
+      enabled: true
+      allowAllUsers: true
+      tenant: nav.no
+    sidecar:
+      enabled: true
+      autoLogin: true
+      autoLoginIgnorePaths:
+        - /api/internal/*
+  accessPolicy:
+    outbound:
+      rules:
+        - application: flexjar-analytics-api
+  env:
+    - name: NODE_ENV
+      value: production
+    - name: FLEXJAR_BACKEND_URL
+      value: http://flexjar-analytics-api
+    - name: FLEXJAR_BACKEND_AUDIENCE
+      value: api://prod-gcp.flex.flexjar-analytics-api/.default

@@ -1,0 +1,76 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - demo-*
+
+permissions:
+  contents: read
+  id-token: write
+  packages: write
+
+jobs:
+  checks:
+    name: Run checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+      - run: npm ci
+        env:
+          NPM_AUTH_TOKEN: ${{ secrets.READER_TOKEN }}
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run test
+
+  build:
+    name: Build and push docker image
+    needs: checks
+    runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.docker-build-push.outputs.image }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+      - run: npm ci
+        env:
+          NPM_AUTH_TOKEN: ${{ secrets.READER_TOKEN }}
+      # Build the application - pass VITE_MOCK_DATA=true if deploying to demo
+      - name: Build application
+        run: |
+          if [[ "${{ startsWith(github.ref_name, 'demo-') || github.ref_name == 'main' }}" == "true" ]]; then
+            export VITE_MOCK_DATA=true
+          fi
+          npm run build
+      
+      # Build and push Docker image
+      - name: Push to GAR
+        uses: nais/docker-build-push@v0
+        id: docker-build-push
+        with:
+          team: team-esyfo
+          identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
+          project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
+
+  deploy-demo:
+    name: Deploy to dev-gcp (Demo)
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: demo
+      url: https://flexjar-analytics-demo.intern.dev.nav.no
+    steps:
+      - uses: actions/checkout@v4
+      - uses: nais/deploy/actions/deploy@v2
+        env:
+          CLUSTER: dev-gcp
+          RESOURCE: nais/app/demo.yaml
+          VAR: image=${{ needs.build.outputs.image }}
