@@ -1,6 +1,7 @@
 import { BarChartIcon, DownloadIcon, TableIcon } from "@navikt/aksel-icons";
 import { Button, HStack } from "@navikt/ds-react";
 import { Link, useLocation } from "@tanstack/react-router";
+import flexjarLogo from "~/assets/flexjar.png";
 import { ThemeToggle } from "~/components/ThemeToggle";
 
 export function Header() {
@@ -28,7 +29,7 @@ export function Header() {
           onClick={handleResetAndNavigate}
           className="header-title"
         >
-          <img src="/static/flexjar.png" alt="" className="header-logo" />
+          <img src={flexjarLogo} alt="" className="header-logo" />
           Flexjar Analytics
         </button>
         <HStack gap="4">

@@ -11,6 +11,7 @@ import type * as React from "react";
 
 // Import Aksel Darkside styles (supports light/dark mode)
 import akselStyles from "@navikt/ds-css/darkside?url";
+import flexjarLogo from "~/assets/flexjar.png";
 import { ThemeProvider, useTheme } from "~/lib/ThemeContext";
 import globalStyles from "~/styles/global.css?url";
 
@@ -39,7 +40,7 @@ export const Route = createRootRoute({
         rel: "icon",
         type: "image/png",
         sizes: "32x32",
-        href: "/static/flexjar.png",
+        href: flexjarLogo,
       },
     ],
   }),
