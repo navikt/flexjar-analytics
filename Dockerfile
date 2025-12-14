@@ -12,6 +12,6 @@ ENV NODE_ENV=production
 
 EXPOSE 3000
 
-CMD ["node", "prod-server.js"]
+CMD ["prod-server.js"]
 
 
