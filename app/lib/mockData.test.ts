@@ -20,7 +20,7 @@ describe("Mock Data Generation", () => {
         text: "Scenario 2",
         tags: ["Tag2"],
         isRedacted: true,
-        redactedText: "Redacted",
+        redactedText: "Her er et fnr: [FØDSELSNUMMER FJERNET]",
       },
     ];
 
@@ -51,7 +51,7 @@ describe("Mock Data Generation", () => {
     // Item 2 should match Scenario 2 (redacted)
     const textAnswer2 = item2.answers.find((a) => a.fieldType === "TEXT")
       ?.value as { text: string };
-    expect(textAnswer2.text).toBe("Redacted");
+    expect(textAnswer2.text).toBe("Her er et fnr: [FØDSELSNUMMER FJERNET]");
     expect(item2.sensitiveDataRedacted).toBe(true);
 
     // Item 3 should loop back to Scenario 1

@@ -237,20 +237,69 @@ const sykmeldtScenarios: MockScenario[] = [
     tags: ["🗣️ Språk"],
   },
 
-  // Redacted examples
+  // Redacted examples - Comprehensive Showcase
   {
     rating: 3,
-    text: "Jeg snakket med saksbehandler som sa jeg skulle...", // Internal text (not shown)
+    text: "Jeg snakket med saksbehandler som sa jeg skulle...",
     isRedacted: true,
-    redactedText: "Jeg snakket med [Navn] som sa jeg skulle...",
+    redactedText: "Jeg snakket med [MULIG NAVN FJERNET] som sa jeg skulle...",
     tags: ["✅ Behandlet"],
   },
   {
     rating: 1,
     text: "Ringte dere på tlf 99999999 men ingen svarte.",
     isRedacted: true,
-    redactedText: "Ringte dere på tlf [Tlf] men ingen svarte.",
+    redactedText: "Ringte dere på tlf [TELEFON FJERNET] men ingen svarte.",
     tags: ["🐛 Bug"],
+  },
+  {
+    rating: 2,
+    text: "Min fnr er 12345678901.",
+    isRedacted: true,
+    redactedText: "Min fnr er [FØDSELSNUMMER FJERNET].",
+    tags: ["🔥 Kritisk"],
+  },
+  {
+    rating: 2,
+    text: "Saksbehandler X123456 var veldig uhøflig.",
+    isRedacted: true,
+    redactedText: "Saksbehandler [NAVIDENT FJERNET] var veldig uhøflig.",
+    tags: ["👎 Misfornøyd"],
+  },
+  {
+    rating: 3,
+    text: "Send svaret til min@epost.no takk.",
+    isRedacted: true,
+    redactedText: "Send svaret til [E-POST FJERNET] takk.",
+    tags: ["📧 Kontakt"],
+  },
+  {
+    rating: 1,
+    text: "Jeg får feilmelding fra IP 192.168.1.1.",
+    isRedacted: true,
+    redactedText: "Jeg får feilmelding fra IP [IP-ADRESSE FJERNET].",
+    tags: ["🐛 Bug"],
+  },
+  {
+    rating: 1,
+    text: "Mitt kontonummer er 1234.56.78903 for utbetaling.",
+    isRedacted: true,
+    redactedText: "Mitt kontonummer er [KONTONUMMER FJERNET] for utbetaling.",
+    tags: ["💰 Utbetaling"],
+  },
+  {
+    rating: 2,
+    text: "Jeg bor i Storgata 1, 0001 Oslo.",
+    isRedacted: true,
+    redactedText: "Jeg bor i [MULIG ADRESSE FJERNET].",
+    tags: ["🏠 Adresse"],
+  },
+  {
+    rating: 5,
+    text: "Bilen min med skilt AB 12345 ble brukt.",
+    isRedacted: true,
+    redactedText: "Bilen min med skilt [BILNUMMER FJERNET] ble brukt.",
+    tags: ["🚗 Bil"],
   },
 
   // No text
@@ -281,11 +330,25 @@ const arbeidsgiverScenarios: MockScenario[] = [
   },
   {
     rating: 1,
-    text: "Systemet henger seg opp når vi prøver å sende inn skjemaet for [Navn].",
+    text: "Org nr 999999999 har problemer med tilgang.",
+    isRedacted: true,
+    redactedText: "Org nr [ORGNUMMER FJERNET] har problemer med tilgang.",
+    tags: ["🐛 Bug", "🔥 Kritisk"],
+  },
+  {
+    rating: 2,
+    text: "Sendte epost til ola.nordmann@bedrift.no men fikk ikke svar.",
+    isRedacted: true,
+    redactedText: "Sendte epost til [E-POST FJERNET] men fikk ikke svar.",
+    tags: ["🐛 Bug"],
+  },
+  {
+    rating: 1,
+    text: "Systemet feilet da jeg tastet inn kortnummer 1234 5678 1234 5678.",
     isRedacted: true,
     redactedText:
-      "Systemet henger seg opp når vi prøver å sende inn skjemaet for [Navn].",
-    tags: ["🐛 Bug", "🔥 Kritisk"],
+      "Systemet feilet da jeg tastet inn kortnummer [KORTNUMMER FJERNET].",
+    tags: ["🐛 Bug"],
   },
   // No text
   { rating: 4 },
