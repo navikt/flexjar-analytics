@@ -17,7 +17,7 @@ function ExportPage() {
         <VStack gap="6">
           <Heading size="large">Eksporter data</Heading>
 
-          <FilterBar />
+          <FilterBar showDetails />
 
           <Alert variant="info" size="small">
             Eksporterte data vil automatisk ha sensitiv informasjon fjernet
