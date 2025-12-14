@@ -183,183 +183,226 @@ function generateTopTasksMockData(): FeedbackDto[] {
 // ============================================
 
 // ============================================
-// Curated Mock Data Scenarios
+// Curated Mock Data Topics (Unique Texts)
 // ============================================
 
-type MockScenario = {
+type FeedbackTopic = {
   rating: number;
-  text?: string;
   tags?: string[];
-  isRedacted?: boolean;
-  redactedText?: string;
-  customAnswers?: Answer[];
+  comments: string[]; // List of unique text variations
+  isRedacted?: boolean; // If true, all comments in this topic are treated as redacted
 };
 
-const sykmeldtScenarios: MockScenario[] = [
-  // High quality / Positive
+const sykmeldtTopics: FeedbackTopic[] = [
+  // ------------------------------------------------
+  // TOPIC: Positive / Mobile Friendly
+  // ------------------------------------------------
   {
     rating: 5,
-    text: "Veldig enkelt og greit å fylle ut på mobilen. Tommel opp!",
     tags: ["📱 Mobil/Tablet", "❤️ Ros"],
+    comments: [
+      "Veldig enkelt og greit å fylle ut på mobilen. Tommel opp!",
+      "Liker at jeg kan gjøre dette på telefonen mens jeg sitter på bussen.",
+      "God flyt og oversiktlig på liten skjerm.",
+      "Fungerte sømløst på min iPhone.",
+      "Toppers at dere har laget en så bra mobilversjon.",
+      "Gikk veldig raskt å klikke seg gjennom på mobilen.",
+    ],
   },
+  // ------------------------------------------------
+  // TOPIC: General Praise
+  // ------------------------------------------------
   {
     rating: 5,
-    text: "Mye bedre enn papirskjema! Fikk gjort det på bussen hjem.",
-    tags: ["❤️ Ros", "✨ Feature"],
+    tags: ["❤️ Ros"],
+    comments: [
+      "Mye bedre enn papirskjema! Dette sparer meg for tid.",
+      "Endelig et skjema fra NAV som er lett å forstå.",
+      "Dette var en drøm sammenlignet med det gamle systemet.",
+      "Takk for at dere gjør hverdagen enklere for oss som er sykmeldte!",
+      "Enkelt å finne frem i mylderet av informasjon. Dere har gjort en god jobb her.",
+      "Veldig intuitivt og brukervennlig.",
+      "Ingen problemer underveis, alt fungerte som det skulle.",
+      "Oversiktlig og fint design.",
+    ],
   },
-  {
-    rating: 4,
-    text: "Oversiktlig og fint, men litt mye tekst på første side.",
-    tags: ["🎨 UX"],
-  },
-
-  // Login / Technical
-  {
-    rating: 2,
-    text: "Måtte logge inn med BankID tre ganger før jeg fikk sendt inn. Det er for dårlig.",
-    tags: ["🔒 Innlogging", "🐛 Bug"],
-  },
-  {
-    rating: 1,
-    text: "Får feilmelding når jeg prøver å laste opp vedlegg. Har prøvd 3 ganger.",
-    tags: ["🐛 Bug", "🔥 Kritisk", "👀 Til vurdering"],
-  },
-
-  // Specific Feedback
+  // ------------------------------------------------
+  // TOPIC: Feature Requests (Save/Edit)
+  // ------------------------------------------------
   {
     rating: 3,
-    text: "Savner egentlig en mulighet til å lagre utkast så jeg kan fortsette senere.",
     tags: ["✨ Feature", "👀 Til vurdering"],
+    comments: [
+      "Savner egentlig en mulighet til å lagre utkast så jeg kan fortsette senere.",
+      "Burde være mulig å endre svarene etter at man har trykket på neste.",
+      "Kunne dere lagt til en 'tilbake'-knapp som faktisk husker hva jeg skrev?",
+      "Jeg skulle gjerne hatt mulighet til å laste opp flere vedlegg samtidig.",
+      "Savner en print-knapp for kvitteringen.",
+      "Hvorfor kan jeg ikke se hva jeg svarte i fjor?",
+    ],
   },
+  // ------------------------------------------------
+  // TOPIC: UX / Language Issues
+  // ------------------------------------------------
   {
     rating: 4,
-    text: "Språket er litt vanskelig å forstå i del 2, men ellers bra.",
-    tags: ["🗣️ Språk"],
+    tags: ["🎨 UX", "🗣️ Språk"],
+    comments: [
+      "Oversiktlig og fint, men litt mye tekst på første side.",
+      "Språket er litt vanskelig å forstå i del 2.",
+      "Noen av spørsmålene var litt tvetydige.",
+      "Litt liten skrift på hjelpetekstene.",
+      "Jeg skjønte ikke begrepet 'medvirkning' i denne sammenhengen.",
+      "Kunne vært færre klikk for å komme til målet.",
+      "Greit nok, men litt kjedelig design.",
+    ],
   },
-
-  // Redacted examples - Comprehensive Showcase
+  // ------------------------------------------------
+  // TOPIC: Login / Technical Bugs
+  // ------------------------------------------------
   {
-    rating: 3,
-    text: "Jeg snakket med saksbehandler som sa jeg skulle...",
-    isRedacted: true,
-    redactedText: "Jeg snakket med [MULIG NAVN FJERNET] som sa jeg skulle...",
+    rating: 2,
+    tags: ["🔒 Innlogging", "🐛 Bug"],
+    comments: [
+      "Måtte logge inn med BankID tre ganger før jeg fikk sendt inn. Det er for dårlig.",
+      "Hvorfor blir jeg logget ut så fort? Rekker knapt å hente kaffe.",
+      "Innloggingen feilet flere ganger med 'ukjent feil'.",
+      "Kommer ikke inn med MinID, den bare spinner.",
+      "Får feilmelding når jeg prøver å logge inn fra iPad.",
+      "Systemet kastet meg ut midt i utfyllingen.",
+    ],
+  },
+  // ------------------------------------------------
+  // TOPIC: Critical Errors (Upload/Submit)
+  // ------------------------------------------------
+  {
+    rating: 1,
+    tags: ["� Bug", "�🔥 Kritisk", "👀 Til vurdering"],
+    comments: [
+      "Får feilmelding når jeg prøver å laste opp vedlegg. Har prøvd 3 ganger.",
+      "Knappen for å sende inn virker ikke!",
+      "Alt ble slettet da jeg trykket på 'Neste'. Utrolig frustrerende.",
+      "Siden krasjer når jeg prøver å åpne den gamle planen.",
+      "Får bare hvit skjerm etter innlogging.",
+      "Startet på nytt 4 ganger, men kommer ikke videre fra steg 2.",
+    ],
+  },
+  // ------------------------------------------------
+  // TOPIC: Redacted (Sensitive Info)
+  // ------------------------------------------------
+  {
+    rating: 1,
     tags: ["✅ Behandlet"],
-  },
-  {
-    rating: 1,
-    text: "Ringte dere på tlf 99999999 men ingen svarte.",
     isRedacted: true,
-    redactedText: "Ringte dere på tlf [TELEFON FJERNET] men ingen svarte.",
-    tags: ["🐛 Bug"],
+    comments: [
+      "Jeg snakket med [MULIG NAVN FJERNET] som sa jeg skulle klage hit.",
+      "Ringte dere på tlf [TELEFON FJERNET] men ingen svarte i går.",
+      "Min fnr er [FØDSELSNUMMER FJERNET], hvorfor finner dere meg ikke?",
+      "Saksbehandler [NAVIDENT FJERNET] var veldig uhøflig i telefonen.",
+      "Send svaret til [E-POST FJERNET] takk, jeg sjekker ikke Digipost.",
+      "Jeg får feilmelding fra IP [IP-ADRESSE FJERNET] når jeg sitter hjemme.",
+      "Utbetalingen til konto [KONTONUMMER FJERNET] har ikke kommet.",
+      "Jeg bor midlertidig i [MULIG ADRESSE FJERNET] pga oppussing.",
+      "Bilen min med skilt [BILNUMMER FJERNET] er nødvendig for jobben.",
+    ],
   },
-  {
-    rating: 2,
-    text: "Min fnr er 12345678901.",
-    isRedacted: true,
-    redactedText: "Min fnr er [FØDSELSNUMMER FJERNET].",
-    tags: ["🔥 Kritisk"],
-  },
-  {
-    rating: 2,
-    text: "Saksbehandler X123456 var veldig uhøflig.",
-    isRedacted: true,
-    redactedText: "Saksbehandler [NAVIDENT FJERNET] var veldig uhøflig.",
-    tags: ["👎 Misfornøyd"],
-  },
-  {
-    rating: 3,
-    text: "Send svaret til min@epost.no takk.",
-    isRedacted: true,
-    redactedText: "Send svaret til [E-POST FJERNET] takk.",
-    tags: ["📧 Kontakt"],
-  },
-  {
-    rating: 1,
-    text: "Jeg får feilmelding fra IP 192.168.1.1.",
-    isRedacted: true,
-    redactedText: "Jeg får feilmelding fra IP [IP-ADRESSE FJERNET].",
-    tags: ["🐛 Bug"],
-  },
-  {
-    rating: 1,
-    text: "Mitt kontonummer er 1234.56.78903 for utbetaling.",
-    isRedacted: true,
-    redactedText: "Mitt kontonummer er [KONTONUMMER FJERNET] for utbetaling.",
-    tags: ["💰 Utbetaling"],
-  },
-  {
-    rating: 2,
-    text: "Jeg bor i Storgata 1, 0001 Oslo.",
-    isRedacted: true,
-    redactedText: "Jeg bor i [MULIG ADRESSE FJERNET].",
-    tags: ["🏠 Adresse"],
-  },
-  {
-    rating: 5,
-    text: "Bilen min med skilt AB 12345 ble brukt.",
-    isRedacted: true,
-    redactedText: "Bilen min med skilt [BILNUMMER FJERNET] ble brukt.",
-    tags: ["🚗 Bil"],
-  },
-
-  // No text
-  { rating: 5, tags: [] },
-  { rating: 4, tags: ["✅ Behandlet"] },
+  // ------------------------------------------------
+  // TOPIC: Empty / Tags Only
+  // ------------------------------------------------
+  { rating: 5, tags: [], comments: new Array(15).fill("") }, // 15 empty 5-stars
+  { rating: 4, tags: ["✅ Behandlet"], comments: new Array(10).fill("") },
+  { rating: 3, tags: [], comments: new Array(5).fill("") },
 ];
 
-const arbeidsgiverScenarios: MockScenario[] = [
+const arbeidsgiverTopics: FeedbackTopic[] = [
+  // ------------------------------------------------
+  // TOPIC: Efficiency / Praise
+  // ------------------------------------------------
   {
     rating: 5,
-    text: "Dette gjør oppfølgingen mye enklere for oss som har mange ansatte.",
     tags: ["❤️ Ros"],
+    comments: [
+      "Dette gjør oppfølgingen mye enklere for oss som har mange ansatte.",
+      "Effektivt verktøy som sparer meg for mye tid.",
+      "Veldig bra oversikt over alle sykmeldte på ett sted.",
+      "Liker at vi kan kommunisere direkte med NAV her.",
+      "Endelig et system som snakker sammen. Takk!",
+      "Enkelt å invitere til dialogmøte gjennom denne løsningen.",
+      "Oversiktlig dashboard som gir full kontroll.",
+      "Dette har blitt mye bedre det siste året.",
+    ],
   },
+  // ------------------------------------------------
+  // TOPIC: Feature Requests (Sorting/Filtering)
+  // ------------------------------------------------
   {
     rating: 3,
-    text: "Fungerer greit, men savner å kunne sortere listen på avdeling.",
     tags: ["✨ Feature", "👀 Til vurdering"],
+    comments: [
+      "Fungerer greit, men savner å kunne sortere listen på avdeling.",
+      "Skulle gjerne hatt mulighet til å filtrere på langtidssykemeldte.",
+      "Kan vi få varsling på SMS når det kommer nytt her?",
+      "Savner eksport til Excel-format.",
+      "Det ville vært fint med en utskriftsvennlig versjon som ser litt bedre ut.",
+      "Kunne dere lagt inn støtte for delegering til mellomledere?",
+    ],
   },
+  // ------------------------------------------------
+  // TOPIC: Altinn / Access Rights
+  // ------------------------------------------------
   {
     rating: 2,
-    text: "Hvorfor må jeg bekrefte hver handling med Altinn-rettigheter? Det tar for lang tid.",
     tags: ["🔒 Innlogging", "🎨 UX"],
+    comments: [
+      "Hvorfor må jeg bekrefte hver handling med Altinn-rettigheter? Det tar for lang tid.",
+      "Får ikke delegert rettigheter riktig i Altinn.",
+      "Tungvint at jeg må logge inn på nytt for hver ansatt.",
+      "Rettighetsstyringen er for komplisert.",
+      "Jeg har tilgang, men får likevel feilmelding om manglende rettigheter.",
+    ],
   },
+  // ------------------------------------------------
+  // TOPIC: UX / UI Issues
+  // ------------------------------------------------
   {
     rating: 4,
-    text: "God oversikt, men litt liten skrift på dashbordet.",
     tags: ["🎨 UX"],
+    comments: [
+      "God oversikt, men litt liten skrift på dashbordet.",
+      "Litt vanskelig å finne eldre saker i arkivet.",
+      "Menyen til venstre tar for mye plass på skjermen.",
+      "Savner bedre kontrast på knappene.",
+      "Kunne vært tydeligere hva som er neste steg i prosessen.",
+    ],
   },
+  // ------------------------------------------------
+  // TOPIC: Redacted / Errors
+  // ------------------------------------------------
   {
     rating: 1,
-    text: "Org nr 999999999 har problemer med tilgang.",
-    isRedacted: true,
-    redactedText: "Org nr [ORGNUMMER FJERNET] har problemer med tilgang.",
     tags: ["🐛 Bug", "🔥 Kritisk"],
-  },
-  {
-    rating: 2,
-    text: "Sendte epost til ola.nordmann@bedrift.no men fikk ikke svar.",
     isRedacted: true,
-    redactedText: "Sendte epost til [E-POST FJERNET] men fikk ikke svar.",
-    tags: ["🐛 Bug"],
+    comments: [
+      "Systemet henger seg opp når vi prøver å sende inn for [MULIG NAVN FJERNET].",
+      "Får ikke sendt planen for [FØDSELSNUMMER FJERNET] selv om alt er fylt ut.",
+      "Org nr [ORGNUMMER FJERNET] kommer ikke opp i listen.",
+      "Sendte epost til [E-POST FJERNET] men fikk ikke svar.",
+      "Feilmelding ved bruk av firmakort [KORTNUMMER FJERNET].",
+      "Systemet kræsjer ved innsending som [NAVIDENT FJERNET].",
+    ],
   },
-  {
-    rating: 1,
-    text: "Systemet feilet da jeg tastet inn kortnummer 1234 5678 1234 5678.",
-    isRedacted: true,
-    redactedText:
-      "Systemet feilet da jeg tastet inn kortnummer [KORTNUMMER FJERNET].",
-    tags: ["🐛 Bug"],
-  },
-  // No text
-  { rating: 4 },
-  { rating: 3 },
+  // ------------------------------------------------
+  // TOPIC: Empty
+  // ------------------------------------------------
+  { rating: 4, tags: [], comments: new Array(10).fill("") },
+  { rating: 3, tags: [], comments: new Array(5).fill("") },
 ];
 
 interface SurveyConfig {
   app: string;
   surveyId: string;
   basePath: string;
-  scenarios: MockScenario[];
+  topics: FeedbackTopic[]; // Changed from scenarios to topics
   questions: {
     ratingLabel: string;
     textLabel?: string;
@@ -374,12 +417,41 @@ export function generateSurveyData(
   const items: FeedbackDto[] = [];
   const now = new Date();
 
-  for (let i = 0; i < count; i++) {
-    // Cycle through scenarios
-    const scenario = config.scenarios[i % config.scenarios.length];
+  // 1. Flatten all topics into a pool of potential items
+  // We attach the 'topic' metadata to each string so we know how to rate/tag it
+  type PoolItem = {
+    text: string;
+    rating: number;
+    tags: string[];
+    isRedacted: boolean;
+  };
 
-    // Check if we should use this scenario or skip (to avoid identical patterns if count > scenarios)
-    // Actually, distinct timestamps make them unique enough.
+  const pool: PoolItem[] = [];
+
+  for (const topic of config.topics) {
+    for (const comment of topic.comments) {
+      pool.push({
+        text: comment,
+        rating: topic.rating,
+        tags: topic.tags || [],
+        isRedacted: !!topic.isRedacted,
+      });
+    }
+  }
+
+  // 2. Shuffle the pool to get random order
+  // Fisher-Yates shuffle
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+
+  // 3. Generate the requested amount
+  // If count > pool size, we loop/recycle, but since we have ~50-100 unique items
+  // and request ~50-150, repeat rate is low.
+
+  for (let i = 0; i < count; i++) {
+    const poolItem = pool[i % pool.length];
 
     // Random date within last 60 days to spread them out
     const daysAgo = Math.floor(Math.random() * 60);
@@ -397,39 +469,30 @@ export function generateSurveyData(
       createRatingAnswer(
         "hovedsporsmal",
         config.questions.ratingLabel,
-        scenario.rating,
+        poolItem.rating,
       ),
     ];
 
-    const feedbackText = scenario.isRedacted
-      ? scenario.redactedText
-      : scenario.text;
-
-    if (feedbackText) {
+    if (poolItem.text) {
       if (config.questions.textLabel) {
         answers.push(
           createTextAnswer(
             "begrunnelse",
             config.questions.textLabel,
-            feedbackText,
+            poolItem.text,
             "Valgfritt",
           ),
         );
       } else if (config.questions.textLabel2) {
         // Employer case: put text in one of the fields based on sentiment (rating)
-        // or just randomly if not specified in scenario
-        const field = scenario.rating > 3 ? "nytte" : "forbedringer";
+        const field = poolItem.rating > 3 ? "nytte" : "forbedringer";
         const label =
-          scenario.rating > 3
+          poolItem.rating > 3
             ? "Opplever du at oppfølgingsplanen er et nyttig verktøy?"
             : "Hvis du kunne endre på noe, hva ville det vært?";
 
-        answers.push(createTextAnswer(field, label, feedbackText));
+        answers.push(createTextAnswer(field, label, poolItem.text));
       }
-    }
-
-    if (scenario.customAnswers) {
-      answers.push(...scenario.customAnswers);
     }
 
     // Device
@@ -461,9 +524,9 @@ export function generateSurveyData(
       app: config.app,
       surveyId: config.surveyId,
       context: createContext(path, device, width, height),
-      tags: scenario.tags || [],
+      tags: poolItem.tags,
       answers,
-      sensitiveDataRedacted: !!scenario.isRedacted,
+      sensitiveDataRedacted: poolItem.isRedacted,
     });
   }
 
@@ -475,44 +538,44 @@ export function generateSurveyData(
 // ============================================
 
 const mockFeedbackItems: FeedbackDto[] = [
-  ...generateSurveyData(150, {
+  ...generateSurveyData(83, {
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-sykmeldt",
     basePath: "/syk/oppfolgingsplaner",
-    scenarios: sykmeldtScenarios,
+    topics: sykmeldtTopics,
     questions: {
       ratingLabel: "Er oppfølgingsplanen til hjelp for deg?",
       textLabel: "Legg gjerne til en begrunnelse",
     },
   }),
 
-  ...generateSurveyData(120, {
+  ...generateSurveyData(62, {
     app: "syfo-oppfolgingsplan-frontend",
     surveyId: "ny-oppfolgingsplan-arbeidsgiver",
     basePath: "/syk/oppfolgingsplaner/arbeidsgiver",
-    scenarios: arbeidsgiverScenarios,
+    topics: arbeidsgiverTopics,
     questions: {
       ratingLabel: "Hvordan var det å bruke oppfølgingsplanen?",
       textLabel2: "True", // Triggers special handling for 2 text fields
     },
   }),
 
-  ...generateSurveyData(110, {
+  ...generateSurveyData(95, {
     app: "oppfolgingsplan-frontend",
     surveyId: "oppfolgingsplan-gammel-sykmeldt",
     basePath: "/oppfolgingsplan/sykmeldt",
-    scenarios: sykmeldtScenarios,
+    topics: sykmeldtTopics,
     questions: {
       ratingLabel: "Er oppfølgingsplanen til hjelp for deg?",
       textLabel: "Legg gjerne til en begrunnelse",
     },
   }),
 
-  ...generateSurveyData(110, {
+  ...generateSurveyData(55, {
     app: "oppfolgingsplan-frontend",
     surveyId: "oppfolgingsplan-gammel-arbeidsgiver",
     basePath: "/oppfolgingsplan/arbeidsgiver",
-    scenarios: arbeidsgiverScenarios,
+    topics: arbeidsgiverTopics,
     questions: {
       ratingLabel: "Hvordan var det å bruke oppfølgingsplanen?",
       textLabel: "Legg gjerne til en begrunnelse",

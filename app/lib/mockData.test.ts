@@ -12,15 +12,14 @@ import {
 } from "./mockData";
 
 describe("Mock Data Generation", () => {
-  it("should generate items from scenarios", () => {
-    const testScenarios = [
-      { rating: 5, text: "Scenario 1", tags: ["Tag1"] },
+  it("should generate items from topics", () => {
+    const testTopics = [
+      { rating: 5, comments: ["Topic 1"], tags: ["Tag1"] },
       {
         rating: 1,
-        text: "Scenario 2",
+        comments: ["Topic 2"],
         tags: ["Tag2"],
         isRedacted: true,
-        redactedText: "Her er et fnr: [FØDSELSNUMMER FJERNET]",
       },
     ];
 
@@ -28,7 +27,7 @@ describe("Mock Data Generation", () => {
       app: "test-app",
       surveyId: "test-survey",
       basePath: "/test",
-      scenarios: testScenarios,
+      topics: testTopics,
       questions: {
         ratingLabel: "Test",
         textLabel: "Test label",
@@ -37,26 +36,26 @@ describe("Mock Data Generation", () => {
 
     expect(data.length).toBe(4);
 
-    // Check if it cycles through
-    const item1 = data[0];
-    const item2 = data[1];
-    const item3 = data[2];
+    // Check if it generates correctly
+    const items = data;
 
-    // Item 1 should match Scenario 1
-    const textAnswer1 = item1.answers.find((a) => a.fieldType === "TEXT")
-      ?.value as { text: string };
-    expect(textAnswer1.text).toBe("Scenario 1");
-    expect(item1.tags).toContain("Tag1");
+    // Verify we have both types of items
+    const topic1Item = items.find((i) => i.tags?.includes("Tag1"));
+    const topic2Item = items.find((i) => i.tags?.includes("Tag2"));
 
-    // Item 2 should match Scenario 2 (redacted)
-    const textAnswer2 = item2.answers.find((a) => a.fieldType === "TEXT")
-      ?.value as { text: string };
-    expect(textAnswer2.text).toBe("Her er et fnr: [FØDSELSNUMMER FJERNET]");
-    expect(item2.sensitiveDataRedacted).toBe(true);
+    expect(topic1Item).toBeDefined();
+    if (topic1Item) {
+      const textAnswer = topic1Item.answers.find((a) => a.fieldType === "TEXT")
+        ?.value as { text: string };
+      expect(textAnswer.text).toBe("Topic 1");
+    }
 
-    // Item 3 should loop back to Scenario 1
-    const textAnswer3 = item3.answers.find((a) => a.fieldType === "TEXT")
-      ?.value as { text: string };
-    expect(textAnswer3.text).toBe("Scenario 1");
+    expect(topic2Item).toBeDefined();
+    if (topic2Item) {
+      const textAnswer = topic2Item.answers.find((a) => a.fieldType === "TEXT")
+        ?.value as { text: string };
+      expect(textAnswer.text).toBe("Topic 2");
+      expect(topic2Item.sensitiveDataRedacted).toBe(true);
+    }
   });
 });
