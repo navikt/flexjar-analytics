@@ -182,6 +182,10 @@ function generateTopTasksMockData(): FeedbackDto[] {
 // Realistic Mock Data Generators
 // ============================================
 
+// ============================================
+// Realistic Mock Data Generators
+// ============================================
+
 const sykmeldtComments = {
   positive: [
     "Veldig enkelt og greit å fylle ut.",
@@ -193,6 +197,9 @@ const sykmeldtComments = {
     "Tydelig språk og enkel navigering.",
     "Gikk raskt å fylle ut.",
     "Dette var en drøm sammenlignet med det gamle systemet. Alt var logisk oppbygd, og jeg trengte ikke å lure på hva jeg skulle svare på noen av punktene. Takk for at dere gjør hverdagen enklere for oss som er sykmeldte!",
+    "Tommel opp for mobilvennlig løsning. Fikk gjort det på bussen på vei hjem.",
+    "Enkelt å finne frem i mylderet av informasjon. Dere har gjort en god jobb her.",
+    "Jeg setter pris på at språket er enkelt å forstå. NAV har ofte vært vanskelig, men dette var bra.",
   ],
   neutral: [
     "Helt greit.",
@@ -202,6 +209,9 @@ const sykmeldtComments = {
     "Ok, men savner noen valgmuligheter.",
     "Grei nok, men litt kjedelig design.",
     "Prosessen var helt ok, men jeg stoppet opp litt underveis da jeg skulle laste opp vedlegg. Det var ikke helt åpenbart hvilke filtyper som var tillatt.",
+    "Savner en 'lagre og fortsett senere' knapp som er tydeligere.",
+    "Det er greit, men jeg måtte logge inn på nytt midt i prosessen. Det var litt irriterende.",
+    "Informasjonen var grei, men jeg følte jeg måtte klikke veldig mange ganger for å komme til poenget.",
   ],
   negative: [
     "Vanskelig å forstå hva jeg skal svare.",
@@ -213,6 +223,10 @@ const sykmeldtComments = {
     "Tungvint løsning.",
     "Mye byråkratspråk som er vanskelig å forstå.",
     "Jeg prøvde tre ganger å sende inn skjemaet, men fikk bare en kryptisk feilmelding hver gang. Veldig frustrerende når man allerede er syk og sliten. Dere må fikse dette snarest!",
+    "Hvorfor kan jeg ikke endre svaret mitt etter at jeg har trykket på neste? Måtte starte helt på nytt.",
+    "Teksten er altfor liten på min telefon, og når jeg zoomer blir siden ødelagt.",
+    "Jeg forstår ikke spørsmålet om 'medvirkning'. Hva betyr det i denne sammenhengen?",
+    "Systemet logget meg ut uten forvarsel og jeg mistet alt jeg hadde skrevet. Utrolig dårlig!",
   ],
 };
 
@@ -226,6 +240,8 @@ const arbeidsgiverComments = {
     "Liker at vi kan kommunisere digitalt med NAV.",
     "Oversiktlig dashboard.",
     "Endelig et system som snakker sammen. Dette sparer meg for mange telefoner og e-poster. Veldig fornøyd med oversikten jeg har fått nå.",
+    "Dette gjør personalarbeidet mye enklere. God oversikt.",
+    "Veldig bra at vi kan se status på sykmeldingene direkte her.",
   ],
   neutral: [
     "Gjør jobben.",
@@ -234,6 +250,8 @@ const arbeidsgiverComments = {
     "Savner mulighet til å lagre utkast enklere.",
     "Fungerer, men kunne vært raskere.",
     "Det fungerer greit, men jeg savner muligheten til å sortere listen over ansatte på etternavn. Ellers er funksjonaliteten helt ok.",
+    "Greit nok, men litt vanskelig å finne eldre saker.",
+    "Det ville vært fint med en utskriftsvennlig versjon som ser litt bedre ut.",
   ],
   negative: [
     "Tungvint system.",
@@ -244,6 +262,9 @@ const arbeidsgiverComments = {
     "Stadig tekniske problemer ved innlogging.",
     "Ikke intuitivt hvor man skal trykke.",
     "Systemet henger seg opp hele tiden når vi er flere som bruker det samtidig. Dette er ikke holdbart for en stor bedrift som vår.",
+    "Altfor mange varsler på e-post. Kan vi skru av noen av dem?",
+    "Jeg finner ikke hvor jeg skal laste opp dokumentasjonen dere ber om.",
+    "Hvorfor må jeg bekrefte med BankID hver eneste gang jeg skal inn på en ny side? Det tar altfor lang tid.",
   ],
 };
 
@@ -260,43 +281,94 @@ interface SurveyConfig {
   tagsProbability?: number;
 }
 
+// Generate tags based on text content keywords + rating
 function generateTags(
   rating: number,
+  text?: string,
   probability = 0.25,
 ): string[] | undefined {
-  if (Math.random() > probability) return undefined;
-
   const tags: string[] = [];
-  const addTag = (pool: string[]) =>
-    tags.push(pool[Math.floor(Math.random() * pool.length)]);
+  const lowerText = text?.toLowerCase() || "";
 
-  // Weighted probabilities for tag categories
-  const r = Math.random();
-
-  if (rating <= 2) {
-    if (r < 0.6) addTag(["🐛 Bug", "🔥 Kritisk"]);
-    else if (r < 0.8) addTag(["🎨 UX", "🚫 Fikses ikke"]);
-    else addTag(["✨ Feature", "👀 Til vurdering"]); // Sometimes even angry users want features
-  } else if (rating === 3) {
-    if (r < 0.4) addTag(["🎨 UX"]);
-    else if (r < 0.7) addTag(["✨ Feature"]);
-    else addTag(["🐛 Bug", "👀 Til vurdering"]);
-  } else {
-    if (r < 0.5) addTag(["✨ Feature", "🎨 UX"]);
-    else if (r < 0.6)
-      addTag(["🐛 Bug"]); // Rare bug report with high rating
-    else addTag(["✅ Behandlet"]);
+  // 1. Keyword-based tags (Prioritized)
+  if (lowerText) {
+    if (lowerText.includes("logg") || lowerText.includes("innlogging"))
+      tags.push("🔒 Innlogging");
+    if (lowerText.includes("mobil") || lowerText.includes("telefon"))
+      tags.push("📱 Mobil/Tablet");
+    if (
+      lowerText.includes("feilmelding") ||
+      lowerText.includes("funker ikke") ||
+      lowerText.includes("ødelagt")
+    )
+      tags.push("🐛 Bug");
+    if (
+      lowerText.includes("språk") ||
+      lowerText.includes("tekst") ||
+      lowerText.includes("forstå")
+    )
+      tags.push("🗣️ Språk");
+    if (lowerText.includes("design") || lowerText.includes("utseende"))
+      tags.push("🎨 UX");
+    if (lowerText.includes("savner") || lowerText.includes("kunne"))
+      tags.push("✨ Feature");
+    if (lowerText.includes("takk") || lowerText.includes("fornøyd"))
+      tags.push("❤️ Ros");
   }
 
-  // Add status tag effectively randomly for some realism
-  if (Math.random() > 0.7 && !tags.includes("✅ Behandlet")) {
-    tags.push(Math.random() > 0.5 ? "✅ Behandlet" : "👀 Til vurdering");
+  // 2. Rating-based heuristics (if no/few tags found or probability hit)
+  if (tags.length === 0 && Math.random() < probability) {
+    const r = Math.random();
+    if (rating <= 2) {
+      if (r < 0.6) tags.push("🐛 Bug");
+      else if (r < 0.8) tags.push("🎨 UX");
+      else tags.push("🔥 Kritisk");
+    } else if (rating === 3) {
+      if (r < 0.4) tags.push("🎨 UX");
+      else tags.push("👀 Til vurdering");
+    } else {
+      if (r < 0.5) tags.push("✨ Feature");
+      else if (r < 0.6) tags.push("❤️ Ros");
+    }
   }
 
-  return Array.from(new Set(tags));
+  // 3. Status tags
+  if (tags.length > 0 || Math.random() > 0.7) {
+    // Already tagged items often have a status
+    if (!tags.includes("✅ Behandlet")) {
+      const statusRand = Math.random();
+      if (statusRand > 0.8) tags.push("✅ Behandlet");
+      else if (statusRand > 0.6) tags.push("👀 Til vurdering");
+    }
+  }
+
+  return tags.length > 0 ? Array.from(new Set(tags)) : undefined;
 }
 
-function generateSurveyData(
+function generateRedactedText(text: string): string {
+  // Simple heuristic to replace some words with [REDACTED] style markers
+  // to simulate real redaction
+  const words = text.split(" ");
+  return words
+    .map((word) => {
+      // Redact potential names (capitalized words in middle of sentence)
+      if (
+        /^[A-Z][a-z]+$/.test(word) &&
+        Math.random() > 0.85 &&
+        words.length > 5
+      ) {
+        return "[Navn]";
+      }
+      // Redact potential numbers (phone, fnr)
+      if (/\d+/.test(word)) {
+        return "[Fnr]";
+      }
+      return word;
+    })
+    .join(" ");
+}
+
+export function generateSurveyData(
   count: number,
   config: SurveyConfig,
 ): FeedbackDto[] {
@@ -352,17 +424,19 @@ function generateSurveyData(
       createRatingAnswer("hovedsporsmal", config.questions.ratingLabel, rating),
     ];
 
+    let feedbackText: string | undefined;
+
     // Add text answer probalistically (30% chance)
     if (Math.random() > 0.7) {
       const texts = commentsPool[sentiment];
-      const text = texts[Math.floor(Math.random() * texts.length)];
+      feedbackText = texts[Math.floor(Math.random() * texts.length)];
 
       if (config.questions.textLabel) {
         answers.push(
           createTextAnswer(
             "begrunnelse",
             config.questions.textLabel,
-            text,
+            feedbackText,
             "Valgfritt",
           ),
         );
@@ -374,7 +448,7 @@ function generateSurveyData(
             createTextAnswer(
               "nytte",
               "Opplever du at oppfølgingsplanen er et nyttig verktøy?",
-              text,
+              feedbackText,
             ),
           );
         } else {
@@ -382,15 +456,28 @@ function generateSurveyData(
             createTextAnswer(
               "forbedringer",
               "Hvis du kunne endre på noe, hva ville det vært?",
-              text,
+              feedbackText,
             ),
           );
         }
       }
     }
 
-    // Generate realistic tags based on rating
-    const tags = generateTags(rating, config.tagsProbability);
+    // Handle redaction
+    const isRedacted = Math.random() > 0.95;
+    if (isRedacted && feedbackText) {
+      // Mutate the text in the answer to be redacted
+      const redactedText = generateRedactedText(feedbackText);
+      // Find and update the text answer
+      for (const a of answers) {
+        if (a.fieldType === "TEXT" && a.value.type === "text") {
+          a.value.text = redactedText;
+        }
+      }
+    }
+
+    // Generate realistic tags based on rating AND text
+    const tags = generateTags(rating, feedbackText, config.tagsProbability);
 
     // Device
     const deviceRand = Math.random();
@@ -424,7 +511,7 @@ function generateSurveyData(
       context: createContext(path, device, width, height),
       tags,
       answers,
-      sensitiveDataRedacted: Math.random() > 0.95, // Occasional redaction
+      sensitiveDataRedacted: isRedacted,
     });
   }
 
