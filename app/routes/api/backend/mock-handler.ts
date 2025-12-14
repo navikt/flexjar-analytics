@@ -11,7 +11,9 @@ import {
 } from "~/lib/mockData";
 
 // Enable mock data when not in NAIS (local development)
-const USE_MOCK_DATA = !process.env.NAIS_CLUSTER_NAME;
+// Enable mock data when explicitly requested or not in NAIS (local development)
+const USE_MOCK_DATA =
+  process.env.USE_MOCK_DATA === "true" || !process.env.NAIS_CLUSTER_NAME;
 
 export function handleMockRequest(
   path: string,

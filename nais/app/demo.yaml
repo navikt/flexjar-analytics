@@ -29,4 +29,5 @@ spec:
   env:
     - name: NODE_ENV
       value: production
-    # Backend config removed as Demo uses Mocks
+    - name: USE_MOCK_DATA
+      value: "true"
