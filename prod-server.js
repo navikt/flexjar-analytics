@@ -1,6 +1,5 @@
 import { createServer } from "node:http";
-// @ts-expect-error - fromNodeMiddleware is deprecated but works for sirv, while defineNodeHandler fails
-import { H3, eventHandler, fromNodeMiddleware } from "h3";
+import { H3, eventHandler, fromNodeHandler } from "h3";
 import { toNodeHandler } from "h3/node";
 import sirv from "sirv";
 import handler from "./dist/server/server.js";
@@ -15,7 +14,7 @@ const staticHandler = sirv("dist/client", {
   dev: false,
 });
 
-app.use(fromNodeMiddleware(staticHandler));
+app.use(fromNodeHandler(staticHandler));
 
 // SSR handler
 app.use(
