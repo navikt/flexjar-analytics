@@ -1,9 +1,15 @@
 import { ChatExclamationmarkIcon, StarIcon } from "@navikt/aksel-icons";
-import { BodyShort, HStack, Heading, Label, VStack } from "@navikt/ds-react";
+import {
+  BodyShort,
+  Box,
+  HStack,
+  Heading,
+  Label,
+  VStack,
+} from "@navikt/ds-react";
 import type { FieldStat, RatingStats, TextStats } from "~/lib/api";
 import { useSearchParams } from "~/lib/useSearchParams";
 import { useStats } from "~/lib/useStats";
-import styles from "./FieldStatsSection/FieldStatsSection.module.css";
 
 import { FieldStatsSkeleton } from "./FieldStatsSection/FieldStatsSkeleton";
 
@@ -24,13 +30,19 @@ export function FieldStatsSection() {
   const ratingFields = stats.fieldStats.filter((f) => f.fieldType === "RATING");
   const textFields = stats.fieldStats.filter((f) => f.fieldType === "TEXT");
 
+  const gridStyle: React.CSSProperties = {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+    gap: "1rem",
+  };
+
   return (
-    <div className={styles.section}>
-      <Heading level="3" size="small" spacing>
+    <VStack gap="4" marginBlock="4">
+      <Heading level="3" size="small">
         Statistikk per felt
       </Heading>
 
-      <div className={styles.grid}>
+      <div style={gridStyle}>
         {ratingFields.map((field) => (
           <RatingFieldCard
             key={field.fieldId}
@@ -46,7 +58,7 @@ export function FieldStatsSection() {
           />
         ))}
       </div>
-    </div>
+    </VStack>
   );
 }
 
@@ -68,11 +80,18 @@ function RatingFieldCard({ field, totalCount }: FieldCardProps) {
   const maxCount = Math.max(...Object.values(distribution), 1);
 
   return (
-    <div className={styles.card}>
-      <HStack gap="2" align="start" className={styles.cardHeader}>
+    <Box.New
+      padding="5"
+      background="raised"
+      borderRadius="large"
+      style={{ boxShadow: "var(--ax-shadow-small)" }}
+      borderColor="neutral-subtle"
+      borderWidth="1"
+    >
+      <HStack gap="2" align="start" marginBlock="0 2">
         <StarIcon fontSize="1.25rem" aria-hidden />
         <VStack gap="0" style={{ flex: 1 }}>
-          <Label size="small" className={styles.cardLabel}>
+          <Label size="small" style={{ flex: 1, minWidth: 0 }}>
             {field.label}
           </Label>
           <BodyShort
@@ -85,12 +104,20 @@ function RatingFieldCard({ field, totalCount }: FieldCardProps) {
         </VStack>
       </HStack>
 
-      <div className={styles.ratingAverage}>
-        <span className={styles.ratingValue}>{stats.average.toFixed(1)}</span>
-        <span className={styles.ratingEmoji}>
+      <HStack gap="2" align="center" marginBlock="2">
+        <span
+          style={{
+            fontSize: "2rem",
+            fontWeight: 700,
+            lineHeight: 1,
+          }}
+        >
+          {stats.average.toFixed(1)}
+        </span>
+        <span style={{ fontSize: "1.5rem" }}>
           {getRatingEmoji(stats.average)}
         </span>
-      </div>
+      </HStack>
 
       <VStack gap="1" marginBlock="3 0">
         {[5, 4, 3, 2, 1].map((rating) => {
@@ -124,7 +151,7 @@ function RatingFieldCard({ field, totalCount }: FieldCardProps) {
               >
                 <div
                   style={{
-                    width: `${barWidth}%`,
+                    width: `${barWidth}% `,
                     height: "100%",
                     borderRadius: 5,
                     backgroundColor: getRatingColor(rating),
@@ -146,7 +173,7 @@ function RatingFieldCard({ field, totalCount }: FieldCardProps) {
           );
         })}
       </VStack>
-    </div>
+    </Box.New>
   );
 }
 
@@ -157,11 +184,22 @@ function TextFieldCard({ field, totalCount }: FieldCardProps) {
     totalCount > 0 ? Math.round((stats.responseCount / totalCount) * 100) : 0;
 
   return (
-    <div className={`${styles.card} ${styles.textFieldCard}`}>
-      <HStack gap="2" align="start" className={styles.cardHeader}>
+    <Box.New
+      padding="5"
+      background="raised"
+      borderRadius="large"
+      style={{
+        boxShadow: "var(--ax-shadow-small)",
+        display: "flex",
+        flexDirection: "column",
+      }}
+      borderColor="neutral-subtle"
+      borderWidth="1"
+    >
+      <HStack gap="2" align="start" marginBlock="0 2">
         <ChatExclamationmarkIcon fontSize="1.25rem" aria-hidden />
         <VStack gap="0" style={{ flex: 1 }}>
-          <Label size="small" className={styles.cardLabel}>
+          <Label size="small" style={{ flex: 1, minWidth: 0 }}>
             {field.label}
           </Label>
           <BodyShort
@@ -173,7 +211,9 @@ function TextFieldCard({ field, totalCount }: FieldCardProps) {
         </VStack>
       </HStack>
 
-      <div className={styles.textStatValue}>{stats.responseCount} svar</div>
+      <div style={{ fontSize: "1.5rem", fontWeight: 600, marginTop: "0.5rem" }}>
+        {stats.responseCount} svar
+      </div>
 
       <div
         style={{
@@ -187,7 +227,7 @@ function TextFieldCard({ field, totalCount }: FieldCardProps) {
       >
         <div
           style={{
-            width: `${responseRate}%`,
+            width: `${responseRate}% `,
             height: "100%",
             borderRadius: 4,
             backgroundColor: getResponseRateColor(responseRate),
@@ -195,7 +235,7 @@ function TextFieldCard({ field, totalCount }: FieldCardProps) {
           }}
         />
       </div>
-    </div>
+    </Box.New>
   );
 }
 
