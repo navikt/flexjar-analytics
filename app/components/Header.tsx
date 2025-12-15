@@ -38,6 +38,7 @@ export function Header() {
               variant={getVariant("/")}
               size="small"
               icon={<BarChartIcon />}
+              className="hide-text-mobile show-text-desktop"
             >
               Dashboard
             </Button>
@@ -47,6 +48,7 @@ export function Header() {
               variant={getVariant("/feedback")}
               size="small"
               icon={<TableIcon />}
+              className="hide-text-mobile show-text-desktop"
             >
               Tilbakemeldinger
             </Button>
@@ -56,6 +58,7 @@ export function Header() {
               variant={getVariant("/export")}
               size="small"
               icon={<DownloadIcon />}
+              className="hide-text-mobile show-text-desktop"
             >
               Eksporter
             </Button>
