@@ -50,14 +50,15 @@ jobs:
             export VITE_MOCK_DATA=true
           fi
           npm run build
+          cp -r .output/public .output/client
       
       # Upload static files to CDN
       - name: Upload static files to NAV CDN
         uses: nais/deploy/actions/cdn-upload/v2@master
         with:
           team: team-esyfo
-          source: ./.output/public
-          destination: "/flexjar-analytics/client"
+          source: ./.output/client
+          destination: "/flexjar-analytics"
           project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
           identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
 
