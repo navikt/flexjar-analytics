@@ -76,7 +76,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: demo
-      url: https://flexjar-analytics-demo.intern.dev.nav.no
+      url: https://flexjar-analytics-demo.ekstern.dev.nav.no
     steps:
       - uses: actions/checkout@v4
       - uses: nais/deploy/actions/deploy@v2
