@@ -1,40 +1,11 @@
 import { ChatExclamationmarkIcon, StarIcon } from "@navikt/aksel-icons";
-import {
-  BodyShort,
-  HStack,
-  Heading,
-  Label,
-  Skeleton,
-  VStack,
-} from "@navikt/ds-react";
+import { BodyShort, HStack, Heading, Label, VStack } from "@navikt/ds-react";
 import type { FieldStat, RatingStats, TextStats } from "~/lib/api";
 import { useSearchParams } from "~/lib/useSearchParams";
 import { useStats } from "~/lib/useStats";
+import styles from "./FieldStatsSection/FieldStatsSection.module.css";
 
-function FieldStatCardSkeleton() {
-  return (
-    <div className="dashboard-card field-stat-card">
-      <HStack gap="2" align="center">
-        <Skeleton variant="circle" width={20} height={20} />
-        <VStack gap="1">
-          <Skeleton variant="text" width={120} />
-          <Skeleton variant="text" width={100} height={14} />
-        </VStack>
-      </HStack>
-      <div style={{ marginTop: "1rem" }}>
-        <Skeleton variant="text" width={80} height={40} />
-      </div>
-      <VStack gap="2" style={{ marginTop: "1rem" }}>
-        {[1, 2, 3, 4, 5].map((i) => (
-          <HStack key={i} gap="2" align="center">
-            <Skeleton variant="text" width={16} />
-            <Skeleton variant="rectangle" width="100%" height={16} />
-          </HStack>
-        ))}
-      </VStack>
-    </div>
-  );
-}
+import { FieldStatsSkeleton } from "./FieldStatsSection/FieldStatsSkeleton";
 
 export function FieldStatsSection() {
   const { data: stats, isLoading } = useStats();
@@ -43,17 +14,7 @@ export function FieldStatsSection() {
 
   // Vis skeleton når det lastes og en survey er valgt
   if (isLoading && hasSurveyFilter) {
-    return (
-      <div className="field-stats-section">
-        <Heading level="3" size="small" spacing>
-          Statistikk per felt
-        </Heading>
-        <div className="field-stats-grid">
-          <FieldStatCardSkeleton />
-          <FieldStatCardSkeleton />
-        </div>
-      </div>
-    );
+    return <FieldStatsSkeleton />;
   }
 
   if (!stats?.fieldStats?.length) {
@@ -64,12 +25,12 @@ export function FieldStatsSection() {
   const textFields = stats.fieldStats.filter((f) => f.fieldType === "TEXT");
 
   return (
-    <div className="field-stats-section">
+    <div className={styles.section}>
       <Heading level="3" size="small" spacing>
         Statistikk per felt
       </Heading>
 
-      <div className="field-stats-grid">
+      <div className={styles.grid}>
         {ratingFields.map((field) => (
           <RatingFieldCard
             key={field.fieldId}
@@ -107,11 +68,11 @@ function RatingFieldCard({ field, totalCount }: FieldCardProps) {
   const maxCount = Math.max(...Object.values(distribution), 1);
 
   return (
-    <div className="dashboard-card field-stat-card">
-      <HStack gap="2" align="start" className="field-card-header">
+    <div className={styles.card}>
+      <HStack gap="2" align="start" className={styles.cardHeader}>
         <StarIcon fontSize="1.25rem" aria-hidden />
         <VStack gap="0" style={{ flex: 1 }}>
-          <Label size="small" className="field-card-label">
+          <Label size="small" className={styles.cardLabel}>
             {field.label}
           </Label>
           <BodyShort
@@ -124,9 +85,11 @@ function RatingFieldCard({ field, totalCount }: FieldCardProps) {
         </VStack>
       </HStack>
 
-      <div className="rating-average">
-        <span className="rating-value">{stats.average.toFixed(1)}</span>
-        <span className="rating-emoji">{getRatingEmoji(stats.average)}</span>
+      <div className={styles.ratingAverage}>
+        <span className={styles.ratingValue}>{stats.average.toFixed(1)}</span>
+        <span className={styles.ratingEmoji}>
+          {getRatingEmoji(stats.average)}
+        </span>
       </div>
 
       <VStack gap="1" marginBlock="3 0">
@@ -139,19 +102,46 @@ function RatingFieldCard({ field, totalCount }: FieldCardProps) {
               key={rating}
               gap="2"
               align="center"
-              className="rating-bar-row"
+              style={{ fontSize: "0.875rem" }}
             >
-              <span className="rating-label">{rating}</span>
-              <div className="rating-bar">
+              <span
+                style={{
+                  width: "1.25rem",
+                  textAlign: "center",
+                  fontWeight: 500,
+                }}
+              >
+                {rating}
+              </span>
+              <div
+                style={{
+                  flex: 1,
+                  height: 10,
+                  background: "var(--ax-bg-neutral-moderate)",
+                  borderRadius: 5,
+                  overflow: "hidden",
+                }}
+              >
                 <div
-                  className="rating-bar-fill"
                   style={{
                     width: `${barWidth}%`,
+                    height: "100%",
+                    borderRadius: 5,
                     backgroundColor: getRatingColor(rating),
+                    transition: "width 0.3s ease",
                   }}
                 />
               </div>
-              <span className="rating-count">{count}</span>
+              <span
+                style={{
+                  width: "2rem",
+                  textAlign: "right",
+                  color: "var(--ax-text-neutral-subtle)",
+                  fontSize: "0.75rem",
+                }}
+              >
+                {count}
+              </span>
             </HStack>
           );
         })}
@@ -167,11 +157,11 @@ function TextFieldCard({ field, totalCount }: FieldCardProps) {
     totalCount > 0 ? Math.round((stats.responseCount / totalCount) * 100) : 0;
 
   return (
-    <div className="dashboard-card field-stat-card text-field-card">
-      <HStack gap="2" align="start" className="field-card-header">
+    <div className={`${styles.card} ${styles.textFieldCard}`}>
+      <HStack gap="2" align="start" className={styles.cardHeader}>
         <ChatExclamationmarkIcon fontSize="1.25rem" aria-hidden />
         <VStack gap="0" style={{ flex: 1 }}>
-          <Label size="small" className="field-card-label">
+          <Label size="small" className={styles.cardLabel}>
             {field.label}
           </Label>
           <BodyShort
@@ -183,14 +173,25 @@ function TextFieldCard({ field, totalCount }: FieldCardProps) {
         </VStack>
       </HStack>
 
-      <div className="text-stat-value">{stats.responseCount} svar</div>
+      <div className={styles.textStatValue}>{stats.responseCount} svar</div>
 
-      <div className="response-rate-bar" style={{ marginTop: "0.75rem" }}>
+      <div
+        style={{
+          width: "100%",
+          height: 8,
+          background: "var(--ax-bg-neutral-moderate)",
+          borderRadius: 4,
+          overflow: "hidden",
+          marginTop: "0.75rem",
+        }}
+      >
         <div
-          className="response-rate-fill"
           style={{
             width: `${responseRate}%`,
+            height: "100%",
+            borderRadius: 4,
             backgroundColor: getResponseRateColor(responseRate),
+            transition: "width 0.3s ease",
           }}
         />
       </div>

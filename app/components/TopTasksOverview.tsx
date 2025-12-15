@@ -97,7 +97,7 @@ export function TopTasksOverview() {
                           <div
                             style={{
                               padding: "1rem",
-                              backgroundColor: "var(--a-surface-subtle)",
+                              backgroundColor: "var(--ax-bg-neutral-soft)",
                             }}
                           >
                             <Heading size="xsmall" level="4" spacing>
@@ -129,10 +129,10 @@ export function TopTasksOverview() {
                           style={{
                             color:
                               task.successRate >= 0.8
-                                ? "var(--a-surface-success)"
+                                ? "var(--ax-status-success)"
                                 : task.successRate >= 0.5
-                                  ? "var(--a-surface-warning)"
-                                  : "var(--a-surface-danger)",
+                                  ? "var(--ax-status-warning)"
+                                  : "var(--ax-status-danger)",
                             fontWeight: "bold",
                           }}
                         >

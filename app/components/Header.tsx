@@ -29,7 +29,13 @@ export function Header() {
           onClick={handleResetAndNavigate}
           className="header-title"
         >
-          <img src={flexjarLogo} alt="" className="header-logo" />
+          <img
+            src={flexjarLogo}
+            alt=""
+            className="header-logo"
+            width={40}
+            height={40}
+          />
           Flexjar Analytics
         </button>
         <HStack gap="4">

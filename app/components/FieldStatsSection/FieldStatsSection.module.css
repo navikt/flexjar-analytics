@@ -1,0 +1,68 @@
+/* Field Stats Section Styles */
+
+.section {
+  margin-top: 1rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.card {
+  min-height: auto;
+  padding: 1.25rem;
+  background: var(--ax-bg-raised);
+  border-radius: 8px;
+  box-shadow: var(--ax-shadow-small);
+  border: 1px solid var(--ax-border-neutral-subtle);
+}
+
+.cardHeader {
+  margin-bottom: 0.5rem;
+}
+
+.cardLabel {
+  flex: 1;
+  min-width: 0;
+}
+
+.cardIcon {
+  flex-shrink: 0;
+}
+
+/* Rating average display */
+.ratingAverage {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.ratingValue {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.ratingEmoji {
+  font-size: 1.5rem;
+}
+
+/* Text field card */
+.textFieldCard {
+  display: flex;
+  flex-direction: column;
+}
+
+.textStatValue {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+.textStatSubtitle {
+  color: var(--ax-text-neutral-subtle);
+}

@@ -3,7 +3,10 @@ import type { Answer } from "~/lib/api";
 import { RenderAnswer } from "./AnswerRenderer";
 
 // Timeline component that connects answer items with lines
-export function TimelineView({ answers }: { answers: Answer[] }) {
+export function TimelineView({
+  answers,
+  styles,
+}: { answers: Answer[]; styles: Record<string, string> }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [lines, setLines] = useState<{ top: number; height: number }[]>([]);
 
@@ -12,7 +15,8 @@ export function TimelineView({ answers }: { answers: Answer[] }) {
     if (!container) return;
 
     const calculateLines = () => {
-      const circles = container.querySelectorAll(".survey-answer-number");
+      // Logic relies on consistent elements, using a static JS class for selection
+      const circles = container.querySelectorAll(".js-answer-number");
       const newLines: { top: number; height: number }[] = [];
 
       circles.forEach((circle, index) => {
@@ -48,9 +52,9 @@ export function TimelineView({ answers }: { answers: Answer[] }) {
   }, []);
 
   return (
-    <div className="survey-answers-list" ref={containerRef}>
+    <div className={styles.answersList} ref={containerRef}>
       {/* SVG layer for connector lines */}
-      <svg className="survey-connector-lines" aria-hidden="true">
+      <svg className={styles.connectorLines} aria-hidden="true">
         {lines.map((line) => (
           <line
             key={line.top}
@@ -58,7 +62,7 @@ export function TimelineView({ answers }: { answers: Answer[] }) {
             y1={line.top}
             x2="15"
             y2={line.top + line.height}
-            stroke="var(--ax-border-neutral-subtle)"
+            stroke="var(--ax-border-subtle)"
             strokeWidth="2"
           />
         ))}
@@ -66,9 +70,11 @@ export function TimelineView({ answers }: { answers: Answer[] }) {
 
       {/* Answer items */}
       {answers.map((answer, index) => (
-        <div key={answer.fieldId} className="survey-answer-item">
-          <div className="survey-answer-number">{index + 1}</div>
-          <RenderAnswer answer={answer} />
+        <div key={answer.fieldId} className={styles.answerItem}>
+          <div className={`${styles.answerNumber} js-answer-number`}>
+            {index + 1}
+          </div>
+          <RenderAnswer answer={answer} styles={styles} />
         </div>
       ))}
     </div>

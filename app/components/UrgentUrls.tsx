@@ -53,7 +53,7 @@ export function UrgentUrls() {
                   rel="noreferrer"
                   style={{
                     textDecoration: "none",
-                    color: "var(--a-text-action)",
+                    color: "var(--ax-text-accent)",
                   }}
                 >
                   {row.path}

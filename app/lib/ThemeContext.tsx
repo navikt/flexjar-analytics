@@ -1,6 +1,13 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-type Theme = "dark" | "light";
+export type Theme = "dark" | "light";
+
+// Extend Window interface for the global theme variable
+declare global {
+  interface Window {
+    __theme?: Theme;
+  }
+}
 
 interface ThemeContextType {
   theme: Theme | undefined;
@@ -26,26 +33,27 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         localStorage.removeItem("theme");
       } catch (e) {}
 
-      // 1. LocalStorage checking
+      // 0. Trust the blocking script (window.__theme) as the source of truth
+      if (window.__theme === "dark" || window.__theme === "light") {
+        if (window.__theme !== theme) setThemeState(window.__theme);
+        return;
+      }
+
+      // Fallback 1. LocalStorage checking (should be handled by script but just in case)
       const local = localStorage.getItem(
         "flexjar-theme-preference",
       ) as Theme | null;
       if (local === "light" || local === "dark") {
-        console.log(
-          "[ThemeDebug] Effect: Found localStorage preference:",
-          local,
-        );
-        // Only update if different, to avoid loop
+        // Only update if different
         if (local !== theme) setThemeState(local);
         return;
       }
 
-      // 2. System preference checking
+      // Fallback 2. System preference checking
       const systemDark = window.matchMedia(
         "(prefers-color-scheme: dark)",
       ).matches;
       const computed = systemDark ? "dark" : "light";
-      console.log("[ThemeDebug] Effect: Fallback to system:", computed);
       // Only update if different
       if (computed !== theme) setThemeState(computed);
     }
@@ -59,33 +67,26 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
     // Only update if the theme actually changed or is different from attribute
     if (root.getAttribute("data-theme") !== theme) {
-      console.log("[ThemeDebug] Effect: Updating DOM attributes to:", theme);
       root.setAttribute("data-theme", theme);
       root.style.colorScheme = theme;
       body.setAttribute("data-theme", theme);
       body.style.colorScheme = theme;
+
+      // Crucial: Aksel Darkside tokens depend on the ".dark" class
+      if (theme === "dark") {
+        root.classList.add("dark");
+      } else {
+        root.classList.remove("dark");
+      }
     }
 
-    console.log("[ThemeDebug] Effect: Persisting to localStorage:", theme);
     localStorage.setItem("flexjar-theme-preference", theme);
   }, [theme]);
 
   const toggleTheme = () => {
     setThemeState((prev) => {
-      // If undefined, we need to know what the current resolved theme is to toggle.
-      // However, typically by the time a user clicks toggle, the effect has run and set a theme.
-      // If strictly needed, we could read from DOM or fallback.
-      // Fallback: If undefined, assume we are currently properly synced (e.g. via script)
-      // so we just toggle based on what we think is there or default to dark -> light.
-      // Safer: Default to "dark" if undefined implies we want to go "light"?
-      // Or better: read from data-theme attribute if prev is undefined.
-      if (!prev) {
-        const current = document.documentElement.getAttribute(
-          "data-theme",
-        ) as Theme;
-        return current === "light" ? "dark" : "light";
-      }
-      return prev === "light" ? "dark" : "light";
+      const next = prev === "light" ? "dark" : "light";
+      return next;
     });
   };
 

@@ -1,4 +1,4 @@
-import { Alert, HStack, Heading, Tag, VStack } from "@navikt/ds-react";
+import { HStack, Heading, Tag, VStack } from "@navikt/ds-react";
 import { createFileRoute } from "@tanstack/react-router";
 import { FieldStatsSection } from "~/components/FieldStatsSection";
 import { FilterBar } from "~/components/FilterBar";
@@ -52,13 +52,6 @@ function DashboardPage() {
           </HStack>
 
           <FilterBar />
-
-          {!hasSurveyFilter && (
-            <Alert variant="info" size="small">
-              Velg en spesifikk survey for å se detaljert statistikk per
-              spørsmål
-            </Alert>
-          )}
 
           {isTopTasks ? (
             <TopTasksOverview />

@@ -6,7 +6,6 @@ import {
   Scripts,
   createRootRoute,
 } from "@tanstack/react-router";
-/// <reference types="vite/client" />
 import type * as React from "react";
 
 // Import Aksel Darkside styles (supports light/dark mode)
@@ -32,6 +31,10 @@ export const Route = createRootRoute({
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { name: "robots", content: "noindex" },
       { title: "Flexjar Analytics" },
+      {
+        name: "description",
+        content: "Analytics dashboard for Flexjar feedback and surveys.",
+      },
     ],
     links: [
       { rel: "stylesheet", href: akselStyles },
@@ -61,12 +64,17 @@ function RootComponent() {
 
 declare global {
   interface Window {
-    __theme: "light" | "dark";
+    __theme?: "light" | "dark";
   }
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   const { theme } = useTheme();
+
+  // Use window.__theme as fallback during initial client render to prevent FOUC
+  // The blocking script sets this variable before React loads
+  const effectiveTheme =
+    theme ?? (typeof window !== "undefined" ? window.__theme : undefined);
 
   return (
     <html lang="no" suppressHydrationWarning>
@@ -83,6 +91,13 @@ function RootDocument({ children }: { children: React.ReactNode }) {
                   if (!localTheme && supportDarkMode) localTheme = 'dark';
                   if (!localTheme) localTheme = 'light';
                   
+                  // Apply class "dark" for Aksel tokens
+                  if (localTheme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                  } else {
+                    document.documentElement.classList.remove('dark');
+                  }
+                  
                   document.documentElement.setAttribute('data-theme', localTheme);
                   document.documentElement.style.colorScheme = localTheme;
                   document.body.setAttribute('data-theme', localTheme);
@@ -96,7 +111,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <Theme theme={theme} hasBackground={false}>
+        <Theme
+          theme={effectiveTheme}
+          hasBackground={false}
+          className="app-theme-root"
+        >
           {children}
         </Theme>
         <Scripts />

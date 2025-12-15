@@ -21,6 +21,7 @@ interface AnswerCardLayoutProps {
   label: string;
   description?: string;
   children: ReactNode;
+  styles: Record<string, string>;
   className?: string; // For passing custom classes like "answer-card--rating"
 }
 
@@ -29,18 +30,19 @@ function AnswerCardLayout({
   label,
   description,
   children,
+  styles,
   className = "",
 }: AnswerCardLayoutProps) {
   return (
-    <div className={`answer-card ${className}`}>
+    <div className={`${styles.answerCard} ${className}`}>
       <HStack gap="4" align="start">
-        <div className="answer-icon">{icon}</div>
+        <div className={styles.answerIcon}>{icon}</div>
         <VStack gap="2" style={{ flex: 1 }}>
           <div>
             <Label size="small">{label}</Label>
             {description && <Detail textColor="subtle">{description}</Detail>}
           </div>
-          <div className="answer-content">{children}</div>
+          <div className={styles.answerContent}>{children}</div>
         </VStack>
       </HStack>
     </div>
@@ -48,13 +50,17 @@ function AnswerCardLayout({
 }
 
 // Render a single answer based on its type
-export function RenderAnswer({ answer }: { answer: Answer }) {
+export function RenderAnswer({
+  answer,
+  styles,
+}: { answer: Answer; styles: Record<string, string> }) {
   switch (answer.fieldType) {
     case "RATING": {
       const ratingValue =
         answer.value.type === "rating" ? answer.value.rating : 0;
       return (
         <AnswerCardLayout
+          styles={styles}
           className="answer-card--rating"
           icon={
             <Tooltip content="Vurdering (1-5)">
@@ -68,18 +74,18 @@ export function RenderAnswer({ answer }: { answer: Answer }) {
           description={answer.question.description}
         >
           <HStack align="center" gap="2">
-            <div className="expanded-rating-bar">
+            <div className={styles.ratingBar}>
               {[1, 2, 3, 4, 5].map((n) => (
                 <span
                   key={n}
-                  className={`expanded-rating-dot ${n <= ratingValue ? "filled" : ""}`}
+                  className={`${styles.ratingDot} ${n <= ratingValue ? styles.ratingDotFilled : ""}`}
                   data-rating={n}
                 >
                   {ratingToEmoji(n)}
                 </span>
               ))}
             </div>
-            <span className="rating-answer-score">{ratingValue}/5</span>
+            <span className={styles.ratingScore}>{ratingValue}/5</span>
           </HStack>
         </AnswerCardLayout>
       );
@@ -87,6 +93,7 @@ export function RenderAnswer({ answer }: { answer: Answer }) {
     case "TEXT":
       return (
         <AnswerCardLayout
+          styles={styles}
           className="answer-card--text"
           icon={
             <Tooltip content="Fritekst">
@@ -99,7 +106,7 @@ export function RenderAnswer({ answer }: { answer: Answer }) {
           {answer.value.type === "text" && answer.value.text ? (
             <BodyShort>{answer.value.text}</BodyShort>
           ) : (
-            <span className="answer-empty">Ikke utfylt</span>
+            <span className={styles.answerEmpty}>Ikke utfylt</span>
           )}
         </AnswerCardLayout>
       );
@@ -115,6 +122,7 @@ export function RenderAnswer({ answer }: { answer: Answer }) {
 
       return (
         <AnswerCardLayout
+          styles={styles}
           className="answer-card--choice"
           icon={
             <Tooltip
@@ -129,11 +137,11 @@ export function RenderAnswer({ answer }: { answer: Answer }) {
           description={answer.question.description}
         >
           {options.length > 0 ? (
-            <div className="choice-options">
+            <div className={styles.choiceOptions}>
               {options.map((opt) => (
                 <span
                   key={opt.id}
-                  className={`choice-option ${selectedIds.includes(opt.id) ? "choice-option--selected" : ""}`}
+                  className={`${styles.choiceOption} ${selectedIds.includes(opt.id) ? styles.choiceOptionSelected : ""}`}
                 >
                   {selectedIds.includes(opt.id) ? "✓ " : ""}
                   {opt.label}
@@ -149,6 +157,7 @@ export function RenderAnswer({ answer }: { answer: Answer }) {
     case "DATE":
       return (
         <AnswerCardLayout
+          styles={styles}
           className="answer-card--date"
           icon={
             <Tooltip content="Dato">

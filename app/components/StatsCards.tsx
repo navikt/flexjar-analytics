@@ -4,45 +4,30 @@ import {
   ChatIcon,
   StarIcon,
 } from "@navikt/aksel-icons";
-import { BodyShort, HStack, Skeleton } from "@navikt/ds-react";
+import { BodyShort, HStack } from "@navikt/ds-react";
 import type { ReactNode } from "react";
 import type { RatingStats, TextStats } from "~/lib/api";
 import { useSearchParams } from "~/lib/useSearchParams";
 import { useStats } from "~/lib/useStats";
+import styles from "./StatsCards/StatsCards.module.css";
+import { StatsCardsSkeleton } from "./StatsCards/StatsCardsSkeleton";
 
 interface StatCardProps {
   icon: ReactNode;
   label: string;
   value: string | number;
   subtitle: string;
-  isLoading?: boolean;
 }
 
-export function StatCard({
-  icon,
-  label,
-  value,
-  subtitle,
-  isLoading,
-}: StatCardProps) {
-  if (isLoading) {
-    return (
-      <div className="dashboard-card stat-card">
-        <Skeleton variant="text" width={100} />
-        <Skeleton variant="text" width={60} height={40} />
-        <Skeleton variant="text" width={80} />
-      </div>
-    );
-  }
-
+export function StatCard({ icon, label, value, subtitle }: StatCardProps) {
   return (
-    <div className="dashboard-card stat-card">
+    <div className={styles.card}>
       <HStack gap="2" align="center">
         {icon}
-        <BodyShort className="stat-label">{label}</BodyShort>
+        <BodyShort className={styles.label}>{label}</BodyShort>
       </HStack>
-      <div className="stat-value">{value}</div>
-      <BodyShort size="small" className="stat-subtitle">
+      <div className={styles.value}>{value}</div>
+      <BodyShort size="small" className={styles.subtitle}>
         {subtitle}
       </BodyShort>
     </div>
@@ -54,25 +39,9 @@ export function StatsCards() {
   const { params } = useSearchParams();
   const hasSurveyFilter = !!params.feedbackId;
 
-  // Vis riktig antall skeleton-kort basert på om survey er valgt
-  const skeletonCount = hasSurveyFilter ? 4 : 3;
-
+  // Vis default skeleton (3 kort) alltid for stabilitet
   if (isLoading) {
-    return (
-      <div className="dashboard-grid">
-        {Array.from({ length: skeletonCount }).map((_, i) => (
-          <StatCard
-            // biome-ignore lint/suspicious/noArrayIndexKey: Skeleton loader needs index key
-            key={i}
-            icon={null}
-            label=""
-            value=""
-            subtitle=""
-            isLoading
-          />
-        ))}
-      </div>
-    );
+    return <StatsCardsSkeleton />;
   }
 
   const totalCount = stats?.totalCount || 0;
@@ -99,7 +68,7 @@ export function StatsCards() {
     }, 0);
 
     return (
-      <div className="dashboard-grid">
+      <div className={styles.grid}>
         <StatCard
           icon={<ChatIcon fontSize="1.5rem" aria-hidden />}
           label="Antall tilbakemeldinger"
@@ -142,7 +111,7 @@ export function StatsCards() {
 
   // Aggregert visning når "alle surveys" er valgt
   return (
-    <div className="dashboard-grid">
+    <div className={styles.grid}>
       <StatCard
         icon={<ChatIcon fontSize="1.5rem" aria-hidden />}
         label="Antall tilbakemeldinger"

@@ -21,6 +21,8 @@ import { useSearchParams } from "~/lib/useSearchParams";
 import { useStats } from "~/lib/useStats";
 import { useSurveysByApp } from "~/lib/useSurveysByApp";
 import { useTags } from "~/lib/useTags";
+import styles from "./FilterBar/FilterBar.module.css";
+import { FilterBarSkeleton } from "./FilterBar/FilterBarSkeleton";
 
 interface FilterBarProps {
   showDetails?: boolean;
@@ -29,10 +31,11 @@ interface FilterBarProps {
 export function FilterBar({ showDetails = false }: FilterBarProps) {
   const { params, setParam, resetParams } = useSearchParams();
   // Use separate query for filter options so they don't change when filtering
-  const { data: filterOptions } = useFilterOptions();
-  const { data: surveysByApp } = useSurveysByApp();
+  const { data: filterOptions, isLoading: isLoadingOptions } =
+    useFilterOptions();
+  const { data: surveysByApp, isLoading: isLoadingSurveys } = useSurveysByApp();
   const { data: allTags = [] } = useTags();
-  const { data: stats } = useStats();
+  const { data: stats, isLoading: isLoadingStats } = useStats();
 
   // Determine active features based on survey type
   const features = getSurveyFeatures(stats?.surveyType);
@@ -109,10 +112,21 @@ export function FilterBar({ showDetails = false }: FilterBarProps) {
     params.deviceType ||
     params.tags;
 
+  const isLoading = isLoadingOptions || isLoadingSurveys || isLoadingStats;
+
+  if (isLoading) {
+    return (
+      <FilterBarSkeleton
+        showDetails={showDetails}
+        hasActiveFilters={!!hasActiveFilters}
+      />
+    );
+  }
+
   return (
-    <div className="filter-bar-container">
+    <div className={styles.container}>
       {/* Primary Row: Common Filters (App, Survey, Period) */}
-      <div className="filter-bar">
+      <div className={styles.bar}>
         <Select
           label="App"
           size="small"
@@ -143,7 +157,7 @@ export function FilterBar({ showDetails = false }: FilterBarProps) {
               e.target.value === "alle" ? undefined : e.target.value,
             )
           }
-          style={{ maxWidth: "250px" }}
+          style={{ width: "250px" }}
         >
           {surveys.map((survey) => (
             <option key={survey} value={survey}>
@@ -173,8 +187,8 @@ export function FilterBar({ showDetails = false }: FilterBarProps) {
 
       {/* Secondary Row: Page Specific Filters (Feedback only for now) */}
       {showDetails && (
-        <div className="filter-bar-secondary">
-          <div className="filter-group">
+        <div className={styles.secondary}>
+          <div className={styles.group}>
             {features.showTextFilter && (
               <TextField
                 label="Søk"
@@ -212,7 +226,7 @@ export function FilterBar({ showDetails = false }: FilterBarProps) {
             )}
           </div>
 
-          <div className="filter-group">
+          <div className={styles.group}>
             {features.showDeviceFilter && (
               <ToggleGroup
                 size="small"
@@ -233,7 +247,7 @@ export function FilterBar({ showDetails = false }: FilterBarProps) {
               </ToggleGroup>
             )}
 
-            <div className="filter-divider" />
+            <div className={styles.divider} />
 
             {features.showTextFilter && (
               <Tooltip content="Vis kun tilbakemeldinger med tekstsvar">

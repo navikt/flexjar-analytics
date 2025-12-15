@@ -15,7 +15,6 @@ import {
   HStack,
   Label,
   Pagination,
-  Skeleton,
   Table,
   Tag,
   Tooltip,
@@ -29,6 +28,8 @@ import { useFeedback } from "~/lib/useFeedback";
 import { useSearchParams } from "~/lib/useSearchParams";
 import { DeleteFeedbackDialog } from "./DeleteFeedbackDialog";
 import { DeleteSurveyDialog } from "./DeleteSurveyDialog";
+import styles from "./FeedbackTable/FeedbackTable.module.css";
+import { FeedbackTableSkeleton } from "./FeedbackTable/FeedbackTableSkeleton";
 import { TagEditor } from "./TagEditor";
 import { TimelineView } from "./feedback/TimelineView";
 import {
@@ -65,42 +66,7 @@ export function FeedbackTable() {
   }
 
   if (isLoading) {
-    return (
-      <div className="feedback-table">
-        <Table>
-          <Table.Header>
-            <Table.Row>
-              <Table.HeaderCell />
-              <Table.HeaderCell>Dato</Table.HeaderCell>
-              <Table.HeaderCell>Tilbakemelding</Table.HeaderCell>
-              <Table.HeaderCell>App</Table.HeaderCell>
-              <Table.HeaderCell />
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {[1, 2, 3, 4, 5].map((i) => (
-              <Table.Row key={i}>
-                <Table.DataCell>
-                  <Skeleton width={24} />
-                </Table.DataCell>
-                <Table.DataCell>
-                  <Skeleton width={80} />
-                </Table.DataCell>
-                <Table.DataCell>
-                  <Skeleton width={300} />
-                </Table.DataCell>
-                <Table.DataCell>
-                  <Skeleton width={150} />
-                </Table.DataCell>
-                <Table.DataCell>
-                  <Skeleton width={40} />
-                </Table.DataCell>
-              </Table.Row>
-            ))}
-          </Table.Body>
-        </Table>
-      </div>
-    );
+    return <FeedbackTableSkeleton />;
   }
 
   const feedbackList = data?.content || [];
@@ -109,10 +75,10 @@ export function FeedbackTable() {
   const selectedSurvey = params.feedbackId;
 
   return (
-    <div className="feedback-table">
+    <div className={styles.table}>
       {/* Toolbar with actions when survey is selected */}
       {selectedSurvey && totalElements > 0 && (
-        <div className="feedback-toolbar">
+        <div className={styles.toolbar}>
           <HStack justify="space-between" align="center">
             <BodyShort size="small" textColor="subtle">
               Viser {totalElements} svar for <strong>{selectedSurvey}</strong>
@@ -139,7 +105,7 @@ export function FeedbackTable() {
         </Alert>
       ) : (
         <>
-          <div className="table-wrapper">
+          <div className={styles.tableWrapper}>
             <Table>
               <Table.Header>
                 <Table.Row>
@@ -191,7 +157,7 @@ export function FeedbackTable() {
                           <HStack gap="2" align="center" wrap>
                             {getAllRatings(feedback).map((r) => (
                               <Tooltip key={r.label} content={r.label}>
-                                <span className="rating-emoji">
+                                <span className={styles.ratingEmoji}>
                                   {ratingToEmoji(r.rating)}
                                 </span>
                               </Tooltip>
@@ -214,7 +180,8 @@ export function FeedbackTable() {
                                         style={{
                                           maxWidth: 350,
                                           fontSize: "0.85rem",
-                                          color: "var(--a-text-subtle)",
+                                          color:
+                                            "var(--ax-text-neutral-subtle)",
                                         }}
                                       >
                                         {preview.subText}
@@ -293,8 +260,11 @@ export function FeedbackTable() {
                       </Table.DataCell>
                     </Table.Row>
                     {expandedRows.has(feedback.id) && (
-                      <Table.Row>
-                        <Table.DataCell colSpan={5}>
+                      <Table.Row className={styles.expandedRow}>
+                        <Table.DataCell
+                          colSpan={5}
+                          className={styles.expandedCell}
+                        >
                           <Box.New
                             padding="5"
                             background="neutral-soft"
@@ -302,21 +272,24 @@ export function FeedbackTable() {
                           >
                             <VStack gap="5">
                               {/* Grupper svar etter type for bedre oversikt */}
-                              <div className="expanded-section">
+                              <div className={styles.expandedSection}>
                                 <Label
                                   size="small"
-                                  className="expanded-section-label"
+                                  className={styles.expandedSectionLabel}
                                 >
                                   Svar ({feedback.answers.length})
                                 </Label>
-                                <TimelineView answers={feedback.answers} />
+                                <TimelineView
+                                  answers={feedback.answers}
+                                  styles={styles}
+                                />
                               </div>
 
                               {/* Tags - editable */}
-                              <div className="expanded-section">
+                              <div className={styles.expandedSection}>
                                 <Label
                                   size="small"
-                                  className="expanded-section-label"
+                                  className={styles.expandedSectionLabel}
                                 >
                                   <HStack gap="1" align="center">
                                     <TagIcon fontSize="1rem" />
@@ -331,30 +304,32 @@ export function FeedbackTable() {
 
                               {/* Context info */}
                               {feedback.context && (
-                                <div className="expanded-section">
+                                <div className={styles.expandedSection}>
                                   <Label
                                     size="small"
-                                    className="expanded-section-label"
+                                    className={styles.expandedSectionLabel}
                                   >
                                     Kontekst
                                   </Label>
-                                  <div className="context-grid">
+                                  <div className={styles.contextGrid}>
                                     {feedback.context.pathname && (
-                                      <div className="context-item">
-                                        <span className="context-icon">📍</span>
-                                        <div className="context-content">
-                                          <span className="context-label">
+                                      <div className={styles.contextItem}>
+                                        <span className={styles.contextIcon}>
+                                          📍
+                                        </span>
+                                        <div className={styles.contextContent}>
+                                          <span className={styles.contextLabel}>
                                             Side
                                           </span>
-                                          <span className="context-value">
+                                          <span className={styles.contextValue}>
                                             {feedback.context.pathname}
                                           </span>
                                         </div>
                                       </div>
                                     )}
                                     {feedback.context.deviceType && (
-                                      <div className="context-item">
-                                        <span className="context-icon">
+                                      <div className={styles.contextItem}>
+                                        <span className={styles.contextIcon}>
                                           {feedback.context.deviceType ===
                                           "mobile"
                                             ? "📱"
@@ -363,11 +338,11 @@ export function FeedbackTable() {
                                               ? "📱"
                                               : "🖥️"}
                                         </span>
-                                        <div className="context-content">
-                                          <span className="context-label">
+                                        <div className={styles.contextContent}>
+                                          <span className={styles.contextLabel}>
                                             Enhet
                                           </span>
-                                          <span className="context-value">
+                                          <span className={styles.contextValue}>
                                             {feedback.context.deviceType}
                                           </span>
                                         </div>
@@ -375,13 +350,15 @@ export function FeedbackTable() {
                                     )}
                                     {(feedback.context.viewportWidth ||
                                       feedback.context.viewportHeight) && (
-                                      <div className="context-item">
-                                        <span className="context-icon">🖼️</span>
-                                        <div className="context-content">
-                                          <span className="context-label">
+                                      <div className={styles.contextItem}>
+                                        <span className={styles.contextIcon}>
+                                          🖼️
+                                        </span>
+                                        <div className={styles.contextContent}>
+                                          <span className={styles.contextLabel}>
                                             Skjermstørrelse
                                           </span>
-                                          <span className="context-value">
+                                          <span className={styles.contextValue}>
                                             {feedback.context.viewportWidth ||
                                               "?"}
                                             ×
@@ -396,7 +373,7 @@ export function FeedbackTable() {
                               )}
 
                               {/* Metadata */}
-                              <div className="expanded-metadata">
+                              <div className={styles.metadata}>
                                 <Detail textColor="subtle">
                                   ID: {feedback.id}
                                 </Detail>
