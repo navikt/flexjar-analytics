@@ -1,82 +1,52 @@
-import {
-  CalendarIcon,
-  ChatExclamationmarkIcon,
-  ChatIcon,
-} from "@navikt/aksel-icons";
-import { Skeleton } from "@navikt/ds-react";
-import type { ReactNode } from "react";
-import styles from "./StatsCards.module.css";
+import { Box, Skeleton } from "@navikt/ds-react";
 
 interface StatCardSkeletonProps {
-  icon: ReactNode;
   labelWidth?: number;
 }
 
-function StatCardSkeleton({ icon, labelWidth = 140 }: StatCardSkeletonProps) {
-  // Inline styles to match .card in StatsCards.module.css exactly
-  const cardStyle: React.CSSProperties = {
-    padding: "1.25rem",
-    background: "var(--ax-bg-raised)",
-    borderRadius: "8px",
-    boxShadow: "var(--ax-shadow-small)",
-    border: "1px solid var(--ax-border-neutral-subtle)",
-    display: "flex",
-    flexDirection: "column",
-    gap: "0.5rem",
-  };
-
+function StatCardSkeleton({ labelWidth = 140 }: StatCardSkeletonProps) {
   return (
-    <div className={styles.card} style={cardStyle}>
-      {/* Icon + Label Row */}
-      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-        <div
-          style={{ color: "var(--ax-text-neutral-subtle)", display: "flex" }}
-        >
-          {icon}
-        </div>
+    <Box.New
+      padding="5"
+      background="raised"
+      borderRadius="large"
+      style={{ boxShadow: "var(--ax-shadow-small)" }}
+      borderColor="neutral-subtle"
+      borderWidth="1"
+    >
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "0.5rem",
+          marginBottom: "0.5rem",
+        }}
+      >
+        <Skeleton variant="circle" width={24} height={24} />
         <Skeleton variant="text" width={labelWidth} />
       </div>
 
-      {/* Value (Large) - Matches 2.5rem (40px) */}
-      <Skeleton variant="text" width={100} height={40} />
+      <div style={{ marginBottom: "0.2rem" }}>
+        <Skeleton variant="text" width={100} height={40} />
+      </div>
 
-      {/* Subtitle (Small) */}
       <Skeleton variant="text" width={120} height={20} />
-    </div>
+    </Box.New>
   );
 }
 
 export function StatsCardsSkeleton() {
-  // Inline styles to match .grid in StatsCards.module.css
   const gridStyle: React.CSSProperties = {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
     gap: "1rem",
   };
 
-  // Card definitions to match StatsCards.tsx logic
-  const iconSize = "1.5rem";
-
-  // Reverted to static 3-card view per user request for stability
   return (
-    <div className={styles.grid} style={gridStyle}>
-      {/* 1. Antall tilbakemeldinger */}
-      <StatCardSkeleton
-        icon={<ChatIcon fontSize={iconSize} aria-hidden />}
-        labelWidth={160}
-      />
-
-      {/* 2. Tilbakemeldinger med tekst */}
-      <StatCardSkeleton
-        icon={<ChatExclamationmarkIcon fontSize={iconSize} aria-hidden />}
-        labelWidth={180}
-      />
-
-      {/* 3. Periode */}
-      <StatCardSkeleton
-        icon={<CalendarIcon fontSize={iconSize} aria-hidden />}
-        labelWidth={80}
-      />
+    <div style={gridStyle}>
+      <StatCardSkeleton labelWidth={160} />
+      <StatCardSkeleton labelWidth={180} />
+      <StatCardSkeleton labelWidth={80} />
     </div>
   );
 }

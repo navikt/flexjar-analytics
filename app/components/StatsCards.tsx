@@ -4,12 +4,11 @@ import {
   ChatIcon,
   StarIcon,
 } from "@navikt/aksel-icons";
-import { BodyShort, HStack } from "@navikt/ds-react";
+import { BodyShort, Box, HStack } from "@navikt/ds-react";
 import type { ReactNode } from "react";
 import type { RatingStats, TextStats } from "~/lib/api";
 import { useSearchParams } from "~/lib/useSearchParams";
 import { useStats } from "~/lib/useStats";
-import styles from "./StatsCards/StatsCards.module.css";
 import { StatsCardsSkeleton } from "./StatsCards/StatsCardsSkeleton";
 
 interface StatCardProps {
@@ -21,16 +20,38 @@ interface StatCardProps {
 
 export function StatCard({ icon, label, value, subtitle }: StatCardProps) {
   return (
-    <div className={styles.card}>
-      <HStack gap="2" align="center">
-        {icon}
-        <BodyShort className={styles.label}>{label}</BodyShort>
+    <Box.New
+      padding="5"
+      background="raised"
+      borderRadius="large"
+      style={{ boxShadow: "var(--ax-shadow-small)" }}
+      borderColor="neutral-subtle"
+      borderWidth="1"
+    >
+      <HStack gap="2" align="center" style={{ marginBottom: "0.5rem" }}>
+        <span
+          style={{ color: "var(--ax-text-neutral-subtle)", display: "flex" }}
+        >
+          {icon}
+        </span>
+        <BodyShort weight="semibold" textColor="subtle">
+          {label}
+        </BodyShort>
       </HStack>
-      <div className={styles.value}>{value}</div>
-      <BodyShort size="small" className={styles.subtitle}>
+      <div
+        style={{
+          fontSize: "2.5rem",
+          fontWeight: 700,
+          lineHeight: 1,
+          marginBottom: "0.2rem",
+        }}
+      >
+        {value}
+      </div>
+      <BodyShort size="small" textColor="subtle">
         {subtitle}
       </BodyShort>
-    </div>
+    </Box.New>
   );
 }
 
@@ -50,6 +71,12 @@ export function StatsCards() {
   const textPercentage =
     totalCount > 0 ? Math.round((countWithText / totalCount) * 100) : 0;
 
+  const gridStyle = {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+    gap: "1rem",
+  };
+
   // Kun vis detaljert felt-statistikk når én survey er valgt
   if (hasSurveyFilter) {
     // Find first rating field from fieldStats
@@ -68,7 +95,7 @@ export function StatsCards() {
     }, 0);
 
     return (
-      <div className={styles.grid}>
+      <div style={gridStyle}>
         <StatCard
           icon={<ChatIcon fontSize="1.5rem" aria-hidden />}
           label="Antall tilbakemeldinger"
@@ -111,7 +138,7 @@ export function StatsCards() {
 
   // Aggregert visning når "alle surveys" er valgt
   return (
-    <div className={styles.grid}>
+    <div style={gridStyle}>
       <StatCard
         icon={<ChatIcon fontSize="1.5rem" aria-hidden />}
         label="Antall tilbakemeldinger"
