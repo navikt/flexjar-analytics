@@ -16,3 +16,4 @@ app.config.timestamp_*.js
 
 # Temporary
 test-h3.js
+.nitro/
