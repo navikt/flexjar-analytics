@@ -7,7 +7,6 @@ import {
 import {
   Alert,
   BodyShort,
-  Box,
   Button,
   HStack,
   Heading,
@@ -17,6 +16,7 @@ import {
 } from "@navikt/ds-react";
 import dayjs from "dayjs";
 import { useState } from "react";
+import { DashboardCard, DashboardGrid } from "~/components/DashboardComponents";
 import { useSearchParams } from "~/lib/useSearchParams";
 
 export function ExportPanel() {
@@ -84,7 +84,7 @@ export function ExportPanel() {
   };
 
   return (
-    <div className="dashboard-grid">
+    <DashboardGrid minColumnWidth="300px">
       {error && (
         <Alert
           variant="error"
@@ -109,7 +109,7 @@ export function ExportPanel() {
           Eksport fullført! Filen er lastet ned.
         </Alert>
       )}
-      <div className="dashboard-card">
+      <DashboardCard padding="6">
         <VStack gap="4">
           <Heading size="small">Velg format</Heading>
 
@@ -162,13 +162,13 @@ export function ExportPanel() {
             Last ned {format.toUpperCase()}
           </Button>
         </VStack>
-      </div>
+      </DashboardCard>
 
-      <div className="dashboard-card">
+      <DashboardCard padding="6">
         <VStack gap="4">
           <Heading size="small">Aktive filtre</Heading>
 
-          <Box>
+          <div style={{ display: "grid", gap: "1rem" }}>
             {params.app && (
               <BodyShort size="small" spacing>
                 <strong>App:</strong> {params.app}
@@ -214,14 +214,14 @@ export function ExportPanel() {
                     : "Alle"}
               </BodyShort>
             )}
-          </Box>
+          </div>
 
           <BodyShort size="small" textColor="subtle">
             Eksporten inkluderer alle svar med metadata (enhet, side, tidspunkt)
             som matcher filtrene (maks 10 000).
           </BodyShort>
         </VStack>
-      </div>
-    </div>
+      </DashboardCard>
+    </DashboardGrid>
   );
 }

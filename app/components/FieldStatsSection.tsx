@@ -1,12 +1,6 @@
 import { ChatExclamationmarkIcon, StarIcon } from "@navikt/aksel-icons";
-import {
-  BodyShort,
-  Box,
-  HStack,
-  Heading,
-  Label,
-  VStack,
-} from "@navikt/ds-react";
+import { BodyShort, HStack, Heading, Label, VStack } from "@navikt/ds-react";
+import { DashboardCard, DashboardGrid } from "~/components/DashboardComponents";
 import type { FieldStat, RatingStats, TextStats } from "~/lib/api";
 import { useSearchParams } from "~/lib/useSearchParams";
 import { useStats } from "~/lib/useStats";
@@ -30,19 +24,13 @@ export function FieldStatsSection() {
   const ratingFields = stats.fieldStats.filter((f) => f.fieldType === "RATING");
   const textFields = stats.fieldStats.filter((f) => f.fieldType === "TEXT");
 
-  const gridStyle: React.CSSProperties = {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-    gap: "1rem",
-  };
-
   return (
     <VStack gap="4" marginBlock="4">
       <Heading level="3" size="small">
         Statistikk per felt
       </Heading>
 
-      <div style={gridStyle}>
+      <DashboardGrid minColumnWidth="280px" gap="1rem">
         {ratingFields.map((field) => (
           <RatingFieldCard
             key={field.fieldId}
@@ -57,7 +45,7 @@ export function FieldStatsSection() {
             totalCount={stats.totalCount}
           />
         ))}
-      </div>
+      </DashboardGrid>
     </VStack>
   );
 }
@@ -80,14 +68,7 @@ function RatingFieldCard({ field, totalCount }: FieldCardProps) {
   const maxCount = Math.max(...Object.values(distribution), 1);
 
   return (
-    <Box.New
-      padding="5"
-      background="raised"
-      borderRadius="large"
-      style={{ boxShadow: "var(--ax-shadow-small)" }}
-      borderColor="neutral-subtle"
-      borderWidth="1"
-    >
+    <DashboardCard padding="5">
       <HStack gap="2" align="start" marginBlock="0 2">
         <StarIcon fontSize="1.25rem" aria-hidden />
         <VStack gap="0" style={{ flex: 1 }}>
@@ -173,7 +154,7 @@ function RatingFieldCard({ field, totalCount }: FieldCardProps) {
           );
         })}
       </VStack>
-    </Box.New>
+    </DashboardCard>
   );
 }
 
@@ -184,17 +165,12 @@ function TextFieldCard({ field, totalCount }: FieldCardProps) {
     totalCount > 0 ? Math.round((stats.responseCount / totalCount) * 100) : 0;
 
   return (
-    <Box.New
+    <DashboardCard
       padding="5"
-      background="raised"
-      borderRadius="large"
       style={{
-        boxShadow: "var(--ax-shadow-small)",
         display: "flex",
         flexDirection: "column",
       }}
-      borderColor="neutral-subtle"
-      borderWidth="1"
     >
       <HStack gap="2" align="start" marginBlock="0 2">
         <ChatExclamationmarkIcon fontSize="1.25rem" aria-hidden />
@@ -235,7 +211,7 @@ function TextFieldCard({ field, totalCount }: FieldCardProps) {
           }}
         />
       </div>
-    </Box.New>
+    </DashboardCard>
   );
 }
 

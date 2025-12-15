@@ -1,5 +1,6 @@
-import { HStack, Heading, Tag, VStack } from "@navikt/ds-react";
+import { Box, HStack, Heading, Tag, VStack } from "@navikt/ds-react";
 import { createFileRoute } from "@tanstack/react-router";
+import { DashboardCard, DashboardGrid } from "~/components/DashboardComponents";
 import { FieldStatsSection } from "~/components/FieldStatsSection";
 import { FilterBar } from "~/components/FilterBar";
 import { Header } from "~/components/Header";
@@ -28,7 +29,12 @@ function DashboardPage() {
     <>
       <Header />
 
-      <main className="main-content">
+      <Box
+        paddingBlock="6"
+        paddingInline="4"
+        style={{ maxWidth: "1400px", margin: "0 auto" }}
+        as="main"
+      >
         <VStack gap="6">
           <HStack justify="space-between" align="center">
             <HStack align="center" gap="4">
@@ -60,82 +66,82 @@ function DashboardPage() {
               <StatsCards />
 
               {/* Tidslinje vises alltid - aggregert statistikk gir mening */}
-              <div className="dashboard-grid">
-                <div className="dashboard-card">
-                  <div className="dashboard-card-header">
+              <DashboardGrid>
+                <DashboardCard>
+                  <VStack gap="4">
                     <Heading size="small">Antall tilbakemeldinger</Heading>
-                  </div>
-                  <div className="chart-container">
-                    <TimelineChart />
-                  </div>
-                </div>
+                    <div style={{ height: "300px", width: "100%" }}>
+                      <TimelineChart />
+                    </div>
+                  </VStack>
+                </DashboardCard>
 
-                <div className="dashboard-card">
-                  <div className="dashboard-card-header">
+                <DashboardCard>
+                  <VStack gap="4">
                     <Heading size="small">Gjennomsnittlig vurdering</Heading>
-                  </div>
-                  <div className="chart-container">
-                    <RatingTrendChart />
-                  </div>
-                </div>
-              </div>
+                    <div style={{ height: "300px", width: "100%" }}>
+                      <RatingTrendChart />
+                    </div>
+                  </VStack>
+                </DashboardCard>
+              </DashboardGrid>
 
-              <div className="dashboard-grid">
+              <DashboardGrid>
                 <UrgentUrls />
-              </div>
+              </DashboardGrid>
 
               {/* Survey-spesifikk statistikk - kun når én survey er valgt */}
               {hasSurveyFilter ? (
                 <>
                   <FieldStatsSection />
 
-                  <div className="dashboard-grid">
-                    <div className="dashboard-card">
-                      <div className="dashboard-card-header">
+                  <DashboardGrid>
+                    <DashboardCard>
+                      <VStack gap="4">
                         <Heading size="small">Fordeling av vurderinger</Heading>
-                      </div>
-                      <div className="chart-container">
-                        <RatingChart />
-                      </div>
-                    </div>
-                  </div>
+                        <div style={{ height: "300px", width: "100%" }}>
+                          <RatingChart />
+                        </div>
+                      </VStack>
+                    </DashboardCard>
+                  </DashboardGrid>
                 </>
               ) : null}
 
               {/* Svar per app og enheter - vis kun når ingen survey er valgt */}
               {!hasSurveyFilter && (
-                <div className="dashboard-grid">
-                  <div className="dashboard-card">
-                    <div className="dashboard-card-header">
+                <DashboardGrid>
+                  <DashboardCard>
+                    <VStack gap="4">
                       <Heading size="small">Tilbakemeldinger per app</Heading>
-                    </div>
-                    <div className="chart-container-small">
-                      <TopAppsChart />
-                    </div>
-                  </div>
+                      <div style={{ height: "200px", width: "100%" }}>
+                        <TopAppsChart />
+                      </div>
+                    </VStack>
+                  </DashboardCard>
 
-                  <div className="dashboard-card">
-                    <div className="dashboard-card-header">
+                  <DashboardCard>
+                    <VStack gap="4">
                       <Heading size="small">Enheter</Heading>
-                    </div>
-                    <DeviceBreakdownChart />
-                  </div>
-                </div>
+                      <DeviceBreakdownChart />
+                    </VStack>
+                  </DashboardCard>
+                </DashboardGrid>
               )}
 
               {/* Enheter når survey er valgt - vis alene */}
               {hasSurveyFilter && (
-                <div className="dashboard-card">
-                  <div className="dashboard-card-header">
+                <DashboardCard>
+                  <VStack gap="4">
                     <Heading size="small">Enheter</Heading>
-                  </div>
-                  <DeviceBreakdownChart />
-                </div>
+                    <DeviceBreakdownChart />
+                  </VStack>
+                </DashboardCard>
               )}
             </>
           )}
         </VStack>
-      </main>
+      </Box>
     </>
   );
 }

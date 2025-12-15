@@ -1,5 +1,5 @@
 import { BarChartIcon, DownloadIcon, TableIcon } from "@navikt/aksel-icons";
-import { Button, HStack } from "@navikt/ds-react";
+import { Box, Button, HStack } from "@navikt/ds-react";
 import { Link, useLocation } from "@tanstack/react-router";
 import flexjarLogo from "~/assets/flexjar.png";
 import { ThemeToggle } from "~/components/ThemeToggle";
@@ -22,17 +22,44 @@ export function Header() {
   };
 
   return (
-    <header className="app-header">
-      <div className="header-content">
+    <Box.New
+      paddingInline="4"
+      background="raised"
+      borderWidth="0 0 1 0"
+      borderColor="neutral-subtle"
+      as="header"
+    >
+      <div
+        style={{
+          maxWidth: "1400px",
+          margin: "0 auto",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          height: "64px",
+        }}
+      >
         <button
           type="button"
           onClick={handleResetAndNavigate}
-          className="header-title"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "0.75rem",
+            fontWeight: 600,
+            fontSize: "1.25rem",
+            textDecoration: "none",
+            color: "inherit",
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            padding: 0,
+          }}
         >
           <img
             src={flexjarLogo}
             alt=""
-            className="header-logo"
+            style={{ height: "40px", width: "auto" }}
             width={40}
             height={40}
           />
@@ -79,6 +106,6 @@ export function Header() {
           <ThemeToggle />
         </HStack>
       </div>
-    </header>
+    </Box.New>
   );
 }

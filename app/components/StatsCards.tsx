@@ -4,8 +4,9 @@ import {
   ChatIcon,
   StarIcon,
 } from "@navikt/aksel-icons";
-import { BodyShort, Box, HStack } from "@navikt/ds-react";
+import { BodyShort, HStack } from "@navikt/ds-react";
 import type { ReactNode } from "react";
+import { DashboardCard, DashboardGrid } from "~/components/DashboardComponents";
 import type { RatingStats, TextStats } from "~/lib/api";
 import { useSearchParams } from "~/lib/useSearchParams";
 import { useStats } from "~/lib/useStats";
@@ -20,14 +21,7 @@ interface StatCardProps {
 
 export function StatCard({ icon, label, value, subtitle }: StatCardProps) {
   return (
-    <Box.New
-      padding="5"
-      background="raised"
-      borderRadius="large"
-      style={{ boxShadow: "var(--ax-shadow-small)" }}
-      borderColor="neutral-subtle"
-      borderWidth="1"
-    >
+    <DashboardCard padding="5">
       <HStack gap="2" align="center" style={{ marginBottom: "0.5rem" }}>
         <span
           style={{ color: "var(--ax-text-neutral-subtle)", display: "flex" }}
@@ -51,7 +45,7 @@ export function StatCard({ icon, label, value, subtitle }: StatCardProps) {
       <BodyShort size="small" textColor="subtle">
         {subtitle}
       </BodyShort>
-    </Box.New>
+    </DashboardCard>
   );
 }
 
@@ -71,12 +65,6 @@ export function StatsCards() {
   const textPercentage =
     totalCount > 0 ? Math.round((countWithText / totalCount) * 100) : 0;
 
-  const gridStyle = {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-    gap: "1rem",
-  };
-
   // Kun vis detaljert felt-statistikk når én survey er valgt
   if (hasSurveyFilter) {
     // Find first rating field from fieldStats
@@ -95,7 +83,7 @@ export function StatsCards() {
     }, 0);
 
     return (
-      <div style={gridStyle}>
+      <DashboardGrid minColumnWidth="240px" gap="1rem">
         <StatCard
           icon={<ChatIcon fontSize="1.5rem" aria-hidden />}
           label="Antall tilbakemeldinger"
@@ -132,13 +120,13 @@ export function StatsCards() {
           value={`${periodDays} dager`}
           subtitle={`${stats?.period?.from || "–"} til ${stats?.period?.to || "nå"}`}
         />
-      </div>
+      </DashboardGrid>
     );
   }
 
   // Aggregert visning når "alle surveys" er valgt
   return (
-    <div style={gridStyle}>
+    <DashboardGrid minColumnWidth="240px" gap="1rem">
       <StatCard
         icon={<ChatIcon fontSize="1.5rem" aria-hidden />}
         label="Antall tilbakemeldinger"
@@ -159,7 +147,7 @@ export function StatsCards() {
         value={`${periodDays} dager`}
         subtitle={`${stats?.period?.from || "–"} til ${stats?.period?.to || "nå"}`}
       />
-    </div>
+    </DashboardGrid>
   );
 }
 

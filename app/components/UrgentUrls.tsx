@@ -1,5 +1,6 @@
 import { LinkIcon } from "@navikt/aksel-icons";
-import { Heading, Table } from "@navikt/ds-react";
+import { Box, Heading, Table } from "@navikt/ds-react";
+import { DashboardCard } from "~/components/DashboardComponents";
 import { useStats } from "~/lib/useStats";
 
 export function UrgentUrls() {
@@ -21,15 +22,18 @@ export function UrgentUrls() {
     .sort((a, b) => a.average - b.average);
 
   return (
-    <div className="dashboard-card" style={{ gridColumn: "span 2" }}>
-      <div className="dashboard-card-header">
+    <DashboardCard
+      padding="0"
+      style={{ gridColumn: "span 2", overflow: "hidden" }}
+    >
+      <Box.New padding="5" borderWidth="0 0 1 0" borderColor="neutral-subtle">
         <Heading
           size="small"
           style={{ display: "flex", alignItems: "center", gap: "8px" }}
         >
           <LinkIcon aria-hidden /> Sider med lavest score
         </Heading>
-      </div>
+      </Box.New>
 
       <Table size="small">
         <Table.Header>
@@ -67,6 +71,6 @@ export function UrgentUrls() {
           ))}
         </Table.Body>
       </Table>
-    </div>
+    </DashboardCard>
   );
 }

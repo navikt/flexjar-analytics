@@ -3,7 +3,8 @@ import {
   CheckmarkCircleIcon,
   XMarkOctagonIcon,
 } from "@navikt/aksel-icons";
-import { Heading, Table } from "@navikt/ds-react";
+import { Box, Heading, Table } from "@navikt/ds-react";
+import { DashboardCard, DashboardGrid } from "~/components/DashboardComponents";
 import { TopTasksTimelineChart } from "~/components/charts/TopTasksTimelineChart";
 import { useTopTasksStats } from "~/lib/useTopTasksStats";
 import { StatCard } from "./StatsCards";
@@ -26,7 +27,7 @@ export function TopTasksOverview() {
 
   return (
     <>
-      <div className="dashboard-grid">
+      <DashboardGrid minColumnWidth="300px">
         <StatCard
           icon={<ChatIcon fontSize="1.5rem" aria-hidden />}
           label="Antall svar"
@@ -47,29 +48,36 @@ export function TopTasksOverview() {
           value={`${100 - successRate}%`}
           subtitle="Oppgaver ikke fullført"
         />
-      </div>
+      </DashboardGrid>
 
-      <div className="dashboard-grid">
-        <div className="dashboard-card" style={{ gridColumn: "1 / -1" }}>
-          <div className="dashboard-card-header">
+      <DashboardGrid minColumnWidth="300px">
+        <DashboardCard padding="6" style={{ gridColumn: "1 / -1" }}>
+          <Box.New paddingBlock="0 4">
             <Heading size="small">Suksessrate over tid</Heading>
-          </div>
-          <div className="chart-container">
+          </Box.New>
+          <div style={{ height: "300px", width: "100%" }}>
             <TopTasksTimelineChart />
           </div>
-        </div>
-      </div>
+        </DashboardCard>
+      </DashboardGrid>
 
-      <div className="dashboard-grid">
-        <div className="dashboard-card" style={{ gridColumn: "1 / -1" }}>
-          <div className="dashboard-card-header">
+      <DashboardGrid minColumnWidth="300px">
+        <DashboardCard
+          padding="0"
+          style={{ gridColumn: "1 / -1", overflow: "hidden" }}
+        >
+          <Box.New
+            padding="6"
+            borderWidth="0 0 1 0"
+            borderColor="neutral-subtle"
+          >
             <Heading size="small">
               {data.questionText
                 ? `Spørsmål: ${data.questionText}`
                 : "Spørsmål"}
             </Heading>
-          </div>
-          <div className="table-wrapper">
+          </Box.New>
+          <Box overflowX="auto">
             <Table>
               <Table.Header>
                 <Table.Row>
@@ -156,9 +164,9 @@ export function TopTasksOverview() {
                 })}
               </Table.Body>
             </Table>
-          </div>
-        </div>
-      </div>
+          </Box>
+        </DashboardCard>
+      </DashboardGrid>
     </>
   );
 }
