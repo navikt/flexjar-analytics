@@ -21,16 +21,24 @@ app/
 │   ├── index.tsx         # Dashboard with charts
 │   ├── feedback.tsx      # Paginated feedback table
 │   ├── export.tsx        # Export panel (CSV/JSON/Excel)
-│   └── api/backend/$.ts  # Proxy to backend with OBO token
+│   └── api/              # API routes (proxy to backend)
 ├── components/
-│   ├── FilterBar.tsx     # Date range, team, app, tags filters
-│   ├── FeedbackTable.tsx # Expandable rows with answer fields
-│   └── charts/           # RatingChart, TimelineChart, TopAppsChart
-├── lib/
-│   ├── api.ts            # Types, `fetchFromBackend` server fn
-│   ├── useFeedback.ts    # TanStack Query hook
+│   ├── FilterBar/        # Date range, team, app, tags filters
+│   ├── FeedbackTable/    # Expandable rows with answer fields
+│   ├── dashboard/        # Dashboard-specific components
+│   └── shared/           # Shared layout components (DashboardCard, DashboardGrid)
+├── hooks/
+│   ├── useFeedback.ts    # TanStack Query hook for feedback
 │   ├── useStats.ts       # Dashboard stats hook
 │   └── useSearchParams.ts# URL state for filters
+├── types/
+│   ├── api.ts            # API response types (matches backend DTOs)
+│   └── filters.ts        # Filter-related types
+├── server/
+│   ├── fetchFromBackend.ts  # Server function with OBO token
+│   └── utils.ts          # Server-side utilities
+├── context/              # React context providers
+├── utils/                # Client-side utilities
 └── styles/global.css     # Aksel Darkside overrides
 ```
 
@@ -63,10 +71,10 @@ npm run typecheck  # TypeScript check (added to pre-commit)
 4. **Chart colors**: Define in `COLORS` constant, not inline
 
 ## Related Repositories
-- **[flexjar-analytics-api](https://github.com/navikt/flexjar-analytics-api)**: Backend API. Types in `lib/api.ts` must match DTOs in `domain/`.
+- **[flexjar-analytics-api](https://github.com/navikt/flexjar-analytics-api)**: Backend API. Types in `types/api.ts` must match DTOs in `domain/`.
 - **[flexjar-widget](https://github.com/navikt/flexjar-widget)**: Survey widget that submits to the backend. Reserved keys `svar`/`feedback` appear in feedback data.
 
 ## Backend Integration
-- Proxy route at `api/backend/$.ts` forwards to `FLEXJAR_BACKEND_URL`
-- Types in `lib/api.ts` must match backend DTOs
+- Proxy route at `app/routes/api/` forwards to `FLEXJAR_BACKEND_URL`
+- Types in `types/api.ts` must match backend DTOs
 - Backend handles: pagination, filtering, sorting, PII redaction
