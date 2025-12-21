@@ -5,7 +5,6 @@ import type { AuthContext } from "~/server/middleware/auth";
  * Checks both Vite client-side and Node.js server-side environment variables.
  */
 import { publicEnv } from "~/publicEnv";
-import { serverEnv } from "~/serverEnv";
 
 /**
  * Check if the application is running in mock mode.
@@ -16,17 +15,14 @@ export function isMockMode(): boolean {
   if (publicEnv.VITE_MOCK_DATA === "true") {
     return true;
   }
-  // Fallback to env (Server-side)
-  // We need to be careful accessing 'env' in client context if it wasn't stripped.
-  // app/env.ts handles this by returning empty object on client.
+  // Fallback to strict process.env check (Server-side)
+  // We avoid importing serverEnv here to keep this file client-safe
   if (
-    serverEnv.NODE_ENV === "development" &&
+    typeof process !== "undefined" &&
+    process.env &&
+    process.env.NODE_ENV === "development" &&
     process.env.VITE_MOCK_DATA === "true"
   ) {
-    // Note: env.ts serverSchema doesn't have VITE_MOCK_DATA in serverSchema currently,
-    // but we can add it or just rely on the publicEnv check if it works on server too (import.meta.env might be polyfilled).
-    // Actually, TanStack Start makes VITE_ prefixed vars available on server via process.env usually?
-    // Let's rely on publicEnv for VITE_ vars if possible, or check process.env raw if needed for now until schema update.
     return true;
   }
 
