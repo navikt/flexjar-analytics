@@ -21,7 +21,7 @@ spec:
     limits:
       memory: 512Mi
     requests:
-      cpu: 50m
+      cpu: 100m
       memory: 256Mi
   ingresses:
     - https://flexjar-analytics.intern.dev.nav.no

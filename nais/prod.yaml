@@ -19,10 +19,10 @@ spec:
     initialDelay: 10
   resources:
     limits:
-      memory: 512Mi
+      memory: 1024Mi
     requests:
-      cpu: 100m
-      memory: 256Mi
+      cpu: 200m
+      memory: 512Mi
   ingresses:
     - https://flexjar-analytics.intern.nav.no
   azure:

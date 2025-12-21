@@ -35,6 +35,11 @@ export const Route = createRootRoute({
         name: "description",
         content: "Analytics dashboard for Flexjar feedback and surveys.",
       },
+      {
+        httpEquiv: "Content-Security-Policy",
+        content:
+          "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:;",
+      },
     ],
     links: [
       { rel: "stylesheet", href: akselStyles },
