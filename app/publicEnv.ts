@@ -19,7 +19,7 @@ export const publicEnv = (() => {
   if (!result.success) {
     console.error(
       "❌ Invalid client environment variables:",
-      z.treeifyError(result.error),
+      result.error.flatten(),
     );
     throw new Error("Invalid client environment variables");
   }

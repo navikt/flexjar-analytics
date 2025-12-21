@@ -30,7 +30,7 @@ export const serverEnv = (() => {
   if (!result.success) {
     console.error(
       "❌ Invalid server environment variables:",
-      z.treeifyError(result.error),
+      result.error.flatten(),
     );
     // In dev we might want to throw, in prod definitely throw.
     throw new Error("Invalid environment variables");
