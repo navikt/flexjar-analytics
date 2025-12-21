@@ -33,7 +33,6 @@ jobs:
     name: Build demo (mock data)
     needs: checks
     runs-on: ubuntu-latest
-    if: startsWith(github.ref_name, 'demo-')
     outputs:
       image: ${{ steps.docker-build-push.outputs.image }}
     steps:
@@ -59,7 +58,7 @@ jobs:
         with:
           team: team-esyfo
           source: ./.output/client
-          destination: "/flexjar-analytics"
+          destination: "/flexjar-analytics-demo"
           project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
           identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
 
@@ -70,6 +69,7 @@ jobs:
           team: team-esyfo
           identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
           project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
+          image_suffix: demo
 
   # Build 2: For dev and prod environments (real backend)
   build-production:
