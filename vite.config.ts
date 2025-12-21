@@ -14,6 +14,18 @@ export default defineConfig({
     port: 3000,
   },
 
+  // Externalize Node.js-only dependencies from client bundle
+  ssr: {
+    external: ["@navikt/oasis", "prom-client"],
+    noExternal: [],
+  },
+
+  build: {
+    rollupOptions: {
+      external: ["@navikt/oasis", "prom-client", "crypto"],
+    },
+  },
+
   // Nitro configuration for deployment
   nitro: {
     preset: "node-server",
