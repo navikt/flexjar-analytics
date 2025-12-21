@@ -1,11 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
-import { type TopTasksResponse, fetchTopTasksStats } from "./api";
+import { fetchTopTasksServerFn } from "./serverFunctions";
 import { useSearchParams } from "./useSearchParams";
+
+// Re-export TopTasksResponse type for components that need it
+export type { TopTasksResponse } from "./api";
 
 export function useTopTasksStats() {
   const { params } = useSearchParams();
 
-  return useQuery<TopTasksResponse>({
+  return useQuery({
     queryKey: [
       "topTasksStats",
       params.team,
@@ -15,18 +18,14 @@ export function useTopTasksStats() {
       params.feedbackId,
       params.deviceType,
     ],
-    queryFn: async () => {
-      // Build params object
-      const apiParams: Record<string, string> = {};
-      if (params.team) apiParams.team = params.team;
-      if (params.app) apiParams.app = params.app;
-      if (params.from) apiParams.from = params.from;
-      if (params.to) apiParams.to = params.to;
-      if (params.feedbackId) apiParams.feedbackId = params.feedbackId;
-      if (params.deviceType) apiParams.deviceType = params.deviceType;
-
-      return fetchTopTasksStats(apiParams);
-    },
-    staleTime: 60000,
+    queryFn: () =>
+      fetchTopTasksServerFn({
+        data: {
+          surveyId: params.feedbackId,
+          from: params.from,
+          to: params.to,
+        },
+      }),
+    staleTime: 60000, // 1 minute
   });
 }

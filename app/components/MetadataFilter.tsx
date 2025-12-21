@@ -1,6 +1,6 @@
 import { Box, Chips, HStack, Label, Skeleton, VStack } from "@navikt/ds-react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchMetadataKeys } from "~/lib/api";
+import { fetchMetadataKeysServerFn } from "~/lib/serverFunctions";
 import { useSearchParams } from "~/lib/useSearchParams";
 
 interface MetadataFilterProps {
@@ -15,7 +15,7 @@ export function MetadataFilter({ surveyId }: MetadataFilterProps) {
   const { params, setParam } = useSearchParams();
   const { data, isLoading } = useQuery({
     queryKey: ["metadataKeys", surveyId],
-    queryFn: () => fetchMetadataKeys(surveyId),
+    queryFn: () => fetchMetadataKeysServerFn({ data: { surveyId } }),
     enabled: !!surveyId && surveyId !== "alle",
   });
 

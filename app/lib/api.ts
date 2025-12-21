@@ -1,35 +1,10 @@
-const PROXY_BASE_PATH = "/api/backend";
-
-// Utility function to proxy API calls to the backend with OBO token
-async function fetchFromBackend(
-  path: string,
-  params?: Record<string, string>,
-): Promise<unknown> {
-  const searchParams = new URLSearchParams();
-  if (params) {
-    for (const [key, value] of Object.entries(params)) {
-      if (value !== undefined && value !== null && value !== "") {
-        searchParams.set(key, String(value));
-      }
-    }
-  }
-
-  const queryString = searchParams.toString();
-  const targetUrl = `${PROXY_BASE_PATH}${path}${queryString ? `?${queryString}` : ""}`;
-
-  const response = await fetch(targetUrl, {
-    headers: { "Content-Type": "application/json" },
-  });
-
-  if (!response.ok) {
-    throw new Error(`Backend request failed: ${response.status}`);
-  }
-
-  return response.json();
-}
+// ============================================
+// Type-only exports for flexjar-analytics
+// All API logic is now in serverFunctions.ts
+// ============================================
 
 // ============================================
-// Answer Types - Den nye strukturen
+// Answer Types
 // ============================================
 
 export type FieldType =
@@ -49,7 +24,7 @@ export interface ChoiceOption {
 export interface Question {
   label: string;
   description?: string;
-  options?: ChoiceOption[]; // For choice-typer
+  options?: ChoiceOption[];
 }
 
 export interface BaseAnswer {
@@ -91,19 +66,19 @@ export type Answer =
   | DateAnswer;
 
 // ============================================
-// Field Stats Types - Statistikk per felt
+// Field Stats Types
 // ============================================
 
 export interface RatingStats {
   type: "rating";
   average: number;
-  distribution: Record<number, number>; // 1-5 -> count
+  distribution: Record<number, number>;
 }
 
 export interface TextStats {
   type: "text";
   responseCount: number;
-  responseRate: number; // 0-1
+  responseRate: number;
 }
 
 export interface ChoiceStats {
@@ -124,7 +99,7 @@ export interface FieldStat {
 }
 
 // ============================================
-// Context Types - Browser metadata
+// Context Types
 // ============================================
 
 export type DeviceType = "mobile" | "tablet" | "desktop";
@@ -224,175 +199,20 @@ export interface TopTasksResponse {
   questionText?: string;
 }
 
-import {
-  getMockFeedback,
-  getMockStats,
-  getMockSurveysByApp,
-  getMockTags,
-  getMockTeams,
-  getMockTopTasksStats,
-} from "./mockData";
-
-// API functions
-export async function fetchStats(
-  params: Record<string, string>,
-): Promise<FeedbackStats> {
-  if (import.meta.env.VITE_MOCK_DATA === "true") {
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    return getMockStats(new URLSearchParams(params));
-  }
-  return fetchFromBackend(
-    "/api/v1/intern/stats",
-    params,
-  ) as Promise<FeedbackStats>;
-}
-
-export async function fetchTopTasksStats(
-  params: Record<string, string>,
-): Promise<TopTasksResponse> {
-  if (import.meta.env.VITE_MOCK_DATA === "true") {
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    return getMockTopTasksStats(new URLSearchParams(params));
-  }
-  return fetchFromBackend(
-    "/api/v1/intern/stats/top-tasks",
-    params,
-  ) as Promise<TopTasksResponse>;
-}
-
-export async function fetchFeedback(
-  params: Record<string, string>,
-): Promise<FeedbackPage> {
-  if (import.meta.env.VITE_MOCK_DATA === "true") {
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    return getMockFeedback(new URLSearchParams(params));
-  }
-  return fetchFromBackend(
-    "/api/v1/intern/feedback",
-    params,
-  ) as Promise<FeedbackPage>;
-}
-
-export async function fetchTeams(): Promise<TeamsAndApps> {
-  if (import.meta.env.VITE_MOCK_DATA === "true") {
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    return getMockTeams();
-  }
-  return fetchFromBackend(
-    "/api/v1/intern/feedback/teams",
-  ) as Promise<TeamsAndApps>;
-}
-
-export async function fetchSurveysByApp(): Promise<Record<string, string[]>> {
-  if (import.meta.env.VITE_MOCK_DATA === "true") {
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    return getMockSurveysByApp();
-  }
-  return fetchFromBackend("/api/v1/intern/feedback/surveys") as Promise<
-    Record<string, string[]>
-  >;
-}
-
-export async function fetchTags(): Promise<string[]> {
-  if (import.meta.env.VITE_MOCK_DATA === "true") {
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    return getMockTags();
-  }
-  return fetchFromBackend("/api/v1/intern/feedback/tags") as Promise<string[]>;
-}
+// ============================================
+// Metadata Keys Types
+// ============================================
 
 export interface MetadataKeysResponse {
   feedbackId: string;
   metadataKeys: Record<string, string[]>;
 }
 
-/**
- * Fetch available metadata keys and values for a specific survey.
- * Used for building dynamic filter UI in analytics dashboard.
- */
-export async function fetchMetadataKeys(
-  surveyId: string,
-): Promise<MetadataKeysResponse> {
-  if (import.meta.env.VITE_MOCK_DATA === "true") {
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    // Return mock metadata keys based on survey
-    if (surveyId === "ny-oppfolgingsplan-sykmeldt") {
-      return {
-        feedbackId: surveyId,
-        metadataKeys: {
-          harDialogmote: ["true", "false"],
-          sykmeldingstype: ["avventende", "standard", "gradert"],
-        },
-      };
-    }
-    return { feedbackId: surveyId, metadataKeys: {} };
-  }
-  return fetchFromBackend("/api/v1/intern/feedback/metadata-keys", {
-    feedbackId: surveyId,
-  }) as Promise<MetadataKeysResponse>;
-}
+// ============================================
+// Delete Survey Types
+// ============================================
 
-// Tag management
-export async function addTag(feedbackId: string, tag: string): Promise<void> {
-  const response = await fetch(
-    `/api/backend/api/v1/intern/feedback/${feedbackId}/tags`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ tag }),
-    },
-  );
-  if (!response.ok) {
-    throw new Error("Failed to add tag");
-  }
-}
-
-export async function removeTag(
-  feedbackId: string,
-  tag: string,
-): Promise<void> {
-  const response = await fetch(
-    `/api/backend/api/v1/intern/feedback/${feedbackId}/tags?tag=${encodeURIComponent(tag)}`,
-    {
-      method: "DELETE",
-    },
-  );
-  if (!response.ok) {
-    throw new Error("Failed to remove tag");
-  }
-}
-
-// Bulk delete survey
 export interface DeleteSurveyResult {
   deletedCount: number;
   surveyId: string;
-}
-
-export async function deleteSurvey(
-  surveyId: string,
-): Promise<DeleteSurveyResult> {
-  const response = await fetch(
-    `/api/backend/api/v1/intern/feedback/survey/${encodeURIComponent(surveyId)}`,
-    {
-      method: "DELETE",
-    },
-  );
-  if (!response.ok) {
-    throw new Error("Failed to delete survey");
-  }
-  return response.json();
-}
-
-// Delete single feedback
-export async function deleteFeedback(feedbackId: string): Promise<void> {
-  const response = await fetch(
-    `/api/backend/api/v1/intern/feedback/${encodeURIComponent(feedbackId)}`,
-    {
-      method: "DELETE",
-    },
-  );
-  if (!response.ok) {
-    throw new Error("Failed to delete feedback");
-  }
 }

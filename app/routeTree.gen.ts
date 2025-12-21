@@ -14,7 +14,6 @@ import { Route as ExportRouteImport } from './routes/export'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiInternalIsReadyRouteImport } from './routes/api/internal/isReady'
 import { Route as ApiInternalIsAliveRouteImport } from './routes/api/internal/isAlive'
-import { Route as ApiBackendSplatRouteImport } from './routes/api/backend/$'
 
 const FeedbackRoute = FeedbackRouteImport.update({
   id: '/feedback',
@@ -41,17 +40,11 @@ const ApiInternalIsAliveRoute = ApiInternalIsAliveRouteImport.update({
   path: '/api/internal/isAlive',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiBackendSplatRoute = ApiBackendSplatRouteImport.update({
-  id: '/api/backend/$',
-  path: '/api/backend/$',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/export': typeof ExportRoute
   '/feedback': typeof FeedbackRoute
-  '/api/backend/$': typeof ApiBackendSplatRoute
   '/api/internal/isAlive': typeof ApiInternalIsAliveRoute
   '/api/internal/isReady': typeof ApiInternalIsReadyRoute
 }
@@ -59,7 +52,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/export': typeof ExportRoute
   '/feedback': typeof FeedbackRoute
-  '/api/backend/$': typeof ApiBackendSplatRoute
   '/api/internal/isAlive': typeof ApiInternalIsAliveRoute
   '/api/internal/isReady': typeof ApiInternalIsReadyRoute
 }
@@ -68,7 +60,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/export': typeof ExportRoute
   '/feedback': typeof FeedbackRoute
-  '/api/backend/$': typeof ApiBackendSplatRoute
   '/api/internal/isAlive': typeof ApiInternalIsAliveRoute
   '/api/internal/isReady': typeof ApiInternalIsReadyRoute
 }
@@ -78,7 +69,6 @@ export interface FileRouteTypes {
     | '/'
     | '/export'
     | '/feedback'
-    | '/api/backend/$'
     | '/api/internal/isAlive'
     | '/api/internal/isReady'
   fileRoutesByTo: FileRoutesByTo
@@ -86,7 +76,6 @@ export interface FileRouteTypes {
     | '/'
     | '/export'
     | '/feedback'
-    | '/api/backend/$'
     | '/api/internal/isAlive'
     | '/api/internal/isReady'
   id:
@@ -94,7 +83,6 @@ export interface FileRouteTypes {
     | '/'
     | '/export'
     | '/feedback'
-    | '/api/backend/$'
     | '/api/internal/isAlive'
     | '/api/internal/isReady'
   fileRoutesById: FileRoutesById
@@ -103,7 +91,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ExportRoute: typeof ExportRoute
   FeedbackRoute: typeof FeedbackRoute
-  ApiBackendSplatRoute: typeof ApiBackendSplatRoute
   ApiInternalIsAliveRoute: typeof ApiInternalIsAliveRoute
   ApiInternalIsReadyRoute: typeof ApiInternalIsReadyRoute
 }
@@ -145,13 +132,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiInternalIsAliveRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/backend/$': {
-      id: '/api/backend/$'
-      path: '/api/backend/$'
-      fullPath: '/api/backend/$'
-      preLoaderRoute: typeof ApiBackendSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -159,7 +139,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ExportRoute: ExportRoute,
   FeedbackRoute: FeedbackRoute,
-  ApiBackendSplatRoute: ApiBackendSplatRoute,
   ApiInternalIsAliveRoute: ApiInternalIsAliveRoute,
   ApiInternalIsReadyRoute: ApiInternalIsReadyRoute,
 }

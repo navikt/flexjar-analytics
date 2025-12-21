@@ -1,11 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
-import type { FeedbackPage } from "./api";
+import { fetchFeedbackServerFn } from "./serverFunctions";
 import { useSearchParams } from "./useSearchParams";
+
+// Re-export the FeedbackPage type for components that need it
+export type { FeedbackPage } from "./api";
 
 export function useFeedback() {
   const { params } = useSearchParams();
 
-  return useQuery<FeedbackPage>({
+  return useQuery({
     queryKey: [
       "feedback",
       params.app,
@@ -22,33 +25,24 @@ export function useFeedback() {
       params.pathname,
       params.deviceType,
     ],
-    queryFn: async () => {
-      const queryParams = new URLSearchParams();
-      // Note: team filtering is done server-side based on user's Azure AD groups
-      queryParams.set("size", params.size || "20");
-
-      if (params.app) queryParams.set("app", params.app);
-      if (params.feedbackId) queryParams.set("feedbackId", params.feedbackId);
-      if (params.page)
-        queryParams.set("page", String(Number.parseInt(params.page, 10) - 1)); // Convert to 0-indexed
-      if (params.from) queryParams.set("from", params.from);
-      if (params.to) queryParams.set("to", params.to);
-      if (params.medTekst) queryParams.set("medTekst", params.medTekst);
-      if (params.stjerne) queryParams.set("stjerne", params.stjerne);
-      if (params.fritekst) queryParams.set("fritekst", params.fritekst);
-      if (params.tags) queryParams.set("tags", params.tags);
-      if (params.lavRating) queryParams.set("lavRating", params.lavRating);
-      if (params.pathname) queryParams.set("pathname", params.pathname);
-      if (params.deviceType) queryParams.set("deviceType", params.deviceType);
-
-      const response = await fetch(
-        `/api/backend/api/v1/intern/feedback?${queryParams.toString()}`,
-      );
-      if (!response.ok) {
-        throw new Error("Failed to fetch feedback");
-      }
-      return response.json();
-    },
+    queryFn: () =>
+      fetchFeedbackServerFn({
+        data: {
+          app: params.app,
+          feedbackId: params.feedbackId,
+          page: params.page,
+          size: params.size || "20",
+          from: params.from,
+          to: params.to,
+          medTekst: params.medTekst,
+          stjerne: params.stjerne,
+          fritekst: params.fritekst,
+          tags: params.tags,
+          lavRating: params.lavRating,
+          pathname: params.pathname,
+          deviceType: params.deviceType,
+        },
+      }),
     staleTime: 10000, // 10 seconds
   });
 }

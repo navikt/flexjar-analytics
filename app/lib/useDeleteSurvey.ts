@@ -1,11 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { type DeleteSurveyResult, deleteSurvey } from "./api";
+import { deleteSurveyServerFn } from "./serverFunctions";
 
 export function useDeleteSurvey() {
   const queryClient = useQueryClient();
 
-  return useMutation<DeleteSurveyResult, Error, string>({
-    mutationFn: (surveyId: string) => deleteSurvey(surveyId),
+  return useMutation({
+    mutationFn: (surveyId: string) =>
+      deleteSurveyServerFn({ data: { surveyId } }),
     onSuccess: () => {
       // Invalidate all related queries
       queryClient.invalidateQueries({ queryKey: ["feedback"] });

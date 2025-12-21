@@ -22,11 +22,13 @@
     "@tanstack/react-query": "^5.62.0",
     "@tanstack/react-router": "^1.140.0",
     "@tanstack/react-start": "^1.140.0",
+    "@tanstack/zod-adapter": "^1.141.8",
     "dayjs": "^1.11.13",
     "nitro": "3.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "recharts": "^2.14.1"
+    "recharts": "^2.14.1",
+    "zod": "^4.2.1"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",

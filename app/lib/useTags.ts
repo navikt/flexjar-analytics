@@ -1,16 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { addTag, removeTag } from "./api";
+import {
+  addTagServerFn,
+  fetchTagsServerFn,
+  removeTagServerFn,
+} from "./serverFunctions";
 
 export function useTags() {
-  return useQuery<string[]>({
+  return useQuery({
     queryKey: ["tags"],
-    queryFn: async () => {
-      const response = await fetch("/api/backend/api/v1/intern/feedback/tags");
-      if (!response.ok) {
-        throw new Error("Failed to fetch tags");
-      }
-      return response.json();
-    },
+    queryFn: () => fetchTagsServerFn(),
     staleTime: 60000, // 1 minute
   });
 }
@@ -20,7 +18,7 @@ export function useAddTag() {
 
   return useMutation({
     mutationFn: ({ feedbackId, tag }: { feedbackId: string; tag: string }) =>
-      addTag(feedbackId, tag),
+      addTagServerFn({ data: { feedbackId, tag } }),
     onSuccess: () => {
       // Invalidate both feedback and tags queries
       queryClient.invalidateQueries({ queryKey: ["feedback"] });
@@ -34,7 +32,7 @@ export function useRemoveTag() {
 
   return useMutation({
     mutationFn: ({ feedbackId, tag }: { feedbackId: string; tag: string }) =>
-      removeTag(feedbackId, tag),
+      removeTagServerFn({ data: { feedbackId, tag } }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["feedback"] });
       queryClient.invalidateQueries({ queryKey: ["tags"] });
