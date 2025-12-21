@@ -149,6 +149,8 @@ export interface FeedbackDto {
   surveyVersion?: string;
   surveyType?: SurveyType;
   context?: SubmissionContext;
+  /** Custom metadata for segmentation (e.g. { harDialogmote: "true" }) */
+  metadata?: Record<string, string>;
   answers: Answer[];
   tags?: string[];
   sensitiveDataRedacted: boolean;
@@ -298,6 +300,37 @@ export async function fetchTags(): Promise<string[]> {
     return getMockTags();
   }
   return fetchFromBackend("/api/v1/intern/feedback/tags") as Promise<string[]>;
+}
+
+export interface MetadataKeysResponse {
+  feedbackId: string;
+  metadataKeys: Record<string, string[]>;
+}
+
+/**
+ * Fetch available metadata keys and values for a specific survey.
+ * Used for building dynamic filter UI in analytics dashboard.
+ */
+export async function fetchMetadataKeys(
+  surveyId: string,
+): Promise<MetadataKeysResponse> {
+  if (import.meta.env.VITE_MOCK_DATA === "true") {
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    // Return mock metadata keys based on survey
+    if (surveyId === "ny-oppfolgingsplan-sykmeldt") {
+      return {
+        feedbackId: surveyId,
+        metadataKeys: {
+          harDialogmote: ["true", "false"],
+          sykmeldingstype: ["avventende", "standard", "gradert"],
+        },
+      };
+    }
+    return { feedbackId: surveyId, metadataKeys: {} };
+  }
+  return fetchFromBackend("/api/v1/intern/feedback/metadata-keys", {
+    feedbackId: surveyId,
+  }) as Promise<MetadataKeysResponse>;
 }
 
 // Tag management

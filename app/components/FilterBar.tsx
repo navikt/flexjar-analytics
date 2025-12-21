@@ -25,6 +25,7 @@ import { useStats } from "~/lib/useStats";
 import { useSurveysByApp } from "~/lib/useSurveysByApp";
 import { useTags } from "~/lib/useTags";
 import { FilterBarSkeleton } from "./FilterBar/FilterBarSkeleton";
+import { MetadataFilter } from "./MetadataFilter";
 
 interface FilterBarProps {
   showDetails?: boolean;
@@ -322,6 +323,11 @@ export function FilterBar({ showDetails = false }: FilterBarProps) {
             </HStack>
           </HStack>
         </Box.New>
+      )}
+
+      {/* Metadata Filter - shows when a specific survey is selected */}
+      {showDetails && params.feedbackId && (
+        <MetadataFilter surveyId={params.feedbackId} />
       )}
     </VStack>
   );

@@ -40,6 +40,15 @@ import {
   ratingToEmoji,
 } from "./feedback/utils";
 
+// Helper to format metadata key for display as a label
+function formatMetadataDisplay(key: string, _value: string): string {
+  // Convert camelCase to readable label (e.g., harDialogmote -> Har Dialogmote)
+  return key
+    .replace(/([A-Z])/g, " $1")
+    .replace(/^./, (str) => str.toUpperCase())
+    .trim();
+}
+
 export function FeedbackTable() {
   const { params, setParam } = useSearchParams();
   const page = Number.parseInt(params.page || "1", 10);
@@ -372,7 +381,51 @@ export function FeedbackTable() {
                                 </div>
                               )}
 
-                              {/* Metadata */}
+                              {/* Custom Metadata */}
+                              {feedback.metadata &&
+                                Object.keys(feedback.metadata).length > 0 && (
+                                  <div className={styles.expandedSection}>
+                                    <Label
+                                      size="small"
+                                      className={styles.expandedSectionLabel}
+                                    >
+                                      <HStack gap="1" align="center">
+                                        📋 Metadata
+                                      </HStack>
+                                    </Label>
+                                    <div className={styles.contextGrid}>
+                                      {Object.entries(feedback.metadata).map(
+                                        ([key, value]) => (
+                                          <div
+                                            key={key}
+                                            className={styles.contextItem}
+                                          >
+                                            <div
+                                              className={styles.contextContent}
+                                            >
+                                              <span
+                                                className={styles.contextLabel}
+                                              >
+                                                {formatMetadataDisplay(key, "")}
+                                              </span>
+                                              <span
+                                                className={styles.contextValue}
+                                              >
+                                                {value === "true"
+                                                  ? "Ja"
+                                                  : value === "false"
+                                                    ? "Nei"
+                                                    : value}
+                                              </span>
+                                            </div>
+                                          </div>
+                                        ),
+                                      )}
+                                    </div>
+                                  </div>
+                                )}
+
+                              {/* Metadata - IDs */}
                               <div className={styles.metadata}>
                                 <Detail textColor="subtle">
                                   ID: {feedback.id}

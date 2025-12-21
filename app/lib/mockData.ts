@@ -408,6 +408,8 @@ interface SurveyConfig {
     textLabel?: string;
     textLabel2?: string;
   };
+  /** Optional metadata generator - returns metadata for each item */
+  metadataGenerator?: () => Record<string, string>;
 }
 
 export function generateSurveyData(
@@ -525,6 +527,7 @@ export function generateSurveyData(
       surveyId: config.surveyId,
       context: createContext(path, device, width, height),
       tags: poolItem.tags,
+      metadata: config.metadataGenerator?.(),
       answers,
       sensitiveDataRedacted: poolItem.isRedacted,
     });
@@ -547,6 +550,13 @@ const mockFeedbackItems: FeedbackDto[] = [
       ratingLabel: "Er oppfølgingsplanen til hjelp for deg?",
       textLabel: "Legg gjerne til en begrunnelse",
     },
+    // Add metadata for demo purposes
+    metadataGenerator: () => ({
+      harDialogmote: Math.random() > 0.5 ? "true" : "false",
+      sykmeldingstype: ["avventende", "standard", "gradert"][
+        Math.floor(Math.random() * 3)
+      ],
+    }),
   }),
 
   ...generateSurveyData(62, {
