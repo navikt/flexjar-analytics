@@ -28,10 +28,12 @@ jobs:
       - run: npm run typecheck
       - run: npm run test
 
-  build:
-    name: Build and push docker image
+  # Build 1: For demo environment (with mock data)
+  build-demo:
+    name: Build demo (mock data)
     needs: checks
     runs-on: ubuntu-latest
+    if: startsWith(github.ref_name, 'demo-')
     outputs:
       image: ${{ steps.docker-build-push.outputs.image }}
     steps:
@@ -43,16 +45,15 @@ jobs:
       - run: npm ci
         env:
           NPM_AUTH_TOKEN: ${{ secrets.READER_TOKEN }}
-      # Build the application - pass VITE_MOCK_DATA=true if deploying to demo
-      - name: Build application
-        run: |
-          if [[ "${{ startsWith(github.ref_name, 'demo-') || github.ref_name == 'main' }}" == "true" ]]; then
-            export VITE_MOCK_DATA=true
-          fi
-          npm run build
-          cp -r .output/public .output/client
       
-      # Upload static files to CDN
+      - name: Build application (with mock data)
+        run: npm run build
+        env:
+          VITE_MOCK_DATA: "true"
+      
+      - name: Copy static files
+        run: cp -r .output/public .output/client
+      
       - name: Upload static files to NAV CDN
         uses: nais/deploy/actions/cdn-upload/v2@master
         with:
@@ -62,7 +63,47 @@ jobs:
           project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
           identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
 
-      # Build and push Docker image
+      - name: Push to GAR
+        uses: nais/docker-build-push@v0
+        id: docker-build-push
+        with:
+          team: team-esyfo
+          identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
+          project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
+
+  # Build 2: For dev and prod environments (real backend)
+  build-production:
+    name: Build production
+    needs: checks
+    runs-on: ubuntu-latest
+    if: github.ref_name == 'main'
+    outputs:
+      image: ${{ steps.docker-build-push.outputs.image }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "npm"
+      - run: npm ci
+        env:
+          NPM_AUTH_TOKEN: ${{ secrets.READER_TOKEN }}
+      
+      - name: Build application (production)
+        run: npm run build
+      
+      - name: Copy static files
+        run: cp -r .output/public .output/client
+      
+      - name: Upload static files to NAV CDN
+        uses: nais/deploy/actions/cdn-upload/v2@master
+        with:
+          team: team-esyfo
+          source: ./.output/client
+          destination: "/flexjar-analytics"
+          project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
+          identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
+
       - name: Push to GAR
         uses: nais/docker-build-push@v0
         id: docker-build-push
@@ -73,7 +114,7 @@ jobs:
 
   deploy-demo:
     name: Deploy to dev-gcp (Demo)
-    needs: build
+    needs: build-demo
     runs-on: ubuntu-latest
     environment:
       name: demo
@@ -83,5 +124,35 @@ jobs:
       - uses: nais/deploy/actions/deploy@v2
         env:
           CLUSTER: dev-gcp
-          RESOURCE: nais/app/demo.yaml
-          VAR: image=${{ needs.build.outputs.image }}
+          RESOURCE: nais/demo.yaml
+          VAR: image=${{ needs.build-demo.outputs.image }}
+
+  deploy-dev:
+    name: Deploy to dev-gcp
+    needs: build-production
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+      url: https://flexjar-analytics.intern.dev.nav.no
+    steps:
+      - uses: actions/checkout@v4
+      - uses: nais/deploy/actions/deploy@v2
+        env:
+          CLUSTER: dev-gcp
+          RESOURCE: nais/dev.yaml
+          VAR: image=${{ needs.build-production.outputs.image }}
+
+  deploy-prod:
+    name: Deploy to prod-gcp
+    needs: [build-production, deploy-dev]
+    runs-on: ubuntu-latest
+    environment:
+      name: prod
+      url: https://flexjar-analytics.intern.nav.no
+    steps:
+      - uses: actions/checkout@v4
+      - uses: nais/deploy/actions/deploy@v2
+        env:
+          CLUSTER: prod-gcp
+          RESOURCE: nais/prod.yaml
+          VAR: image=${{ needs.build-production.outputs.image }}
