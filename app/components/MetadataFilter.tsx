@@ -1,7 +1,7 @@
 import { Box, Chips, HStack, Label, Skeleton, VStack } from "@navikt/ds-react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchMetadataKeysServerFn } from "~/lib/serverFunctions";
-import { useSearchParams } from "~/lib/useSearchParams";
+import { useSearchParams } from "~/hooks/useSearchParams";
+import { fetchMetadataKeysServerFn } from "~/server/actions";
 
 interface MetadataFilterProps {
   surveyId: string;

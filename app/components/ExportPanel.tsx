@@ -17,11 +17,18 @@ import {
 import dayjs from "dayjs";
 import { useState } from "react";
 import { DashboardCard, DashboardGrid } from "~/components/DashboardComponents";
-import { useSearchParams } from "~/lib/useSearchParams";
+import { useSearchParams } from "~/hooks/useSearchParams";
+import { exportServerFn } from "~/server/actions";
 
+type ExportFormat = "csv" | "json" | "excel";
+
+/**
+ * Panel for exporting feedback data in various formats.
+ * Uses server function for authenticated backend access.
+ */
 export function ExportPanel() {
   const { params } = useSearchParams();
-  const [format, setFormat] = useState<"csv" | "json" | "excel">("csv");
+  const [format, setFormat] = useState<ExportFormat>("csv");
   const [isExporting, setIsExporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -32,47 +39,39 @@ export function ExportPanel() {
     setSuccess(false);
 
     try {
-      const queryParams = new URLSearchParams();
-      queryParams.set("format", format);
-      if (params.team) queryParams.set("team", params.team);
-      if (params.app) queryParams.set("app", params.app);
-      if (params.feedbackId) queryParams.set("feedbackId", params.feedbackId);
-      if (params.from) queryParams.set("from", params.from);
-      if (params.to) queryParams.set("to", params.to);
-      if (params.medTekst) queryParams.set("medTekst", params.medTekst);
-      if (params.fritekst) queryParams.set("fritekst", params.fritekst);
-      if (params.lavRating) queryParams.set("lavRating", params.lavRating);
-      if (params.deviceType) queryParams.set("deviceType", params.deviceType);
-      if (params.tags) queryParams.set("tags", params.tags);
+      const result = await exportServerFn({
+        data: {
+          format,
+          team: params.team,
+          app: params.app,
+          feedbackId: params.feedbackId,
+          from: params.from,
+          to: params.to,
+          medTekst: params.medTekst,
+          fritekst: params.fritekst,
+          lavRating: params.lavRating,
+          deviceType: params.deviceType,
+          tags: params.tags,
+        },
+      });
 
-      const response = await fetch(
-        `/api/backend/api/v1/intern/export?${queryParams.toString()}`,
-      );
-
-      if (!response.ok) {
-        if (response.status === 401 || response.status === 403) {
-          throw new Error("Du har ikke tilgang til å eksportere data");
-        }
-        if (response.status === 504 || response.status === 408) {
-          throw new Error(
-            "Forespørselen tok for lang tid. Prøv å begrense tidsperioden.",
-          );
-        }
-        throw new Error(`Eksport feilet (${response.status})`);
+      // Convert base64 back to blob and download
+      const binaryString = atob(result.data);
+      const bytes = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
       }
+      const blob = new Blob([bytes], { type: result.contentType });
 
-      const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-
-      const extension = format === "excel" ? "xlsx" : format;
-      a.download = `flexjar-export-${new Date().toISOString().split("T")[0]}.${extension}`;
-
+      a.download = result.filename;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
+
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
@@ -117,7 +116,7 @@ export function ExportPanel() {
             legend="Eksportformat"
             hideLegend
             value={format}
-            onChange={(val) => setFormat(val as typeof format)}
+            onChange={(val) => setFormat(val as ExportFormat)}
           >
             <Radio value="csv">
               <HStack gap="2" align="center">
@@ -167,55 +166,7 @@ export function ExportPanel() {
       <DashboardCard padding="6">
         <VStack gap="4">
           <Heading size="small">Aktive filtre</Heading>
-
-          <div style={{ display: "grid", gap: "1rem" }}>
-            {params.app && (
-              <BodyShort size="small" spacing>
-                <strong>App:</strong> {params.app}
-              </BodyShort>
-            )}
-            {params.feedbackId && (
-              <BodyShort size="small" spacing>
-                <strong>Survey:</strong> {params.feedbackId}
-              </BodyShort>
-            )}
-            {params.from && (
-              <BodyShort size="small" spacing>
-                <strong>Fra:</strong> {dayjs(params.from).format("DD.MM.YYYY")}
-              </BodyShort>
-            )}
-            {params.to && (
-              <BodyShort size="small" spacing>
-                <strong>Til:</strong> {dayjs(params.to).format("DD.MM.YYYY")}
-              </BodyShort>
-            )}
-            {params.medTekst === "true" && (
-              <BodyShort size="small" spacing>
-                <strong>Filter:</strong> Kun med tekst
-              </BodyShort>
-            )}
-            {params.lavRating === "true" && (
-              <BodyShort size="small" spacing>
-                <strong>Filter:</strong> Kun lave vurderinger (1-2)
-              </BodyShort>
-            )}
-            {params.stjerne === "true" && (
-              <BodyShort size="small" spacing>
-                <strong>Filter:</strong> Kun stjernede
-              </BodyShort>
-            )}
-            {params.deviceType && (
-              <BodyShort size="small" spacing>
-                <strong>Enhet:</strong>{" "}
-                {params.deviceType === "mobile"
-                  ? "Mobil"
-                  : params.deviceType === "desktop"
-                    ? "Desktop"
-                    : "Alle"}
-              </BodyShort>
-            )}
-          </div>
-
+          <ActiveFilters params={params} />
           <BodyShort size="small" textColor="subtle">
             Eksporten inkluderer alle svar med metadata (enhet, side, tidspunkt)
             som matcher filtrene (maks 10 000).
@@ -223,5 +174,62 @@ export function ExportPanel() {
         </VStack>
       </DashboardCard>
     </DashboardGrid>
+  );
+}
+
+/**
+ * Displays active filter parameters in a readable format.
+ */
+function ActiveFilters({
+  params,
+}: { params: ReturnType<typeof useSearchParams>["params"] }) {
+  return (
+    <div style={{ display: "grid", gap: "1rem" }}>
+      {params.app && (
+        <BodyShort size="small" spacing>
+          <strong>App:</strong> {params.app}
+        </BodyShort>
+      )}
+      {params.feedbackId && (
+        <BodyShort size="small" spacing>
+          <strong>Survey:</strong> {params.feedbackId}
+        </BodyShort>
+      )}
+      {params.from && (
+        <BodyShort size="small" spacing>
+          <strong>Fra:</strong> {dayjs(params.from).format("DD.MM.YYYY")}
+        </BodyShort>
+      )}
+      {params.to && (
+        <BodyShort size="small" spacing>
+          <strong>Til:</strong> {dayjs(params.to).format("DD.MM.YYYY")}
+        </BodyShort>
+      )}
+      {params.medTekst === "true" && (
+        <BodyShort size="small" spacing>
+          <strong>Filter:</strong> Kun med tekst
+        </BodyShort>
+      )}
+      {params.lavRating === "true" && (
+        <BodyShort size="small" spacing>
+          <strong>Filter:</strong> Kun lave vurderinger (1-2)
+        </BodyShort>
+      )}
+      {params.stjerne === "true" && (
+        <BodyShort size="small" spacing>
+          <strong>Filter:</strong> Kun stjernede
+        </BodyShort>
+      )}
+      {params.deviceType && (
+        <BodyShort size="small" spacing>
+          <strong>Enhet:</strong>{" "}
+          {params.deviceType === "mobile"
+            ? "Mobil"
+            : params.deviceType === "desktop"
+              ? "Desktop"
+              : "Alle"}
+        </BodyShort>
+      )}
+    </div>
   );
 }

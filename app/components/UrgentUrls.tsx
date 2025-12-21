@@ -1,7 +1,7 @@
 import { LinkIcon } from "@navikt/aksel-icons";
 import { Box, Heading, Table } from "@navikt/ds-react";
 import { DashboardCard } from "~/components/DashboardComponents";
-import { useStats } from "~/lib/useStats";
+import { useStats } from "~/hooks/useStats";
 
 export function UrgentUrls() {
   const { data: stats } = useStats();

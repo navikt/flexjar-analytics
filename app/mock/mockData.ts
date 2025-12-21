@@ -10,7 +10,7 @@ import type {
   TextAnswer,
   TopTaskStats,
   TopTasksResponse,
-} from "./api";
+} from "~/types/api";
 
 // ============================================
 // Helper functions for creating answers

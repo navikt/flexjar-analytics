@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import type { Answer } from "~/lib/api";
+import type { Answer } from "~/types/api";
 import { RenderAnswer } from "./AnswerRenderer";
 
 // Timeline component that connects answer items with lines

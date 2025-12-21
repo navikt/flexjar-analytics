@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteFeedbackServerFn } from "./serverFunctions";
+import { deleteFeedbackServerFn } from "~/server/actions";
 
 export function useDeleteFeedback() {
   const queryClient = useQueryClient();

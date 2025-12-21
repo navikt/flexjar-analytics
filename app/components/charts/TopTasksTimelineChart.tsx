@@ -9,8 +9,8 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { useTheme } from "~/lib/ThemeContext";
-import { useTopTasksStats } from "~/lib/useTopTasksStats";
+import { useTheme } from "~/context/ThemeContext";
+import { useTopTasksStats } from "~/hooks/useTopTasksStats";
 
 // Chart colors for dark mode (reused from others for consistency)
 const CHART_COLORS = {

@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchStatsServerFn } from "./serverFunctions";
+import { fetchStatsServerFn } from "~/server/actions";
 
 // Re-export the FeedbackStats type for components that need it
-export type { FeedbackStats } from "./api";
+export type { FeedbackStats } from "~/types/api";
 
 /**
  * Hook to fetch all available filter options (apps, surveys)

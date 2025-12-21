@@ -8,8 +8,8 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import type { RatingStats } from "~/lib/api";
-import { useStats } from "~/lib/useStats";
+import { useStats } from "~/hooks/useStats";
+import type { RatingStats } from "~/types/api";
 
 const COLORS = {
   "1": "#EF4444", // Red - angry (brighter)

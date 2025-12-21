@@ -66,6 +66,22 @@ export const MetadataKeysParamsSchema = z.object({
 
 export type MetadataKeysParams = z.infer<typeof MetadataKeysParamsSchema>;
 
+export const ExportParamsSchema = z.object({
+  format: z.enum(["csv", "json", "excel"]),
+  team: z.string().optional(),
+  app: z.string().optional(),
+  feedbackId: z.string().optional(),
+  from: z.string().optional(),
+  to: z.string().optional(),
+  medTekst: z.string().optional(),
+  fritekst: z.string().optional(),
+  lavRating: z.string().optional(),
+  deviceType: z.string().optional(),
+  tags: z.string().optional(),
+});
+
+export type ExportParams = z.infer<typeof ExportParamsSchema>;
+
 // ============================================
 // Response Schemas (for runtime validation)
 // ============================================

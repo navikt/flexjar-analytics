@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteSurveyServerFn } from "./serverFunctions";
+import { deleteSurveyServerFn } from "~/server/actions";
 
 export function useDeleteSurvey() {
   const queryClient = useQueryClient();

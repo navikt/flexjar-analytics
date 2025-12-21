@@ -8,8 +8,8 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { useTheme } from "~/lib/ThemeContext";
-import { useStats } from "~/lib/useStats";
+import { useTheme } from "~/context/ThemeContext";
+import { useStats } from "~/hooks/useStats";
 
 const CHART_COLORS = {
   bar: "#818CF8", // Purple

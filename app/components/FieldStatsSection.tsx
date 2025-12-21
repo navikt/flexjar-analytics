@@ -1,9 +1,9 @@
 import { ChatExclamationmarkIcon, StarIcon } from "@navikt/aksel-icons";
 import { BodyShort, HStack, Heading, Label, VStack } from "@navikt/ds-react";
 import { DashboardCard, DashboardGrid } from "~/components/DashboardComponents";
-import type { FieldStat, RatingStats, TextStats } from "~/lib/api";
-import { useSearchParams } from "~/lib/useSearchParams";
-import { useStats } from "~/lib/useStats";
+import { useSearchParams } from "~/hooks/useSearchParams";
+import { useStats } from "~/hooks/useStats";
+import type { FieldStat, RatingStats, TextStats } from "~/types/api";
 
 import { FieldStatsSkeleton } from "./FieldStatsSection/FieldStatsSkeleton";
 

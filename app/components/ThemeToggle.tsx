@@ -1,6 +1,6 @@
 import { MoonIcon, SunIcon } from "@navikt/aksel-icons";
 import { Button, Tooltip } from "@navikt/ds-react";
-import { useTheme } from "~/lib/ThemeContext";
+import { useTheme } from "~/context/ThemeContext";
 
 export function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();

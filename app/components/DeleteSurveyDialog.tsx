@@ -9,7 +9,7 @@ import {
   VStack,
 } from "@navikt/ds-react";
 import { useState } from "react";
-import { useDeleteSurvey } from "~/lib/useDeleteSurvey";
+import { useDeleteSurvey } from "~/hooks/useDeleteSurvey";
 
 interface DeleteSurveyDialogProps {
   surveyId: string;

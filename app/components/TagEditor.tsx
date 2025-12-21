@@ -7,7 +7,7 @@ import {
   Tooltip,
 } from "@navikt/ds-react";
 import { useState } from "react";
-import { useAddTag, useRemoveTag, useTags } from "~/lib/useTags";
+import { useAddTag, useRemoveTag, useTags } from "~/hooks/useTags";
 
 interface TagEditorProps {
   feedbackId: string;

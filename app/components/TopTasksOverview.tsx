@@ -6,7 +6,7 @@ import {
 import { Box, Heading, Table } from "@navikt/ds-react";
 import { DashboardCard, DashboardGrid } from "~/components/DashboardComponents";
 import { TopTasksTimelineChart } from "~/components/charts/TopTasksTimelineChart";
-import { useTopTasksStats } from "~/lib/useTopTasksStats";
+import { useTopTasksStats } from "~/hooks/useTopTasksStats";
 import { StatCard } from "./StatsCards";
 
 export function TopTasksOverview() {

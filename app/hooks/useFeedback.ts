@@ -1,10 +1,34 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchFeedbackServerFn } from "./serverFunctions";
-import { useSearchParams } from "./useSearchParams";
+import { useSearchParams } from "~/hooks/useSearchParams";
+import { fetchFeedbackServerFn } from "~/server/actions";
 
 // Re-export the FeedbackPage type for components that need it
-export type { FeedbackPage } from "./api";
+export type { FeedbackPage } from "~/types/api";
 
+/**
+ * Hook to fetch paginated feedback items.
+ *
+ * Automatically reacts to URL search params for filtering and pagination:
+ * - app: Filter by application name
+ * - feedbackId: Filter by specific survey ID
+ * - page/size: Pagination controls (1-indexed)
+ * - from/to: Date range filter
+ * - medTekst: Filter to only items with text responses
+ * - lavRating: Filter to only low ratings (1-2)
+ * - tags: Filter by comma-separated tags
+ * - deviceType: Filter by device type
+ *
+ * @returns React Query result with FeedbackPage (content, pagination info)
+ *
+ * @example
+ * ```tsx
+ * function FeedbackList() {
+ *   const { data, isLoading } = useFeedback();
+ *   if (isLoading) return <Spinner />;
+ *   return data.content.map(item => <FeedbackCard key={item.id} {...item} />);
+ * }
+ * ```
+ */
 export function useFeedback() {
   const { params } = useSearchParams();
 

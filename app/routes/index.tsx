@@ -12,8 +12,8 @@ import { RatingChart } from "~/components/charts/RatingChart";
 import { RatingTrendChart } from "~/components/charts/RatingTrendChart";
 import { TimelineChart } from "~/components/charts/TimelineChart";
 import { TopAppsChart } from "~/components/charts/TopAppsChart";
-import { useSearchParams } from "~/lib/useSearchParams";
-import { useStats } from "~/lib/useStats";
+import { useSearchParams } from "~/hooks/useSearchParams";
+import { useStats } from "~/hooks/useStats";
 
 export const Route = createFileRoute("/")({
   component: DashboardPage,

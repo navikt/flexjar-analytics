@@ -305,3 +305,15 @@
   font-size: 1.25rem;
   font-weight: 600;
 }
+
+/* Preview text in compact row */
+.previewText {
+  max-width: 350px;
+  font-weight: 500;
+}
+
+.previewSubText {
+  max-width: 350px;
+  font-size: 0.85rem;
+  color: var(--ax-text-neutral-subtle);
+}

@@ -13,7 +13,7 @@ import {
   VStack,
 } from "@navikt/ds-react";
 import type { ReactNode } from "react";
-import type { Answer } from "~/lib/api";
+import type { Answer } from "~/types/api";
 import { COLORS, ratingToEmoji } from "./utils";
 
 interface AnswerCardLayoutProps {

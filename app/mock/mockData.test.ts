@@ -9,7 +9,7 @@ import { describe, expect, it } from "vitest";
 import {
   generateSurveyData,
   // @ts-ignore - these might not be exported but we can check the results
-} from "./mockData";
+} from "~/mock/mockData";
 
 describe("Mock Data Generation", () => {
   it("should generate items from topics", () => {

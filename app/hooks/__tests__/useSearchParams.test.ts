@@ -1,6 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
-import { useSearchParams } from "../useSearchParams";
+import { useSearchParams } from "~/hooks/useSearchParams";
 
 describe("useSearchParams", () => {
   beforeEach(() => {

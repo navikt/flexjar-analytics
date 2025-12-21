@@ -7,9 +7,9 @@ import {
 import { BodyShort, HStack } from "@navikt/ds-react";
 import type { ReactNode } from "react";
 import { DashboardCard, DashboardGrid } from "~/components/DashboardComponents";
-import type { RatingStats, TextStats } from "~/lib/api";
-import { useSearchParams } from "~/lib/useSearchParams";
-import { useStats } from "~/lib/useStats";
+import { useSearchParams } from "~/hooks/useSearchParams";
+import { useStats } from "~/hooks/useStats";
+import type { RatingStats, TextStats } from "~/types/api";
 import { StatsCardsSkeleton } from "./StatsCards/StatsCardsSkeleton";
 
 interface StatCardProps {

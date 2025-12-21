@@ -14,7 +14,7 @@ import {
 } from "@navikt/ds-react";
 import dayjs from "dayjs";
 import { useRef, useState } from "react";
-import { useSearchParams } from "~/lib/useSearchParams";
+import { useSearchParams } from "~/hooks/useSearchParams";
 
 function CustomPeriodInputs({
   onApply,

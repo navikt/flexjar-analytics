@@ -8,8 +8,8 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { useTheme } from "~/lib/ThemeContext";
-import { useStats } from "~/lib/useStats";
+import { useTheme } from "~/context/ThemeContext";
+import { useStats } from "~/hooks/useStats";
 
 const DEVICE_COLORS: Record<string, string> = {
   desktop: "#60A5FA", // Blue

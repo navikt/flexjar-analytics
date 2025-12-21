@@ -18,12 +18,12 @@ import {
 } from "@navikt/ds-react";
 import dayjs from "dayjs";
 import { PeriodSelector } from "~/components/PeriodSelector";
-import { getSurveyFeatures } from "~/lib/surveyConfig";
-import { useFilterOptions } from "~/lib/useFilterOptions";
-import { useSearchParams } from "~/lib/useSearchParams";
-import { useStats } from "~/lib/useStats";
-import { useSurveysByApp } from "~/lib/useSurveysByApp";
-import { useTags } from "~/lib/useTags";
+import { getSurveyFeatures } from "~/config/surveyConfig";
+import { useFilterOptions } from "~/hooks/useFilterOptions";
+import { useSearchParams } from "~/hooks/useSearchParams";
+import { useStats } from "~/hooks/useStats";
+import { useSurveysByApp } from "~/hooks/useSurveysByApp";
+import { useTags } from "~/hooks/useTags";
 import { FilterBarSkeleton } from "./FilterBar/FilterBarSkeleton";
 import { MetadataFilter } from "./MetadataFilter";
 

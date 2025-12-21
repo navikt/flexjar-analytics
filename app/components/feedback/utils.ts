@@ -1,29 +1,19 @@
-import type { FeedbackDto } from "../../lib/api";
+import type { FeedbackDto } from "~/types/api";
 
-// Dark mode compatible colors
+/**
+ * Common color tokens for feedback UI elements.
+ * Uses CSS variables from Aksel design system.
+ */
 export const COLORS = {
-  textMuted: "rgba(255, 255, 255, 0.6)",
-  iconWarning: "#FBBF24", // Yellow/amber
-  iconInfo: "#60A5FA", // Blue
+  iconWarning: "var(--ax-icon-warning)",
+  iconInfo: "var(--ax-icon-info)",
+  iconSuccess: "var(--ax-icon-success)",
+  iconError: "var(--ax-icon-error)",
 };
 
-export function ratingToEmoji(rating: number): string {
-  switch (rating) {
-    case 1:
-      return "😡";
-    case 2:
-      return "🙁";
-    case 3:
-      return "😐";
-    case 4:
-      return "😀";
-    case 5:
-      return "😍";
-    default:
-      return "❓";
-  }
-}
-
+/**
+ * Converts device type to an emoji icon.
+ */
 export function deviceToIcon(deviceType: string): string {
   switch (deviceType) {
     case "mobile":
@@ -33,85 +23,124 @@ export function deviceToIcon(deviceType: string): string {
     case "desktop":
       return "🖥️";
     default:
-      return "";
+      return "❓";
   }
 }
 
-// Get all ratings from a feedback item
+/**
+ * Converts a rating (1-5) to a descriptive emoji.
+ */
+export function ratingToEmoji(rating: number): string {
+  switch (rating) {
+    case 1:
+      return "😢";
+    case 2:
+      return "😕";
+    case 3:
+      return "😐";
+    case 4:
+      return "🙂";
+    case 5:
+      return "😄";
+    default:
+      return "❓";
+  }
+}
+
+/**
+ * Extracts all rating answers from feedback.
+ * Returns array of {rating, label} for display.
+ */
 export function getAllRatings(
   feedback: FeedbackDto,
-): { label: string; rating: number }[] {
+): { rating: number; label: string }[] {
   return feedback.answers
     .filter((a) => a.fieldType === "RATING" && a.value.type === "rating")
     .map((a) => ({
-      label: a.question.label,
       rating: (a.value as { type: "rating"; rating: number }).rating,
+      label: a.question.label,
     }));
 }
 
-// Get the first text response as a preview
+/**
+ * Gets main text content from feedback for preview/copy.
+ * Prioritizes text answers, falls back to choice selections.
+ */
 export function getMainTextPreview(feedback: FeedbackDto): string | null {
+  // Find first text answer with non-empty content
   const textAnswer = feedback.answers.find(
-    (a) => a.fieldType === "TEXT" && a.value.type === "text" && a.value.text,
+    (a) =>
+      a.fieldType === "TEXT" &&
+      a.value.type === "text" &&
+      a.value.text.trim().length > 0,
   );
+
   if (textAnswer && textAnswer.value.type === "text") {
     return textAnswer.value.text;
   }
+
   return null;
 }
 
+/**
+ * Gets a smart preview for feedback based on answer types.
+ * Returns {text, subText} for two-line display.
+ */
 export function getFeedbackPreview(
   feedback: FeedbackDto,
 ): { text: string; subText?: string } | null {
-  // Top Tasks logic
-  if (feedback.surveyType === "topTasks") {
-    const taskAnswer = feedback.answers.find(
-      (a) => a.fieldId === "task" || a.fieldId === "category",
-    );
-    const successAnswer = feedback.answers.find(
-      (a) => a.fieldId === "taskSuccess" || a.fieldId === "success",
-    );
+  const textAnswers = feedback.answers.filter(
+    (a) =>
+      a.fieldType === "TEXT" &&
+      a.value.type === "text" &&
+      a.value.text.trim().length > 0,
+  );
 
-    if (
-      taskAnswer &&
-      taskAnswer.fieldType === "SINGLE_CHOICE" &&
-      taskAnswer.value.type === "singleChoice"
-    ) {
-      // Resolving label logic duplicated from mock data stats - ideally should be robust
-      const option = taskAnswer.question.options?.find(
-        (o) => o.id === taskAnswer.value.selectedOptionId,
-      );
-      const taskLabel = option
-        ? option.label
-        : taskAnswer.value.selectedOptionId;
-
-      let successLabel = "";
-      if (
-        successAnswer &&
-        successAnswer.fieldType === "SINGLE_CHOICE" &&
-        successAnswer.value.type === "singleChoice"
-      ) {
-        const val = successAnswer.value.selectedOptionId;
-        if (val === "yes") successLabel = "✅";
-        else if (val === "no") successLabel = "❌";
-        else if (val === "partial") successLabel = "⚠️";
-      }
-
-      // Check for blocker text if failed
-      const blocker = getMainTextPreview(feedback);
-
-      return {
-        text: `${successLabel} ${taskLabel}`,
-        subText: blocker || undefined,
-      };
-    }
+  if (textAnswers.length > 0) {
+    const mainText = (textAnswers[0].value as { type: "text"; text: string })
+      .text;
+    const label = textAnswers[0].question.label;
+    return {
+      text: mainText,
+      subText: label !== mainText ? label : undefined,
+    };
   }
 
-  // Default text logic
-  const mainText = getMainTextPreview(feedback);
-  if (mainText) {
-    return { text: mainText };
+  // For choice answers, show selected option
+  const choiceAnswer = feedback.answers.find(
+    (a) => a.fieldType === "SINGLE_CHOICE" && a.value.type === "singleChoice",
+  );
+
+  if (choiceAnswer && choiceAnswer.value.type === "singleChoice") {
+    const selectedId = choiceAnswer.value.selectedOptionId;
+    const option = choiceAnswer.question.options?.find(
+      (o) => o.id === selectedId,
+    );
+    return {
+      text: option?.label || selectedId,
+      subText: choiceAnswer.question.label,
+    };
   }
 
   return null;
+}
+
+/**
+ * Formats a camelCase key to readable label.
+ * e.g., "harDialogmote" -> "Har Dialogmote"
+ */
+export function formatMetadataKey(key: string): string {
+  return key
+    .replace(/([A-Z])/g, " $1")
+    .replace(/^./, (str) => str.toUpperCase())
+    .trim();
+}
+
+/**
+ * Formats boolean-like metadata values to Norwegian.
+ */
+export function formatMetadataValue(value: string): string {
+  if (value === "true") return "Ja";
+  if (value === "false") return "Nei";
+  return value.charAt(0).toUpperCase() + value.slice(1);
 }

@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchTopTasksServerFn } from "./serverFunctions";
-import { useSearchParams } from "./useSearchParams";
+import { useSearchParams } from "~/hooks/useSearchParams";
+import { fetchTopTasksServerFn } from "~/server/actions";
 
 // Re-export TopTasksResponse type for components that need it
-export type { TopTasksResponse } from "./api";
+export type { TopTasksResponse } from "~/types/api";
 
 export function useTopTasksStats() {
   const { params } = useSearchParams();

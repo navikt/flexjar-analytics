@@ -5,7 +5,7 @@ import type {
   RatingAnswer,
   SingleChoiceAnswer,
   TextAnswer,
-} from "../api";
+} from "~/types/api";
 
 describe("API Types", () => {
   describe("Answer type discrimination", () => {

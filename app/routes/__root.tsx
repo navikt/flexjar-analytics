@@ -11,7 +11,7 @@ import type * as React from "react";
 // Import Aksel Darkside styles (supports light/dark mode)
 import akselStyles from "@navikt/ds-css/darkside?url";
 import flexjarLogo from "~/assets/flexjar.png";
-import { ThemeProvider, useTheme } from "~/lib/ThemeContext";
+import { ThemeProvider, useTheme } from "~/context/ThemeContext";
 import globalStyles from "~/styles/global.css?url";
 
 // Create QueryClient outside component to avoid recreation on each render

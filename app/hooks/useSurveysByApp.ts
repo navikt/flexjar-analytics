@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchSurveysByAppServerFn } from "./serverFunctions";
+import { fetchSurveysByAppServerFn } from "~/server/actions";
 
 /**
  * Hook to fetch surveys grouped by app.
