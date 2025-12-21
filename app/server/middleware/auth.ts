@@ -5,9 +5,11 @@ import {
 } from "@navikt/oasis";
 import { createMiddleware } from "@tanstack/react-start";
 
-const BACKEND_URL = process.env.FLEXJAR_BACKEND_URL || "http://localhost:8080";
+import { serverEnv } from "~/serverEnv";
+
+const BACKEND_URL = serverEnv.FLEXJAR_BACKEND_URL || "http://localhost:8080";
 const BACKEND_AUDIENCE =
-  process.env.FLEXJAR_BACKEND_AUDIENCE ||
+  serverEnv.FLEXJAR_BACKEND_AUDIENCE ||
   "api://dev-gcp.flex.flexjar-analytics-api/.default";
 
 export interface AuthContext {
@@ -25,7 +27,7 @@ export interface AuthContext {
  */
 export const authMiddleware = createMiddleware().server(
   async ({ next, request }) => {
-    const isNais = !!process.env.NAIS_CLUSTER_NAME;
+    const isNais = !!serverEnv.NAIS_CLUSTER_NAME;
 
     if (!isNais) {
       // Local development: no authentication required
