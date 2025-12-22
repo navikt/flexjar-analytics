@@ -38,7 +38,7 @@ export const Route = createRootRoute({
       {
         httpEquiv: "Content-Security-Policy",
         content:
-          "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:;",
+          "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.nav.no; style-src 'self' 'unsafe-inline' https://cdn.nav.no; img-src 'self' data: https://cdn.nav.no; font-src 'self' data: https://cdn.nav.no;",
       },
     ],
     links: [
