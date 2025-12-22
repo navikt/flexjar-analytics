@@ -3,9 +3,10 @@ import viteReact from "@vitejs/plugin-react";
 import { nitro } from "nitro/vite";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
+import { serverOnlyPlugin } from "./vite-plugins/server-only";
 
-// Server-only modules that should never be bundled or referenced in client code
-const serverOnlyModules = ["@navikt/oasis", "prom-client", "crypto"];
+// Server-only modules that should be stubbed in client builds
+const serverOnlyModules = ["@navikt/oasis", "prom-client"];
 
 export default defineConfig({
   base:
@@ -17,26 +18,9 @@ export default defineConfig({
     port: 3000,
   },
 
-  // Externalize Node.js-only dependencies from SSR bundle
+  // Externalize server-only dependencies from SSR bundle
   ssr: {
     external: serverOnlyModules,
-    noExternal: [],
-  },
-
-  // Exclude from dependency optimization (prevents client analysis)
-  optimizeDeps: {
-    exclude: serverOnlyModules,
-  },
-
-  build: {
-    rollupOptions: {
-      // Mark as external for client build
-      external: (id) => {
-        return serverOnlyModules.some(
-          (mod) => id === mod || id.startsWith(`${mod}/`),
-        );
-      },
-    },
   },
 
   // Nitro configuration for deployment
@@ -45,6 +29,8 @@ export default defineConfig({
   },
 
   plugins: [
+    // Custom plugin to stub server-only modules in client builds
+    serverOnlyPlugin(serverOnlyModules),
     tsconfigPaths({
       projects: ["./tsconfig.json"],
     }),

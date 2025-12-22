@@ -1,8 +1,3 @@
-import {
-  getToken,
-  requestAzureOboToken,
-  validateAzureToken,
-} from "@navikt/oasis";
 import { createMiddleware } from "@tanstack/react-start";
 
 import { serverEnv } from "~/serverEnv";
@@ -39,7 +34,12 @@ export const authMiddleware = createMiddleware().server(
       });
     }
 
-    // Production: validate and exchange token
+    // Production: dynamically import server-only oasis module
+    // Using dynamic import ensures @navikt/oasis is never bundled into client code
+    const { getToken, validateAzureToken, requestAzureOboToken } = await import(
+      "@navikt/oasis"
+    );
+
     const token = getToken(request);
 
     if (!token) {
