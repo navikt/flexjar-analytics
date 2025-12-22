@@ -27,12 +27,15 @@ spec:
       cpu: 200m
       memory: 512Mi
   ingresses:
-    - https://flexjar-analytics.intern.nav.no
+    - https://flexjar-analytics.ansatt.nav.no
   azure:
     application:
       enabled: true
       allowAllUsers: true
       tenant: nav.no
+      claims:
+        extra:
+          - "NAVident"
     sidecar:
       enabled: true
       autoLogin: true

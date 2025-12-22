@@ -136,7 +136,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: dev
-      url: https://flexjar-analytics.intern.dev.nav.no
+      url: https://flexjar-analytics.ansatt.dev.nav.no
     steps:
       - uses: actions/checkout@v4
       - uses: nais/deploy/actions/deploy@v2
@@ -151,7 +151,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: prod
-      url: https://flexjar-analytics.intern.nav.no
+      url: https://flexjar-analytics.ansatt.nav.no
     steps:
       - uses: actions/checkout@v4
       - uses: nais/deploy/actions/deploy@v2
