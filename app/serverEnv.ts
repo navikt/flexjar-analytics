@@ -20,10 +20,8 @@ const serverSchema = z.object({
  * Best practice: Only import this in server-only files (entry-server, app/server/*).
  */
 export const serverEnv = (() => {
-  if (typeof process === "undefined") {
+  if (typeof window !== "undefined" || typeof process === "undefined") {
     // We are on the client, or process is not polyfilled.
-    // Return a proxy that throws to prevent accidental usage?
-    // Or just undefined. Let's rely on strict usage in server files.
     return {} as z.infer<typeof serverSchema>;
   }
 

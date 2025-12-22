@@ -34,3 +34,7 @@ spec:
       value: production
     - name: USE_MOCK_DATA
       value: "true"
+    - name: FLEXJAR_BACKEND_URL
+      value: "http://localhost"
+    - name: FLEXJAR_BACKEND_AUDIENCE
+      value: "demo-audience"
