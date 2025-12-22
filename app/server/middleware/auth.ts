@@ -1,11 +1,12 @@
 import { createMiddleware } from "@tanstack/react-start";
 
+import { logger } from "~/server/logger";
 import { serverEnv } from "~/serverEnv";
 
 const BACKEND_URL = serverEnv.FLEXJAR_BACKEND_URL || "http://localhost:8080";
 const BACKEND_AUDIENCE =
   serverEnv.FLEXJAR_BACKEND_AUDIENCE ||
-  "api://dev-gcp.flex.flexjar-analytics-api/.default";
+  "api://dev-gcp.team-esyfo.flexjar-analytics-api/.default";
 
 export interface AuthContext {
   backendUrl: string;
@@ -54,7 +55,7 @@ export const authMiddleware = createMiddleware().server(
 
     const oboResult = await requestAzureOboToken(token, BACKEND_AUDIENCE);
     if (!oboResult.ok) {
-      console.error("OBO token exchange failed");
+      logger.error({ audience: BACKEND_AUDIENCE }, "OBO token exchange failed");
       throw new Error("Token exchange failed");
     }
 
