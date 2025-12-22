@@ -1,10 +1,11 @@
+import { publicEnv } from "~/publicEnv";
 import type { AuthContext } from "~/server/middleware/auth";
 
 /**
  * Check if the application is running in mock mode.
  * Checks both Vite client-side and Node.js server-side environment variables.
  */
-import { publicEnv } from "~/publicEnv";
+import { serverEnv } from "~/serverEnv";
 
 /**
  * Check if the application is running in mock mode.
@@ -15,14 +16,9 @@ export function isMockMode(): boolean {
   if (publicEnv.VITE_MOCK_DATA === "true") {
     return true;
   }
-  // Fallback to strict process.env check (Server-side)
-  // We avoid importing serverEnv here to keep this file client-safe
-  if (
-    typeof process !== "undefined" &&
-    process.env &&
-    process.env.NODE_ENV === "development" &&
-    process.env.VITE_MOCK_DATA === "true"
-  ) {
+
+  // Check serverEnv (Server-side)
+  if (serverEnv.USE_MOCK_DATA === "true") {
     return true;
   }
 

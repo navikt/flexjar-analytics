@@ -20,12 +20,12 @@ export interface AuthContext {
  *
  * Provides AuthContext to downstream handlers with backendUrl and oboToken.
  */
+import { isMockMode } from "~/server/utils";
+
 export const authMiddleware = createMiddleware().server(
   async ({ next, request }) => {
-    const isMockData = serverEnv.USE_MOCK_DATA === "true";
-    const isDev = serverEnv.NODE_ENV === "development";
-
-    if (isMockData || isDev) {
+    // Check centralized mock mode logic + local dev environment
+    if (isMockMode() || serverEnv.NODE_ENV === "development") {
       // Mock data mode or local dev: no authentication required
       return next({
         context: {
