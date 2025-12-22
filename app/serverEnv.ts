@@ -1,8 +1,12 @@
 import { z } from "zod";
 
 const serverSchema = z.object({
-  FLEXJAR_BACKEND_URL: z.string().url(),
-  FLEXJAR_BACKEND_AUDIENCE: z.string().min(1),
+  // Optional with defaults for local development
+  FLEXJAR_BACKEND_URL: z.string().url().default("http://localhost:8080"),
+  FLEXJAR_BACKEND_AUDIENCE: z
+    .string()
+    .min(1)
+    .default("api://dev-gcp.team-esyfo.flexjar-analytics-api/.default"),
   NAIS_CLUSTER_NAME: z.string().optional(),
   USE_MOCK_DATA: z.string().optional(),
   NODE_ENV: z
@@ -24,9 +28,15 @@ export const serverEnv = (() => {
   }
 
   // Validate process.env
-  // Note: z.object.parse will strip unknown keys if using strict(), but by default it passes through.
-  // We want to extract only the known keys usually? safeParse is better if we want graceful error context.
-  const result = serverSchema.safeParse(process.env);
+  // process.env values are strings. Empty strings should be treated as undefined for .default() to work.
+  const env = Object.fromEntries(
+    Object.entries(process.env).map(([key, value]) => [
+      key,
+      value === "" ? undefined : value,
+    ]),
+  );
+
+  const result = serverSchema.safeParse(env);
 
   if (!result.success) {
     console.error(

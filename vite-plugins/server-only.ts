@@ -3,11 +3,14 @@ import type { Plugin } from "vite";
 /**
  * Vite plugin to replace server-only modules with empty stubs in client builds.
  * This prevents bare module specifiers from appearing in browser code.
+ *
+ * Only applies in production builds - dev mode handles this differently.
  */
 export function serverOnlyPlugin(modules: string[]): Plugin {
   return {
     name: "server-only-stub",
     enforce: "pre",
+    apply: "build", // Only apply during build, not serve (dev)
     resolveId(id, _importer, options) {
       // Only stub in client builds, not in SSR
       if (options?.ssr) return null;

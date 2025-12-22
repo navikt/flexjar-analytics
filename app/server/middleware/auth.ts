@@ -23,9 +23,10 @@ export interface AuthContext {
 export const authMiddleware = createMiddleware().server(
   async ({ next, request }) => {
     const isMockData = serverEnv.USE_MOCK_DATA === "true";
+    const isDev = serverEnv.NODE_ENV === "development";
 
-    if (isMockData) {
-      // Mock data mode (local dev or demo): no authentication required
+    if (isMockData || isDev) {
+      // Mock data mode or local dev: no authentication required
       return next({
         context: {
           backendUrl: BACKEND_URL,
