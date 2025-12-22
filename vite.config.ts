@@ -6,7 +6,13 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import { serverOnlyPlugin } from "./vite-plugins/server-only";
 
 // Server-only modules that should be stubbed in client builds
-const serverOnlyModules = ["@navikt/oasis", "prom-client"];
+// and externalized from SSR bundle to avoid CJS/ESM issues
+const serverOnlyModules = [
+  "@navikt/oasis",
+  "@navikt/pino-logger",
+  "pino",
+  "prom-client",
+];
 
 export default defineConfig({
   base:
