@@ -27,6 +27,8 @@ export default defineConfig({
   // Externalize server-only dependencies from SSR bundle
   ssr: {
     external: serverOnlyModules,
+    // Force bundle lodash to fix ESM import issues (lodash/throttle)
+    noExternal: ["lodash"],
   },
 
   // Nitro configuration for deployment

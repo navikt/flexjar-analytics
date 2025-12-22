@@ -24,13 +24,27 @@ export function serverOnlyPlugin(modules: string[]): Plugin {
     load(id) {
       if (id === "\0server-only-stub") {
         // Return empty module exports for client-side
+        // Must include all exports that may be imported by server code that gets processed
         return `
           export default {};
+          // @navikt/oasis stubs
           export const getToken = () => null;
           export const validateAzureToken = async () => ({ ok: false });
           export const requestAzureOboToken = async () => ({ ok: false, token: null });
+          // prom-client stubs
           export const register = { metrics: async () => '', contentType: 'text/plain' };
           export const collectDefaultMetrics = () => {};
+          // @navikt/pino-logger stubs
+          const noop = () => {};
+          export const logger = {
+            info: noop,
+            warn: noop,
+            error: noop,
+            debug: noop,
+            trace: noop,
+            fatal: noop,
+            child: () => logger,
+          };
         `;
       }
       return null;

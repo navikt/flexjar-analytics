@@ -25,6 +25,7 @@
     "@tanstack/react-start": "^1.140.0",
     "@tanstack/zod-adapter": "^1.141.8",
     "dayjs": "^1.11.13",
+    "lodash": "^4.17.21",
     "nitro": "^3.0.1-alpha.1",
     "pino": "^10.1.0",
     "prom-client": "^15.1.3",
