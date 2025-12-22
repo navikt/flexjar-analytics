@@ -24,6 +24,12 @@ export default defineConfig({
     port: 3000,
   },
 
+  resolve: {
+    alias: {
+      "lodash/throttle": "lodash/throttle.js",
+    },
+  },
+
   // Externalize server-only dependencies from SSR bundle
   ssr: {
     external: serverOnlyModules,

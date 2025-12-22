@@ -26,6 +26,14 @@ spec:
     requests:
       cpu: 200m
       memory: 512Mi
+  observability:
+    logging:
+      destinations:
+        - id: elastic
+        - id: loki
+    autoInstrumentation:
+      enabled: true
+      runtime: nodejs
   ingresses:
     - https://flexjar-analytics.ansatt.nav.no
   azure:
