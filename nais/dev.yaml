@@ -44,6 +44,9 @@ spec:
       claims:
         extra:
           - "NAVident"
+        groups:
+          - id: "5066bb56-7f19-4b49-ae48-f1ba66abf546" # isyfo - Intern Sykefraværsoppfølging
+          - id: "ef4e9824-6f3a-4933-8f40-6edf5233d4d2" # esyfo - Ekstern Sykefraværsoppfølging
     sidecar:
       enabled: true
       autoLogin: true
