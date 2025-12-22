@@ -4,6 +4,7 @@ const serverSchema = z.object({
   FLEXJAR_BACKEND_URL: z.string().url(),
   FLEXJAR_BACKEND_AUDIENCE: z.string().min(1),
   NAIS_CLUSTER_NAME: z.string().optional(),
+  USE_MOCK_DATA: z.string().optional(),
   NODE_ENV: z
     .enum(["development", "production", "test"])
     .default("development"),

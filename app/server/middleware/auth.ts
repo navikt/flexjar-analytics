@@ -22,10 +22,10 @@ export interface AuthContext {
  */
 export const authMiddleware = createMiddleware().server(
   async ({ next, request }) => {
-    const isNais = !!serverEnv.NAIS_CLUSTER_NAME;
+    const isMockData = serverEnv.USE_MOCK_DATA === "true";
 
-    if (!isNais) {
-      // Local development: no authentication required
+    if (isMockData) {
+      // Mock data mode (local dev or demo): no authentication required
       return next({
         context: {
           backendUrl: BACKEND_URL,
