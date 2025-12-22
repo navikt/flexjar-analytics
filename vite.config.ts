@@ -11,7 +11,7 @@ const serverOnlyModules = ["@navikt/oasis", "prom-client"];
 export default defineConfig({
   base:
     process.env.NODE_ENV === "production"
-      ? "https://cdn.nav.no/team-esyfo/flexjar-analytics/client"
+      ? `https://cdn.nav.no/team-esyfo${process.env.CDN_BASE_PATH || "/flexjar-analytics"}/client`
       : undefined,
 
   server: {

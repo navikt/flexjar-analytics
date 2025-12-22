@@ -49,6 +49,7 @@ jobs:
         run: npm run build
         env:
           VITE_MOCK_DATA: "true"
+          CDN_BASE_PATH: "/flexjar-analytics-demo"
       
       - name: Copy static files
         run: cp -r .output/public .output/client
@@ -91,6 +92,8 @@ jobs:
       
       - name: Build application (production)
         run: npm run build
+        env:
+          CDN_BASE_PATH: "/flexjar-analytics"
       
       - name: Copy static files
         run: cp -r .output/public .output/client
