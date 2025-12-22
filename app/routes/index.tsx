@@ -123,7 +123,9 @@ function DashboardPage() {
                   <DashboardCard>
                     <VStack gap="4">
                       <Heading size="small">Enheter</Heading>
-                      <DeviceBreakdownChart />
+                      <div style={{ height: "200px", width: "100%" }}>
+                        <DeviceBreakdownChart />
+                      </div>
                     </VStack>
                   </DashboardCard>
                 </DashboardGrid>
@@ -134,7 +136,9 @@ function DashboardPage() {
                 <DashboardCard>
                   <VStack gap="4">
                     <Heading size="small">Enheter</Heading>
-                    <DeviceBreakdownChart />
+                    <div style={{ height: "200px", width: "100%" }}>
+                      <DeviceBreakdownChart />
+                    </div>
                   </VStack>
                 </DashboardCard>
               )}
