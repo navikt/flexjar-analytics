@@ -39,7 +39,7 @@ spec:
   azure:
     application:
       enabled: true
-      allowAllUsers: true
+      allowAllUsers: false
       tenant: nav.no
       claims:
         extra:
