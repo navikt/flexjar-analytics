@@ -45,4 +45,4 @@ spec:
     - name: FLEXJAR_BACKEND_URL
       value: http://flexjar-analytics-api
     - name: FLEXJAR_BACKEND_AUDIENCE
-      value: api://prod-gcp.flex.flexjar-analytics-api/.default
+      value: api://prod-gcp.team-esyfo.flexjar-analytics-api/.default
