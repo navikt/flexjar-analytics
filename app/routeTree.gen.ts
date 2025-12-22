@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as FeedbackRouteImport } from './routes/feedback'
 import { Route as ExportRouteImport } from './routes/export'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiInternalMetricsRouteImport } from './routes/api/internal/metrics'
 import { Route as ApiInternalIsReadyRouteImport } from './routes/api/internal/isReady'
 import { Route as ApiInternalIsAliveRouteImport } from './routes/api/internal/isAlive'
 
@@ -28,6 +29,11 @@ const ExportRoute = ExportRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiInternalMetricsRoute = ApiInternalMetricsRouteImport.update({
+  id: '/api/internal/metrics',
+  path: '/api/internal/metrics',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiInternalIsReadyRoute = ApiInternalIsReadyRouteImport.update({
@@ -47,6 +53,7 @@ export interface FileRoutesByFullPath {
   '/feedback': typeof FeedbackRoute
   '/api/internal/isAlive': typeof ApiInternalIsAliveRoute
   '/api/internal/isReady': typeof ApiInternalIsReadyRoute
+  '/api/internal/metrics': typeof ApiInternalMetricsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +61,7 @@ export interface FileRoutesByTo {
   '/feedback': typeof FeedbackRoute
   '/api/internal/isAlive': typeof ApiInternalIsAliveRoute
   '/api/internal/isReady': typeof ApiInternalIsReadyRoute
+  '/api/internal/metrics': typeof ApiInternalMetricsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,6 +70,7 @@ export interface FileRoutesById {
   '/feedback': typeof FeedbackRoute
   '/api/internal/isAlive': typeof ApiInternalIsAliveRoute
   '/api/internal/isReady': typeof ApiInternalIsReadyRoute
+  '/api/internal/metrics': typeof ApiInternalMetricsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -71,6 +80,7 @@ export interface FileRouteTypes {
     | '/feedback'
     | '/api/internal/isAlive'
     | '/api/internal/isReady'
+    | '/api/internal/metrics'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -78,6 +88,7 @@ export interface FileRouteTypes {
     | '/feedback'
     | '/api/internal/isAlive'
     | '/api/internal/isReady'
+    | '/api/internal/metrics'
   id:
     | '__root__'
     | '/'
@@ -85,6 +96,7 @@ export interface FileRouteTypes {
     | '/feedback'
     | '/api/internal/isAlive'
     | '/api/internal/isReady'
+    | '/api/internal/metrics'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -93,6 +105,7 @@ export interface RootRouteChildren {
   FeedbackRoute: typeof FeedbackRoute
   ApiInternalIsAliveRoute: typeof ApiInternalIsAliveRoute
   ApiInternalIsReadyRoute: typeof ApiInternalIsReadyRoute
+  ApiInternalMetricsRoute: typeof ApiInternalMetricsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -118,6 +131,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/internal/metrics': {
+      id: '/api/internal/metrics'
+      path: '/api/internal/metrics'
+      fullPath: '/api/internal/metrics'
+      preLoaderRoute: typeof ApiInternalMetricsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/internal/isReady': {
       id: '/api/internal/isReady'
       path: '/api/internal/isReady'
@@ -141,6 +161,7 @@ const rootRouteChildren: RootRouteChildren = {
   FeedbackRoute: FeedbackRoute,
   ApiInternalIsAliveRoute: ApiInternalIsAliveRoute,
   ApiInternalIsReadyRoute: ApiInternalIsReadyRoute,
+  ApiInternalMetricsRoute: ApiInternalMetricsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
