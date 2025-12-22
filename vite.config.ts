@@ -4,6 +4,9 @@ import { nitro } from "nitro/vite";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 
+// Server-only modules that should never be bundled or referenced in client code
+const serverOnlyModules = ["@navikt/oasis", "prom-client", "crypto"];
+
 export default defineConfig({
   base:
     process.env.NODE_ENV === "production"
@@ -14,15 +17,25 @@ export default defineConfig({
     port: 3000,
   },
 
-  // Externalize Node.js-only dependencies from client bundle
+  // Externalize Node.js-only dependencies from SSR bundle
   ssr: {
-    external: ["@navikt/oasis", "prom-client"],
+    external: serverOnlyModules,
     noExternal: [],
+  },
+
+  // Exclude from dependency optimization (prevents client analysis)
+  optimizeDeps: {
+    exclude: serverOnlyModules,
   },
 
   build: {
     rollupOptions: {
-      external: ["@navikt/oasis", "prom-client", "crypto"],
+      // Mark as external for client build
+      external: (id) => {
+        return serverOnlyModules.some(
+          (mod) => id === mod || id.startsWith(`${mod}/`),
+        );
+      },
     },
   },
 
