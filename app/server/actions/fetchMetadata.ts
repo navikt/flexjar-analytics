@@ -10,6 +10,7 @@ import {
 } from "~/server/utils";
 import type { MetadataKeysResponse } from "~/types/api";
 import { MetadataKeysParamsSchema } from "~/types/schemas";
+import { handleApiResponse } from "../fetchUtils";
 
 /**
  * Fetch available metadata keys and values for a specific survey.
@@ -42,9 +43,7 @@ export const fetchMetadataKeysServerFn = createServerFn({ method: "GET" })
       headers: getHeaders(oboToken),
     });
 
-    if (!response.ok) {
-      throw new Error(`Backend request failed: ${response.status}`);
-    }
+    await handleApiResponse(response);
 
     return response.json() as Promise<MetadataKeysResponse>;
   });

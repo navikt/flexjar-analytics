@@ -8,6 +8,7 @@ import {
   isMockMode,
   mockDelay,
 } from "~/server/utils";
+import { handleApiResponse } from "../fetchUtils";
 
 /**
  * Fetch surveys grouped by application.
@@ -27,9 +28,7 @@ export const fetchSurveysByAppServerFn = createServerFn({ method: "GET" })
       headers: getHeaders(oboToken),
     });
 
-    if (!response.ok) {
-      throw new Error(`Backend request failed: ${response.status}`);
-    }
+    await handleApiResponse(response);
 
     return response.json() as Promise<Record<string, string[]>>;
   });

@@ -9,6 +9,7 @@ import {
 } from "~/server/utils";
 import type { DeleteSurveyResult } from "~/types/api";
 import { DeleteFeedbackSchema, DeleteSurveySchema } from "~/types/schemas";
+import { handleApiResponse } from "../fetchUtils";
 
 /**
  * Delete all feedback for a specific survey.
@@ -30,9 +31,7 @@ export const deleteSurveyServerFn = createServerFn({ method: "POST" })
       headers: getHeaders(oboToken),
     });
 
-    if (!response.ok) {
-      throw new Error("Failed to delete survey");
-    }
+    await handleApiResponse(response);
 
     return response.json() as Promise<DeleteSurveyResult>;
   });
@@ -57,9 +56,7 @@ export const deleteFeedbackServerFn = createServerFn({ method: "POST" })
       headers: getHeaders(oboToken),
     });
 
-    if (!response.ok) {
-      throw new Error("Failed to delete feedback");
-    }
+    await handleApiResponse(response);
 
     return { success: true };
   });

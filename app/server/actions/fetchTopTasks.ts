@@ -11,6 +11,7 @@ import {
 } from "~/server/utils";
 import type { TopTasksResponse } from "~/types/api";
 import { TopTasksParamsSchema } from "~/types/schemas";
+import { handleApiResponse } from "../fetchUtils";
 
 /**
  * Fetch Top Tasks statistics for task completion analysis.
@@ -35,9 +36,7 @@ export const fetchTopTasksServerFn = createServerFn({ method: "GET" })
       headers: getHeaders(oboToken),
     });
 
-    if (!response.ok) {
-      throw new Error(`Backend request failed: ${response.status}`);
-    }
+    await handleApiResponse(response);
 
     return response.json() as Promise<TopTasksResponse>;
   });

@@ -9,6 +9,7 @@ import {
   mockDelay,
 } from "~/server/utils";
 import type { TeamsAndApps } from "~/types/api";
+import { handleApiResponse } from "../fetchUtils";
 
 /**
  * Fetch teams and their applications for filtering.
@@ -28,9 +29,7 @@ export const fetchTeamsServerFn = createServerFn({ method: "GET" })
       headers: getHeaders(oboToken),
     });
 
-    if (!response.ok) {
-      throw new Error(`Backend request failed: ${response.status}`);
-    }
+    await handleApiResponse(response);
 
     return response.json() as Promise<TeamsAndApps>;
   });

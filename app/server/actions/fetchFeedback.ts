@@ -11,6 +11,7 @@ import {
 } from "~/server/utils";
 import type { FeedbackPage } from "~/types/api";
 import { FeedbackParamsSchema } from "~/types/schemas";
+import { handleApiResponse } from "../fetchUtils";
 
 /**
  * Fetch paginated feedback items with filtering support.
@@ -44,9 +45,7 @@ export const fetchFeedbackServerFn = createServerFn({ method: "GET" })
       headers: getHeaders(oboToken),
     });
 
-    if (!response.ok) {
-      throw new Error(`Backend request failed: ${response.status}`);
-    }
+    await handleApiResponse(response);
 
     return response.json() as Promise<FeedbackPage>;
   });

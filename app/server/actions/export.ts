@@ -9,6 +9,7 @@ import {
   mockDelay,
 } from "~/server/utils";
 import { ExportParamsSchema } from "~/types/schemas";
+import { handleApiResponse } from "../fetchUtils";
 
 interface ExportResult {
   data: string;
@@ -46,17 +47,7 @@ export const exportServerFn = createServerFn({ method: "GET" })
       headers: getHeaders(oboToken),
     });
 
-    if (!response.ok) {
-      if (response.status === 401 || response.status === 403) {
-        throw new Error("Du har ikke tilgang til å eksportere data");
-      }
-      if (response.status === 504 || response.status === 408) {
-        throw new Error(
-          "Forespørselen tok for lang tid. Prøv å begrense tidsperioden.",
-        );
-      }
-      throw new Error(`Eksport feilet (${response.status})`);
-    }
+    await handleApiResponse(response);
 
     // Get blob and convert to base64
     const arrayBuffer = await response.arrayBuffer();

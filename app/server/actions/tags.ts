@@ -10,6 +10,7 @@ import {
   mockDelay,
 } from "~/server/utils";
 import { TagActionSchema } from "~/types/schemas";
+import { handleApiResponse } from "../fetchUtils";
 
 /**
  * Fetch all available tags.
@@ -29,9 +30,7 @@ export const fetchTagsServerFn = createServerFn({ method: "GET" })
       headers: getHeaders(oboToken),
     });
 
-    if (!response.ok) {
-      throw new Error(`Backend request failed: ${response.status}`);
-    }
+    await handleApiResponse(response);
 
     return response.json() as Promise<string[]>;
   });
@@ -56,9 +55,7 @@ export const addTagServerFn = createServerFn({ method: "POST" })
       headers: getHeaders(oboToken),
     });
 
-    if (!response.ok) {
-      throw new Error("Failed to add tag");
-    }
+    await handleApiResponse(response);
 
     return { success: true };
   });
@@ -83,9 +80,7 @@ export const removeTagServerFn = createServerFn({ method: "POST" })
       headers: getHeaders(oboToken),
     });
 
-    if (!response.ok) {
-      throw new Error("Failed to remove tag");
-    }
+    await handleApiResponse(response);
 
     return { success: true };
   });

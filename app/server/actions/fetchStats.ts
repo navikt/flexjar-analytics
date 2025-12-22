@@ -11,6 +11,7 @@ import {
 } from "~/server/utils";
 import type { FeedbackStats } from "~/types/api";
 import { StatsParamsSchema } from "~/types/schemas";
+import { handleApiResponse } from "../fetchUtils";
 
 /**
  * Fetch aggregated feedback statistics.
@@ -36,9 +37,7 @@ export const fetchStatsServerFn = createServerFn({ method: "GET" })
       headers: getHeaders(oboToken),
     });
 
-    if (!response.ok) {
-      throw new Error(`Backend request failed: ${response.status}`);
-    }
+    await handleApiResponse(response);
 
     return response.json() as Promise<FeedbackStats>;
   });
