@@ -27,6 +27,12 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npm run test
+      - name: Install Playwright
+        run: npx playwright install chromium --with-deps
+      - name: Run E2E tests
+        run: npm run e2e
+        env:
+          USE_MOCK_DATA: "true"
 
   # Build 1: For demo environment (with mock data)
   build-demo:

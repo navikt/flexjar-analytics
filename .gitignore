@@ -17,3 +17,8 @@ app.config.timestamp_*.js
 # Temporary
 test-h3.js
 .nitro/
+
+# Playwright
+playwright-report/
+test-results/
+
