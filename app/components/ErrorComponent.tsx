@@ -23,15 +23,24 @@ export function ErrorComponent({ error }: { error: Error }) {
     }
 
     if (type === ErrorType.AUTHORIZATION_ERROR || status === 403) {
+      const { details, helpUrl } = error.error;
       return (
-        <Alert variant="error" className="m-4">
+        <Alert variant="warning" className="m-4">
           <Heading spacing size="small" level="3">
             Ingen tilgang
           </Heading>
-          <BodyShort>Du har ikke tilgang til å se denne ressursen.</BodyShort>
-          {message && (
-            <BodyShort className="mt-2 text-sm text-gray-600">
-              {message}
+          <BodyShort>{message}</BodyShort>
+          {details && <BodyShort className="mt-2">{details}</BodyShort>}
+          {helpUrl && (
+            <BodyShort className="mt-4">
+              <a
+                href={helpUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:underline"
+              >
+                Les mer om hvordan du får tilgang →
+              </a>
             </BodyShort>
           )}
         </Alert>

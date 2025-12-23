@@ -16,6 +16,8 @@ export const ApiErrorSchema = z.object({
   message: z.string(),
   timestamp: z.string(),
   path: z.string().optional(),
+  details: z.string().optional(),
+  helpUrl: z.string().optional(),
 });
 
 export type ApiError = z.infer<typeof ApiErrorSchema>;
