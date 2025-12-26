@@ -1,5 +1,13 @@
 import { LinkIcon } from "@navikt/aksel-icons";
-import { Box, Heading, Table } from "@navikt/ds-react";
+import {
+  BodyShort,
+  Box,
+  Heading,
+  Hide,
+  Show,
+  Table,
+  VStack,
+} from "@navikt/ds-react";
 import { DashboardCard } from "~/components/DashboardComponents";
 import { useStats } from "~/hooks/useStats";
 
@@ -22,11 +30,12 @@ export function UrgentUrls() {
     .sort((a, b) => a.average - b.average);
 
   return (
-    <DashboardCard
-      padding="0"
-      style={{ gridColumn: "span 2", overflow: "hidden" }}
-    >
-      <Box.New padding="5" borderWidth="0 0 1 0" borderColor="neutral-subtle">
+    <DashboardCard padding="0" style={{ overflow: "hidden" }}>
+      <Box.New
+        padding={{ xs: "4", md: "5" }}
+        borderWidth="0 0 1 0"
+        borderColor="neutral-subtle"
+      >
         <Heading
           size="small"
           style={{ display: "flex", alignItems: "center", gap: "8px" }}
@@ -35,42 +44,83 @@ export function UrgentUrls() {
         </Heading>
       </Box.New>
 
-      <Table size="small">
-        <Table.Header>
-          <Table.Row>
-            <Table.HeaderCell>URL / Path</Table.HeaderCell>
-            <Table.HeaderCell align="right">Snitt</Table.HeaderCell>
-            <Table.HeaderCell align="right">Antall</Table.HeaderCell>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {urls.map((row) => (
-            <Table.Row key={row.path}>
-              <Table.DataCell>
-                <a
-                  href={
-                    row.path.startsWith("http")
-                      ? row.path
-                      : `https://www.nav.no${row.path}`
-                  }
-                  target="_blank"
-                  rel="noreferrer"
-                  style={{
-                    textDecoration: "none",
-                    color: "var(--ax-text-accent)",
-                  }}
-                >
-                  {row.path}
-                </a>
-              </Table.DataCell>
-              <Table.DataCell align="right">
-                {row.average.toFixed(1)}
-              </Table.DataCell>
-              <Table.DataCell align="right">{row.count}</Table.DataCell>
+      {/* Desktop: Table view */}
+      <Show above="md">
+        <Table size="small">
+          <Table.Header>
+            <Table.Row>
+              <Table.HeaderCell>URL / Path</Table.HeaderCell>
+              <Table.HeaderCell align="right">Snitt</Table.HeaderCell>
+              <Table.HeaderCell align="right">Antall</Table.HeaderCell>
             </Table.Row>
+          </Table.Header>
+          <Table.Body>
+            {urls.map((row) => (
+              <Table.Row key={row.path}>
+                <Table.DataCell>
+                  <UrlLink path={row.path} />
+                </Table.DataCell>
+                <Table.DataCell align="right">
+                  {row.average.toFixed(1)}
+                </Table.DataCell>
+                <Table.DataCell align="right">{row.count}</Table.DataCell>
+              </Table.Row>
+            ))}
+          </Table.Body>
+        </Table>
+      </Show>
+
+      {/* Mobile: List view */}
+      <Hide above="md">
+        <VStack gap="0">
+          {urls.map((row) => (
+            <Box.New
+              key={row.path}
+              padding="3"
+              borderWidth="0 0 1 0"
+              borderColor="neutral-subtle"
+            >
+              <VStack gap="1">
+                <UrlLink path={row.path} truncate />
+                <BodyShort size="small" textColor="subtle">
+                  Snitt: {row.average.toFixed(1)} • {row.count} svar
+                </BodyShort>
+              </VStack>
+            </Box.New>
           ))}
-        </Table.Body>
-      </Table>
+        </VStack>
+      </Hide>
     </DashboardCard>
+  );
+}
+
+/**
+ * URL link component with truncation support for mobile
+ */
+function UrlLink({
+  path,
+  truncate = false,
+}: { path: string; truncate?: boolean }) {
+  const href = path.startsWith("http") ? path : `https://www.nav.no${path}`;
+
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      style={{
+        textDecoration: "none",
+        color: "var(--ax-text-accent)",
+        display: "block",
+        ...(truncate && {
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+          maxWidth: "100%",
+        }),
+      }}
+    >
+      {path}
+    </a>
   );
 }

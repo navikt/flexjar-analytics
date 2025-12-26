@@ -5,9 +5,12 @@ import {
   Box,
   Button,
   HStack,
+  Hide,
   Pagination,
+  Show,
   Table,
   Tooltip,
+  VStack,
 } from "@navikt/ds-react";
 import React, { useState } from "react";
 
@@ -16,6 +19,7 @@ import { useFeedback } from "~/hooks/useFeedback";
 import { useSearchParams } from "~/hooks/useSearchParams";
 import { DeleteFeedbackDialog } from "./DeleteFeedbackDialog";
 import { DeleteSurveyDialog } from "./DeleteSurveyDialog";
+import { FeedbackCard } from "./FeedbackTable/FeedbackCard";
 import { FeedbackExpandedView } from "./FeedbackTable/FeedbackExpandedView";
 import { FeedbackRow } from "./FeedbackTable/FeedbackRow";
 import styles from "./FeedbackTable/FeedbackTable.module.css";
@@ -23,6 +27,7 @@ import { FeedbackTableSkeleton } from "./FeedbackTable/FeedbackTableSkeleton";
 
 /**
  * Main feedback table component displaying paginated feedback list.
+ * Shows table on desktop, card grid on mobile.
  * Supports expand/collapse for detailed view, deletion, and filtering.
  */
 export function FeedbackTable() {
@@ -78,42 +83,64 @@ export function FeedbackTable() {
         </Alert>
       ) : (
         <>
-          <div className={styles.tableWrapper}>
-            <Table>
-              <Table.Header>
-                <Table.Row>
-                  <Table.HeaderCell style={{ width: 40 }} />
-                  <Table.HeaderCell style={{ width: 100 }}>
-                    Dato
-                  </Table.HeaderCell>
-                  <Table.HeaderCell>Feedback</Table.HeaderCell>
-                  <Table.HeaderCell style={{ width: 200 }}>
-                    App
-                  </Table.HeaderCell>
-                  <Table.HeaderCell style={{ width: 80 }} />
-                </Table.Row>
-              </Table.Header>
-              <Table.Body>
-                {feedbackList.map((feedback) => (
-                  <React.Fragment key={feedback.id}>
-                    <FeedbackRow
-                      feedback={feedback}
-                      isExpanded={expandedRows.has(feedback.id)}
-                      onToggleExpand={() => toggleExpanded(feedback.id)}
-                      onDelete={() => setFeedbackToDelete(feedback.id)}
-                      isDeleting={
-                        deleteFeedbackMutation.isPending &&
-                        feedbackToDelete === feedback.id
-                      }
-                    />
-                    {expandedRows.has(feedback.id) && (
-                      <FeedbackExpandedView feedback={feedback} />
-                    )}
-                  </React.Fragment>
-                ))}
-              </Table.Body>
-            </Table>
-          </div>
+          {/* Desktop: Table view */}
+          <Show above="md">
+            <div className={styles.tableWrapper}>
+              <Table>
+                <Table.Header>
+                  <Table.Row>
+                    <Table.HeaderCell style={{ width: 40 }} />
+                    <Table.HeaderCell style={{ width: 100 }}>
+                      Dato
+                    </Table.HeaderCell>
+                    <Table.HeaderCell>Feedback</Table.HeaderCell>
+                    <Table.HeaderCell style={{ width: 200 }}>
+                      App
+                    </Table.HeaderCell>
+                    <Table.HeaderCell style={{ width: 80 }} />
+                  </Table.Row>
+                </Table.Header>
+                <Table.Body>
+                  {feedbackList.map((feedback) => (
+                    <React.Fragment key={feedback.id}>
+                      <FeedbackRow
+                        feedback={feedback}
+                        isExpanded={expandedRows.has(feedback.id)}
+                        onToggleExpand={() => toggleExpanded(feedback.id)}
+                        onDelete={() => setFeedbackToDelete(feedback.id)}
+                        isDeleting={
+                          deleteFeedbackMutation.isPending &&
+                          feedbackToDelete === feedback.id
+                        }
+                      />
+                      {expandedRows.has(feedback.id) && (
+                        <FeedbackExpandedView feedback={feedback} />
+                      )}
+                    </React.Fragment>
+                  ))}
+                </Table.Body>
+              </Table>
+            </div>
+          </Show>
+
+          {/* Mobile: Card view */}
+          <Hide above="md">
+            <VStack gap="3" padding="3">
+              {feedbackList.map((feedback) => (
+                <FeedbackCard
+                  key={feedback.id}
+                  feedback={feedback}
+                  isExpanded={expandedRows.has(feedback.id)}
+                  onToggleExpand={() => toggleExpanded(feedback.id)}
+                  onDelete={() => setFeedbackToDelete(feedback.id)}
+                  isDeleting={
+                    deleteFeedbackMutation.isPending &&
+                    feedbackToDelete === feedback.id
+                  }
+                />
+              ))}
+            </VStack>
+          </Hide>
 
           <PaginationBar
             page={page}
@@ -163,7 +190,7 @@ function SurveyToolbar({
 }: { surveyId: string; totalCount: number; onDelete: () => void }) {
   return (
     <div className={styles.toolbar}>
-      <HStack justify="space-between" align="center">
+      <HStack justify="space-between" align="center" wrap gap="2">
         <BodyShort size="small" textColor="subtle">
           Viser {totalCount} svar for <strong>{surveyId}</strong>
         </BodyShort>
@@ -174,7 +201,10 @@ function SurveyToolbar({
             icon={<TrashIcon />}
             onClick={onDelete}
           >
-            Slett alle svar
+            <Hide below="sm" asChild>
+              <span>Slett alle svar</span>
+            </Hide>
+            <Show below="sm">Slett</Show>
           </Button>
         </Tooltip>
       </HStack>
@@ -200,16 +230,26 @@ function PaginationBar({
 }) {
   return (
     <Box padding="4">
-      <HStack justify="space-between" align="center">
+      <HStack justify="space-between" align="center" wrap gap="2">
         <BodyShort size="small">
-          Viser {(page - 1) * pageSize + 1} -{" "}
-          {Math.min(page * pageSize, totalElements)} av {totalElements}
+          <Hide below="sm" asChild>
+            <span>
+              Viser {(page - 1) * pageSize + 1} -{" "}
+              {Math.min(page * pageSize, totalElements)} av {totalElements}
+            </span>
+          </Hide>
+          <Show below="sm">
+            {(page - 1) * pageSize + 1}-
+            {Math.min(page * pageSize, totalElements)} / {totalElements}
+          </Show>
         </BodyShort>
         <Pagination
           page={page}
           count={totalPages}
           onPageChange={onPageChange}
           size="small"
+          siblingCount={0}
+          boundaryCount={1}
         />
       </HStack>
     </Box>

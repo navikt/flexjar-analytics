@@ -119,8 +119,8 @@ export function ExportPanel() {
             onChange={(val) => setFormat(val as ExportFormat)}
           >
             <Radio value="csv">
-              <HStack gap="2" align="center">
-                <FilesIcon />
+              <HStack gap="2" align="start">
+                <FilesIcon style={{ marginTop: "2px" }} />
                 <VStack gap="0">
                   <BodyShort weight="semibold">CSV</BodyShort>
                   <BodyShort size="small">
@@ -130,8 +130,8 @@ export function ExportPanel() {
               </HStack>
             </Radio>
             <Radio value="excel">
-              <HStack gap="2" align="center">
-                <FileExcelIcon />
+              <HStack gap="2" align="start">
+                <FileExcelIcon style={{ marginTop: "2px" }} />
                 <VStack gap="0">
                   <BodyShort weight="semibold">Excel (XLSX)</BodyShort>
                   <BodyShort size="small">
@@ -141,8 +141,8 @@ export function ExportPanel() {
               </HStack>
             </Radio>
             <Radio value="json">
-              <HStack gap="2" align="center">
-                <FilesIcon />
+              <HStack gap="2" align="start">
+                <FilesIcon style={{ marginTop: "2px" }} />
                 <VStack gap="0">
                   <BodyShort weight="semibold">JSON</BodyShort>
                   <BodyShort size="small">

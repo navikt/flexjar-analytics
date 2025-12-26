@@ -30,14 +30,15 @@ function DashboardPage() {
       <Header />
 
       <Box
-        paddingBlock="6"
-        paddingInline="4"
+        paddingBlock={{ xs: "4", md: "6" }}
+        paddingInline={{ xs: "3", sm: "4" }}
         style={{ maxWidth: "1400px", margin: "0 auto" }}
         as="main"
       >
-        <VStack gap="6">
-          <HStack justify="space-between" align="center">
-            <HStack align="center" gap="4">
+        <VStack gap={{ xs: "4", md: "6" }}>
+          {/* Page header */}
+          <HStack justify="space-between" align="center" wrap gap="2">
+            <HStack align="center" gap={{ xs: "2", md: "4" }}>
               <Heading size="large">Dashboard</Heading>
               {hasSurveyFilter && stats?.surveyType === "topTasks" && (
                 <Tag variant="info" size="small">
@@ -65,65 +66,87 @@ function DashboardPage() {
             <>
               <StatsCards />
 
-              {/* Tidslinje vises alltid - aggregert statistikk gir mening */}
-              <DashboardGrid>
-                <DashboardCard>
+              {/* Timeline charts */}
+              <DashboardGrid columns={{ xs: 1, lg: 2 }}>
+                <DashboardCard padding={{ xs: "4", md: "6" }}>
                   <VStack gap="4">
                     <Heading size="small">Antall tilbakemeldinger</Heading>
-                    <div style={{ height: "300px", width: "100%" }}>
+                    <div
+                      style={{
+                        height: "clamp(200px, 40vw, 300px)",
+                        width: "100%",
+                      }}
+                    >
                       <TimelineChart />
                     </div>
                   </VStack>
                 </DashboardCard>
 
-                <DashboardCard>
+                <DashboardCard padding={{ xs: "4", md: "6" }}>
                   <VStack gap="4">
                     <Heading size="small">Gjennomsnittlig vurdering</Heading>
-                    <div style={{ height: "300px", width: "100%" }}>
+                    <div
+                      style={{
+                        height: "clamp(200px, 40vw, 300px)",
+                        width: "100%",
+                      }}
+                    >
                       <RatingTrendChart />
                     </div>
                   </VStack>
                 </DashboardCard>
               </DashboardGrid>
 
-              <DashboardGrid>
-                <UrgentUrls />
-              </DashboardGrid>
+              {/* Urgent URLs - full width */}
+              <UrgentUrls />
 
-              {/* Survey-spesifikk statistikk - kun når én survey er valgt */}
-              {hasSurveyFilter ? (
+              {/* Survey-specific statistics - only when a survey is selected */}
+              {hasSurveyFilter && (
                 <>
                   <FieldStatsSection />
 
-                  <DashboardGrid>
-                    <DashboardCard>
-                      <VStack gap="4">
-                        <Heading size="small">Fordeling av vurderinger</Heading>
-                        <div style={{ height: "300px", width: "100%" }}>
-                          <RatingChart />
-                        </div>
-                      </VStack>
-                    </DashboardCard>
-                  </DashboardGrid>
+                  <DashboardCard padding={{ xs: "4", md: "6" }}>
+                    <VStack gap="4">
+                      <Heading size="small">Fordeling av vurderinger</Heading>
+                      <div
+                        style={{
+                          height: "clamp(200px, 40vw, 300px)",
+                          width: "100%",
+                        }}
+                      >
+                        <RatingChart />
+                      </div>
+                    </VStack>
+                  </DashboardCard>
                 </>
-              ) : null}
+              )}
 
-              {/* Svar per app og enheter - vis kun når ingen survey er valgt */}
+              {/* Apps and devices breakdown - only when no survey filter */}
               {!hasSurveyFilter && (
-                <DashboardGrid>
-                  <DashboardCard>
+                <DashboardGrid columns={{ xs: 1, md: 2 }}>
+                  <DashboardCard padding={{ xs: "4", md: "6" }}>
                     <VStack gap="4">
                       <Heading size="small">Tilbakemeldinger per app</Heading>
-                      <div style={{ height: "200px", width: "100%" }}>
+                      <div
+                        style={{
+                          height: "clamp(150px, 30vw, 200px)",
+                          width: "100%",
+                        }}
+                      >
                         <TopAppsChart />
                       </div>
                     </VStack>
                   </DashboardCard>
 
-                  <DashboardCard>
+                  <DashboardCard padding={{ xs: "4", md: "6" }}>
                     <VStack gap="4">
                       <Heading size="small">Enheter</Heading>
-                      <div style={{ height: "200px", width: "100%" }}>
+                      <div
+                        style={{
+                          height: "clamp(150px, 30vw, 200px)",
+                          width: "100%",
+                        }}
+                      >
                         <DeviceBreakdownChart />
                       </div>
                     </VStack>
@@ -131,12 +154,17 @@ function DashboardPage() {
                 </DashboardGrid>
               )}
 
-              {/* Enheter når survey er valgt - vis alene */}
+              {/* Devices when survey is selected - standalone card */}
               {hasSurveyFilter && (
-                <DashboardCard>
+                <DashboardCard padding={{ xs: "4", md: "6" }}>
                   <VStack gap="4">
                     <Heading size="small">Enheter</Heading>
-                    <div style={{ height: "200px", width: "100%" }}>
+                    <div
+                      style={{
+                        height: "clamp(150px, 30vw, 200px)",
+                        width: "100%",
+                      }}
+                    >
                       <DeviceBreakdownChart />
                     </div>
                   </VStack>

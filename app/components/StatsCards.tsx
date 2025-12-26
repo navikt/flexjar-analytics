@@ -21,20 +21,20 @@ interface StatCardProps {
 
 export function StatCard({ icon, label, value, subtitle }: StatCardProps) {
   return (
-    <DashboardCard padding="5">
+    <DashboardCard padding={{ xs: "4", md: "5" }}>
       <HStack gap="2" align="center" style={{ marginBottom: "0.5rem" }}>
         <span
           style={{ color: "var(--ax-text-neutral-subtle)", display: "flex" }}
         >
           {icon}
         </span>
-        <BodyShort weight="semibold" textColor="subtle">
+        <BodyShort weight="semibold" textColor="subtle" size="small">
           {label}
         </BodyShort>
       </HStack>
       <div
         style={{
-          fontSize: "2.5rem",
+          fontSize: "clamp(1.75rem, 5vw, 2.5rem)",
           fontWeight: 700,
           lineHeight: 1,
           marginBottom: "0.2rem",
@@ -83,42 +83,45 @@ export function StatsCards() {
     }, 0);
 
     return (
-      <DashboardGrid minColumnWidth="240px" gap="1rem">
+      <DashboardGrid
+        columns={{ xs: 1, sm: 2, md: 4 }}
+        gap={{ xs: "3", md: "4" }}
+      >
         <StatCard
-          icon={<ChatIcon fontSize="1.5rem" aria-hidden />}
-          label="Antall tilbakemeldinger"
+          icon={<CalendarIcon fontSize="1.25rem" aria-hidden />}
+          label="Periode"
+          value={`${periodDays}d`}
+          subtitle={`${stats?.period?.from || "–"} → ${stats?.period?.to || "nå"}`}
+        />
+
+        <StatCard
+          icon={<ChatIcon fontSize="1.25rem" aria-hidden />}
+          label="Tilbakemeldinger"
           value={totalCount.toLocaleString("no-NO")}
           subtitle={`Siste ${periodDays} dager`}
         />
 
         {ratingStats ? (
           <StatCard
-            icon={<StarIcon fontSize="1.5rem" aria-hidden />}
-            label="Gjennomsnittlig vurdering"
+            icon={<StarIcon fontSize="1.25rem" aria-hidden />}
+            label="Snitt vurdering"
             value={`${avgRating} ${getRatingEmoji(Number(avgRating))}`}
             subtitle="av 5 mulige"
           />
         ) : (
           <StatCard
-            icon={<StarIcon fontSize="1.5rem" aria-hidden />}
+            icon={<StarIcon fontSize="1.25rem" aria-hidden />}
             label="Vurdering"
             value="–"
-            subtitle="Ingen rating i denne surveyen"
+            subtitle="Ingen rating"
           />
         )}
 
         <StatCard
-          icon={<ChatExclamationmarkIcon fontSize="1.5rem" aria-hidden />}
-          label="Antall tekstsvar"
+          icon={<ChatExclamationmarkIcon fontSize="1.25rem" aria-hidden />}
+          label="Tekstsvar"
           value={totalTextResponses.toLocaleString("no-NO")}
-          subtitle={`${textFields.length} tekstfelt`}
-        />
-
-        <StatCard
-          icon={<CalendarIcon fontSize="1.5rem" aria-hidden />}
-          label="Periode"
-          value={`${periodDays} dager`}
-          subtitle={`${stats?.period?.from || "–"} til ${stats?.period?.to || "nå"}`}
+          subtitle={`${textFields.length} felt`}
         />
       </DashboardGrid>
     );
@@ -126,26 +129,26 @@ export function StatsCards() {
 
   // Aggregert visning når "alle surveys" er valgt
   return (
-    <DashboardGrid minColumnWidth="240px" gap="1rem">
+    <DashboardGrid columns={{ xs: 1, sm: 2, md: 3 }} gap={{ xs: "3", md: "4" }}>
       <StatCard
-        icon={<ChatIcon fontSize="1.5rem" aria-hidden />}
-        label="Antall tilbakemeldinger"
+        icon={<CalendarIcon fontSize="1.25rem" aria-hidden />}
+        label="Periode"
+        value={`${periodDays}d`}
+        subtitle={`${stats?.period?.from || "–"} → ${stats?.period?.to || "nå"}`}
+      />
+
+      <StatCard
+        icon={<ChatIcon fontSize="1.25rem" aria-hidden />}
+        label="Tilbakemeldinger"
         value={totalCount.toLocaleString("no-NO")}
         subtitle={`Siste ${periodDays} dager`}
       />
 
       <StatCard
-        icon={<ChatExclamationmarkIcon fontSize="1.5rem" aria-hidden />}
-        label="Tilbakemeldinger med tekst"
+        icon={<ChatExclamationmarkIcon fontSize="1.25rem" aria-hidden />}
+        label="Med tekst"
         value={countWithText.toLocaleString("no-NO")}
         subtitle={`${textPercentage}% av totalt`}
-      />
-
-      <StatCard
-        icon={<CalendarIcon fontSize="1.5rem" aria-hidden />}
-        label="Periode"
-        value={`${periodDays} dager`}
-        subtitle={`${stats?.period?.from || "–"} til ${stats?.period?.to || "nå"}`}
       />
     </DashboardGrid>
   );

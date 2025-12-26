@@ -4,11 +4,20 @@
  * This file contains only:
  * - CSS resets and base styles
  * - Layout utilities (header, main content)
+ * - Responsive utilities
  * - Typography defaults
  * - Loading states
  * - Dashboard grid layout
  *
  * Component-specific styles are in their respective .module.css files.
+ *
+ * Aksel Breakpoints Reference:
+ * - xs: 0px (small phones)
+ * - sm: 480px (large phones)
+ * - md: 768px (tablets)
+ * - lg: 1024px (small laptops)
+ * - xl: 1280px (desktops)
+ * - 2xl: 1440px (large desktops)
  */
 
 /* ============================================
@@ -19,6 +28,8 @@ body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
+  /* Prevent horizontal overflow on mobile */
+  overflow-x: hidden;
 }
 
 .app-theme-root {
@@ -29,6 +40,9 @@ body {
   font-family: var(--ax-font-family);
   background-color: var(--ax-bg-default);
   color: var(--ax-text-default);
+  /* Improve text rendering on mobile */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Header */
@@ -79,11 +93,29 @@ body {
   width: auto;
 }
 
-/* Main content area */
+/* Main content area - responsive padding */
 .main-content {
-  padding: 1.5rem 1rem;
+  padding: 1rem 0.75rem;
   max-width: 1400px;
   margin: 0 auto;
+}
+
+@media (min-width: 480px) {
+  .main-content {
+    padding: 1.25rem 1rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .main-content {
+    padding: 1.5rem 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .main-content {
+    padding: 1.5rem 2rem;
+  }
 }
 
 /* Navigation tabs */

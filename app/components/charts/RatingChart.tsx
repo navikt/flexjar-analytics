@@ -8,6 +8,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { useBreakpoint } from "~/hooks/useBreakpoint";
 import { useStats } from "~/hooks/useStats";
 import type { RatingStats } from "~/types/api";
 
@@ -39,6 +40,12 @@ const EMOJIS = {
 
 export function RatingChart() {
   const { data: stats, isLoading } = useStats();
+  const { isMobile } = useBreakpoint();
+
+  // Responsive chart margins - small left/right on mobile to prevent clipping
+  const chartMargin = isMobile
+    ? { top: 10, right: 5, left: 5, bottom: 30 }
+    : { top: 20, right: 30, left: 20, bottom: 40 };
 
   if (isLoading) {
     return <Skeleton variant="rectangle" height={300} />;
@@ -92,13 +99,13 @@ export function RatingChart() {
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={data}
-            margin={{ top: 20, right: 30, left: 20, bottom: 40 }}
+            margin={chartMargin}
             role="img"
             aria-label={`Søylediagram som viser fordeling av vurderinger: ${data.map((d) => `${d.emoji} ${d.count}`).join(", ")}`}
           >
             <XAxis
               dataKey="emoji"
-              tick={{ fontSize: 24 }}
+              tick={{ fontSize: isMobile ? 20 : 24 }}
               axisLine={false}
               tickLine={false}
             />
@@ -106,6 +113,7 @@ export function RatingChart() {
               axisLine={false}
               tickLine={false}
               tick={{ fill: CHART_STYLES.text, fontSize: 12 }}
+              hide={isMobile}
             />
             <Tooltip
               content={({ active, payload }) => {

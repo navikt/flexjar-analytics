@@ -1,4 +1,12 @@
-import { BodyShort, HStack, Label, Skeleton, VStack } from "@navikt/ds-react";
+import {
+  BodyShort,
+  HStack,
+  Hide,
+  Label,
+  Show,
+  Skeleton,
+  VStack,
+} from "@navikt/ds-react";
 import {
   Bar,
   BarChart,
@@ -96,108 +104,160 @@ export function DeviceBreakdownChart() {
   const totalCount = data.reduce((sum, d) => sum + d.count, 0);
 
   return (
-    <VStack gap="4">
-      {/* Summary cards */}
-      <HStack gap="4" wrap>
-        {data.map((d) => (
-          <div
-            key={d.device}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
-              padding: "0.5rem 0.75rem",
-              background: "var(--ax-bg-neutral-soft)",
-              borderRadius: "6px",
-              borderLeft: `3px solid ${d.color}`,
-            }}
-          >
-            <span style={{ fontSize: "1.25rem" }}>{d.icon}</span>
-            <VStack gap="0">
-              <Label size="small">{d.label}</Label>
-              <HStack gap="2" align="center">
-                <BodyShort size="small" weight="semibold">
-                  {d.count}
-                </BodyShort>
-                <BodyShort size="small" style={{ color: colors.textMuted }}>
-                  ({Math.round((d.count / totalCount) * 100)}%)
-                </BodyShort>
-                <BodyShort
-                  size="small"
+    <VStack gap="4" style={{ width: "100%" }}>
+      {/* Mobile: Simple compact list with progress bars */}
+      <Hide above="md">
+        <VStack gap="3" style={{ width: "100%" }}>
+          {data.map((d) => {
+            const percentage = Math.round((d.count / totalCount) * 100);
+            return (
+              <div key={d.device}>
+                <HStack justify="space-between" align="center" gap="2">
+                  <HStack gap="2" align="center">
+                    <span style={{ fontSize: "1rem" }}>{d.icon}</span>
+                    <BodyShort size="small" weight="semibold">
+                      {d.label}
+                    </BodyShort>
+                  </HStack>
+                  <HStack gap="2" align="center">
+                    <BodyShort size="small">{d.count}</BodyShort>
+                    <BodyShort size="small" style={{ color: colors.textMuted }}>
+                      ({percentage}%)
+                    </BodyShort>
+                  </HStack>
+                </HStack>
+                <div
                   style={{
-                    color:
-                      d.averageRating >= 4
-                        ? "#34D399"
-                        : d.averageRating <= 2
-                          ? "#F87171"
-                          : colors.text,
+                    width: "100%",
+                    height: "8px",
+                    background: "var(--ax-bg-neutral-moderate)",
+                    borderRadius: "4px",
+                    marginTop: "0.25rem",
+                    overflow: "hidden",
                   }}
                 >
-                  ⭐ {d.averageRating.toFixed(1)}
-                </BodyShort>
-              </HStack>
-            </VStack>
-          </div>
-        ))}
-      </HStack>
+                  <div
+                    style={{
+                      width: `${percentage}%`,
+                      height: "100%",
+                      background: d.color,
+                      borderRadius: "4px",
+                      transition: "width 0.3s ease",
+                    }}
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </VStack>
+      </Hide>
 
-      {/* Bar chart */}
-      <div
-        style={{ height: "120px" }}
-        role="img"
-        aria-label={`Enhetsfordeling: ${data.map((d) => `${d.label} ${d.count} svar`).join(", ")}`}
-      >
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            data={data}
-            layout="vertical"
-            margin={{ top: 0, right: 30, left: 80, bottom: 0 }}
-          >
-            <XAxis type="number" hide />
-            <YAxis
-              type="category"
-              dataKey="label"
-              axisLine={false}
-              tickLine={false}
-              tick={{ fill: colors.text, fontSize: 12 }}
-            />
-            <Tooltip
-              content={({ active, payload }) => {
-                if (active && payload && payload.length) {
-                  const d = payload[0].payload;
-                  return (
-                    <div
-                      style={{
-                        background: colors.tooltip.bg,
-                        color: colors.tooltip.text,
-                        padding: "0.75rem",
-                        borderRadius: "4px",
-                        border: `1px solid ${colors.tooltip.border}`,
-                        boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                      }}
-                    >
-                      <div style={{ fontWeight: 600, marginBottom: "0.25rem" }}>
-                        {d.icon} {d.label}
-                      </div>
-                      <div>
-                        {d.count} tilbakemeldinger (
-                        {Math.round((d.count / totalCount) * 100)}%)
-                      </div>
-                      <div>Snittrating: {d.averageRating.toFixed(1)} ⭐</div>
-                    </div>
-                  );
-                }
-                return null;
+      {/* Desktop: Cards + Bar chart */}
+      <Show above="md">
+        {/* Summary cards */}
+        <HStack gap="4" wrap>
+          {data.map((d) => (
+            <div
+              key={d.device}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                padding: "0.5rem 0.75rem",
+                background: "var(--ax-bg-neutral-soft)",
+                borderRadius: "6px",
+                borderLeft: `3px solid ${d.color}`,
               }}
-            />
-            <Bar dataKey="count" radius={[0, 4, 4, 0]}>
-              {data.map((entry) => (
-                <Cell key={entry.device} fill={entry.color} />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+            >
+              <span style={{ fontSize: "1.25rem" }}>{d.icon}</span>
+              <VStack gap="0">
+                <Label size="small">{d.label}</Label>
+                <HStack gap="2" align="center">
+                  <BodyShort size="small" weight="semibold">
+                    {d.count}
+                  </BodyShort>
+                  <BodyShort size="small" style={{ color: colors.textMuted }}>
+                    ({Math.round((d.count / totalCount) * 100)}%)
+                  </BodyShort>
+                  <BodyShort
+                    size="small"
+                    style={{
+                      color:
+                        d.averageRating >= 4
+                          ? "#34D399"
+                          : d.averageRating <= 2
+                            ? "#F87171"
+                            : colors.text,
+                    }}
+                  >
+                    ⭐ {d.averageRating.toFixed(1)}
+                  </BodyShort>
+                </HStack>
+              </VStack>
+            </div>
+          ))}
+        </HStack>
+
+        {/* Bar chart - only on desktop */}
+        <div
+          style={{ height: "120px" }}
+          role="img"
+          aria-label={`Enhetsfordeling: ${data.map((d) => `${d.label} ${d.count} svar`).join(", ")}`}
+        >
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={data}
+              layout="vertical"
+              margin={{ top: 0, right: 30, left: 80, bottom: 0 }}
+            >
+              <XAxis type="number" hide />
+              <YAxis
+                type="category"
+                dataKey="label"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: colors.text, fontSize: 12 }}
+              />
+              <Tooltip
+                content={({ active, payload }) => {
+                  if (active && payload && payload.length) {
+                    const d = payload[0].payload;
+                    return (
+                      <div
+                        style={{
+                          background: colors.tooltip.bg,
+                          color: colors.tooltip.text,
+                          padding: "0.75rem",
+                          borderRadius: "4px",
+                          border: `1px solid ${colors.tooltip.border}`,
+                          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                        }}
+                      >
+                        <div
+                          style={{ fontWeight: 600, marginBottom: "0.25rem" }}
+                        >
+                          {d.icon} {d.label}
+                        </div>
+                        <div>
+                          {d.count} tilbakemeldinger (
+                          {Math.round((d.count / totalCount) * 100)}%)
+                        </div>
+                        <div>Snittrating: {d.averageRating.toFixed(1)} ⭐</div>
+                      </div>
+                    );
+                  }
+                  return null;
+                }}
+              />
+              <Bar dataKey="count" radius={[0, 4, 4, 0]}>
+                {data.map((entry) => (
+                  <Cell key={entry.device} fill={entry.color} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </Show>
     </VStack>
   );
 }

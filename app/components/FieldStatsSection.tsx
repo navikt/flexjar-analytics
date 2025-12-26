@@ -25,7 +25,7 @@ export function FieldStatsSection() {
   const textFields = stats.fieldStats.filter((f) => f.fieldType === "TEXT");
 
   return (
-    <VStack gap="4" marginBlock="4">
+    <VStack gap="4" marginBlock="6 4">
       <Heading level="3" size="small">
         Statistikk per felt
       </Heading>

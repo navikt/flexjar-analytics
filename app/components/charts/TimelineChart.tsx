@@ -10,6 +10,7 @@ import {
   YAxis,
 } from "recharts";
 import { useTheme } from "~/context/ThemeContext";
+import { useBreakpoint } from "~/hooks/useBreakpoint";
 import { useSearchParams } from "~/hooks/useSearchParams";
 import { useStats } from "~/hooks/useStats";
 
@@ -43,8 +44,14 @@ export function TimelineChart() {
   const { theme } = useTheme();
   const navigate = useNavigate();
   const { params } = useSearchParams();
+  const { isMobile } = useBreakpoint();
 
   const colors = theme === "light" ? CHART_COLORS_LIGHT : CHART_COLORS;
+
+  // Responsive chart margins - small left/right on mobile to prevent clipping
+  const chartMargin = isMobile
+    ? { top: 10, right: 5, left: 5, bottom: 10 }
+    : { top: 20, right: 30, left: 20, bottom: 20 };
 
   if (isLoading) {
     return <Skeleton variant="rectangle" height={300} />;
@@ -81,7 +88,7 @@ export function TimelineChart() {
     <ResponsiveContainer width="100%" height="100%">
       <AreaChart
         data={data}
-        margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+        margin={chartMargin}
         role="img"
         aria-label={`Tidslinjediagram som viser ${data.length} datapunkter med tilbakemeldinger over tid`}
         onClick={(e) => {
@@ -118,6 +125,7 @@ export function TimelineChart() {
           axisLine={false}
           tickLine={false}
           tick={{ fill: colors.text, fontSize: 12 }}
+          hide={isMobile}
         />
         <Tooltip
           content={({ active, payload }) => {

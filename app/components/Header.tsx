@@ -1,5 +1,5 @@
 import { BarChartIcon, DownloadIcon, TableIcon } from "@navikt/aksel-icons";
-import { Box, Button, HStack } from "@navikt/ds-react";
+import { Box, Button, HStack, Hide } from "@navikt/ds-react";
 import { Link, useLocation } from "@tanstack/react-router";
 import flexjarLogo from "~/assets/flexjar.png";
 import { ThemeToggle } from "~/components/ThemeToggle";
@@ -23,31 +23,32 @@ export function Header() {
 
   return (
     <Box.New
-      paddingInline="4"
+      paddingInline={{ xs: "3", sm: "4" }}
       background="raised"
       borderWidth="0 0 1 0"
       borderColor="neutral-subtle"
       as="header"
     >
-      <div
+      <HStack
+        justify="space-between"
+        align="center"
+        gap={{ xs: "2", md: "4" }}
         style={{
           maxWidth: "1400px",
           margin: "0 auto",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
           height: "64px",
         }}
       >
+        {/* Logo and title */}
         <button
           type="button"
           onClick={handleResetAndNavigate}
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "0.75rem",
+            gap: "0.5rem",
             fontWeight: 600,
-            fontSize: "1.25rem",
+            fontSize: "1.125rem",
             textDecoration: "none",
             color: "inherit",
             background: "none",
@@ -59,53 +60,67 @@ export function Header() {
           <img
             src={flexjarLogo}
             alt=""
-            style={{ height: "40px", width: "auto" }}
-            width={40}
-            height={40}
+            style={{ height: "36px", width: "auto" }}
+            width={36}
+            height={36}
           />
-          Flexjar Analytics
+          {/* Hide title text on very small screens */}
+          <Hide below="sm" asChild>
+            <span>Flexjar Analytics</span>
+          </Hide>
         </button>
-        <HStack gap="4">
+
+        {/* Navigation */}
+        <HStack gap={{ xs: "1", sm: "2", md: "4" }}>
           <Link to="/" search={(prev) => prev}>
             <Button
               variant={getVariant("/")}
               size="small"
-              icon={<BarChartIcon />}
-              className="hide-text-mobile show-text-desktop"
+              icon={<BarChartIcon aria-hidden />}
             >
-              Dashboard
+              {/* Hide button text on mobile, show on tablet+ */}
+              <Hide below="md" asChild>
+                <span>Dashboard</span>
+              </Hide>
             </Button>
           </Link>
           <Link to="/feedback" search={(prev) => prev}>
             <Button
               variant={getVariant("/feedback")}
               size="small"
-              icon={<TableIcon />}
-              className="hide-text-mobile show-text-desktop"
+              icon={<TableIcon aria-hidden />}
             >
-              Tilbakemeldinger
+              <Hide below="md" asChild>
+                <span>Tilbakemeldinger</span>
+              </Hide>
             </Button>
           </Link>
           <Link to="/export" search={(prev) => prev}>
             <Button
               variant={getVariant("/export")}
               size="small"
-              icon={<DownloadIcon />}
-              className="hide-text-mobile show-text-desktop"
+              icon={<DownloadIcon aria-hidden />}
             >
-              Eksporter
+              <Hide below="md" asChild>
+                <span>Eksporter</span>
+              </Hide>
             </Button>
           </Link>
-          <div
-            style={{
-              width: "1px",
-              height: "32px",
-              background: "var(--ax-border-neutral-subtle)",
-            }}
-          />
+
+          {/* Divider - hide on very small screens */}
+          <Hide below="sm">
+            <div
+              style={{
+                width: "1px",
+                height: "32px",
+                background: "var(--ax-border-neutral-subtle)",
+              }}
+            />
+          </Hide>
+
           <ThemeToggle />
         </HStack>
-      </div>
+      </HStack>
     </Box.New>
   );
 }

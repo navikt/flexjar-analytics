@@ -9,8 +9,11 @@ import {
   Box,
   Button,
   UNSAFE_Combobox as Combobox,
+  HGrid,
   HStack,
+  Hide,
   Select,
+  Show,
   TextField,
   ToggleGroup,
   Tooltip,
@@ -130,25 +133,30 @@ export function FilterBar({ showDetails = false }: FilterBarProps) {
     <VStack gap="3" style={{ width: "100%" }}>
       {/* Primary Row: Common Filters (App, Survey, Period) */}
       <Box.New
-        padding="4"
+        padding={{ xs: "3", md: "4" }}
         background="raised"
         borderRadius="large"
         style={{ boxShadow: "var(--ax-shadow-small)", minHeight: "52px" }}
         borderColor="neutral-subtle"
         borderWidth="1"
       >
-        <HStack gap="3" align="end" wrap>
+        {/* Responsive grid: stack on mobile, inline on tablet+ */}
+        <HGrid
+          columns={{ xs: 1, sm: 2, lg: "1fr 1fr auto auto" }}
+          gap={{ xs: "2", md: "3" }}
+          align="end"
+        >
           <Select
             label="App"
-            size="small"
             hideLabel
+            size="small"
             value={params.app || "alle"}
             onChange={(e) =>
               handleAppChange(
                 e.target.value === "alle" ? undefined : e.target.value,
               )
             }
-            style={{ width: "200px" }}
+            style={{ width: "100%" }}
           >
             {apps.map((app) => (
               <option key={app} value={app}>
@@ -159,8 +167,8 @@ export function FilterBar({ showDetails = false }: FilterBarProps) {
 
           <Select
             label="Survey"
-            size="small"
             hideLabel
+            size="small"
             value={params.feedbackId || "alle"}
             onChange={(e) =>
               setParam(
@@ -168,7 +176,7 @@ export function FilterBar({ showDetails = false }: FilterBarProps) {
                 e.target.value === "alle" ? undefined : e.target.value,
               )
             }
-            style={{ width: "250px" }}
+            style={{ width: "100%" }}
           >
             {surveys.map((survey) => (
               <option key={survey} value={survey}>
@@ -177,12 +185,35 @@ export function FilterBar({ showDetails = false }: FilterBarProps) {
             ))}
           </Select>
 
-          <div style={{ flex: 1 }} />
+          {/* Period and reset - visible on lg+ inline, separate row on smaller */}
+          <Show above="lg">
+            <PeriodSelector />
+            {hasActiveFilters && (
+              <Tooltip content="Nullstill alle filtre til standard (siste 30 dager)">
+                <Button
+                  variant="tertiary"
+                  size="small"
+                  icon={<XMarkIcon aria-hidden />}
+                  onClick={handleReset}
+                  type="button"
+                >
+                  Nullstill
+                </Button>
+              </Tooltip>
+            )}
+          </Show>
+        </HGrid>
 
-          <PeriodSelector />
-
-          {hasActiveFilters && (
-            <Tooltip content="Nullstill alle filtre til standard (siste 30 dager)">
+        {/* Period and reset on mobile/tablet - shown as separate row */}
+        <Hide above="lg">
+          <HStack
+            gap="2"
+            justify="space-between"
+            align="center"
+            style={{ marginTop: "0.5rem" }}
+          >
+            <PeriodSelector />
+            {hasActiveFilters && (
               <Button
                 variant="tertiary"
                 size="small"
@@ -190,17 +221,19 @@ export function FilterBar({ showDetails = false }: FilterBarProps) {
                 onClick={handleReset}
                 type="button"
               >
-                Nullstill
+                <Hide below="sm" asChild>
+                  <span>Nullstill</span>
+                </Hide>
               </Button>
-            </Tooltip>
-          )}
-        </HStack>
+            )}
+          </HStack>
+        </Hide>
       </Box.New>
 
       {/* Secondary Row: Page Specific Filters (Feedback only for now) */}
       {showDetails && (
         <Box.New
-          paddingInline="4"
+          paddingInline={{ xs: "3", md: "4" }}
           paddingBlock="3"
           style={{
             background: "var(--ax-bg-default)",
@@ -222,7 +255,7 @@ export function FilterBar({ showDetails = false }: FilterBarProps) {
                     setParam("fritekst", e.target.value || undefined)
                   }
                   placeholder="Søk i tekst..."
-                  style={{ width: 200 }}
+                  style={{ width: "100%", minWidth: 150, maxWidth: 200 }}
                 />
               )}
 
@@ -244,7 +277,7 @@ export function FilterBar({ showDetails = false }: FilterBarProps) {
                     );
                   }}
                   placeholder="Velg tags..."
-                  style={{ width: 200 }}
+                  style={{ width: "100%", minWidth: 150, maxWidth: 200 }}
                 />
               )}
             </HStack>
@@ -258,7 +291,11 @@ export function FilterBar({ showDetails = false }: FilterBarProps) {
                     setParam("deviceType", val === "alle" ? undefined : val)
                   }
                 >
-                  <ToggleGroup.Item value="alle">Alle enheter</ToggleGroup.Item>
+                  {/* Show "Alle enheter" text only on md+, just icon on xs/sm */}
+                  <ToggleGroup.Item value="alle">
+                    <Show above="md">Alle enheter</Show>
+                    <Hide above="md">Alle</Hide>
+                  </ToggleGroup.Item>
                   <ToggleGroup.Item
                     value="desktop"
                     icon={<LaptopIcon title="Desktop" />}
@@ -270,14 +307,17 @@ export function FilterBar({ showDetails = false }: FilterBarProps) {
                 </ToggleGroup>
               )}
 
-              <div
-                style={{
-                  width: "1px",
-                  height: "24px",
-                  background: "var(--ax-border-neutral-subtle)",
-                  margin: "0 0.25rem",
-                }}
-              />
+              {/* Divider - hide on small screens */}
+              <Hide below="md">
+                <div
+                  style={{
+                    width: "1px",
+                    height: "24px",
+                    background: "var(--ax-border-neutral-subtle)",
+                    margin: "0 0.25rem",
+                  }}
+                />
+              </Hide>
 
               {features.showTextFilter && (
                 <Tooltip content="Vis kun tilbakemeldinger med tekstsvar">
@@ -295,7 +335,9 @@ export function FilterBar({ showDetails = false }: FilterBarProps) {
                     }
                     type="button"
                   >
-                    Med tekst
+                    <Hide below="sm" asChild>
+                      <span>Med tekst</span>
+                    </Hide>
                   </Button>
                 </Tooltip>
               )}
@@ -316,7 +358,9 @@ export function FilterBar({ showDetails = false }: FilterBarProps) {
                     }
                     type="button"
                   >
-                    Lav score
+                    <Hide below="sm" asChild>
+                      <span>Lav score</span>
+                    </Hide>
                   </Button>
                 </Tooltip>
               )}

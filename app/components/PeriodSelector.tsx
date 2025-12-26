@@ -7,13 +7,16 @@ import {
   Button,
   DatePicker,
   HStack,
+  Hide,
   Label,
   Popover,
+  Show,
   VStack,
   useDatepicker,
 } from "@navikt/ds-react";
 import dayjs from "dayjs";
 import { useRef, useState } from "react";
+import { useBreakpoint } from "~/hooks/useBreakpoint";
 import { useSearchParams } from "~/hooks/useSearchParams";
 
 function CustomPeriodInputs({
@@ -66,6 +69,7 @@ export function PeriodSelector() {
   const { params, setParam } = useSearchParams();
   const [open, setOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const { isMobile } = useBreakpoint();
 
   // Parse current params
   const currentFrom = params.from ? dayjs(params.from) : undefined;
@@ -105,16 +109,20 @@ export function PeriodSelector() {
 
     // Check presets
     if (isToday) {
-      if (start.isSame(today, "day")) return "Hittil i dag";
+      if (start.isSame(today, "day"))
+        return isMobile ? "I dag" : "Hittil i dag";
 
       const diff = end.diff(start, "day") + 1;
-      if (diff === 7) return "Siste 7 dager";
-      if (diff === 30) return "Siste 30 dager";
-      if (diff === 90) return "Siste 3 måneder";
+      if (diff === 7) return isMobile ? "7 dager" : "Siste 7 dager";
+      if (diff === 30) return isMobile ? "30 dager" : "Siste 30 dager";
+      if (diff === 90) return isMobile ? "3 mnd" : "Siste 3 måneder";
       if (start.isSame(today.startOf("year"), "day")) return "Hittil i år";
     }
 
-    // Custom
+    // Custom - shorter format on mobile
+    if (isMobile) {
+      return `${start.format("DD.MM")} - ${end.format("DD.MM")}`;
+    }
     return `${start.format("DD.MM.YYYY")} - ${end.format("DD.MM.YYYY")}`;
   };
 
@@ -137,69 +145,112 @@ export function PeriodSelector() {
         open={open}
         onClose={() => setOpen(false)}
         anchorEl={buttonRef.current}
-        placement="bottom-start"
+        placement={isMobile ? "bottom" : "bottom-start"}
       >
-        <Popover.Content>
-          <HStack gap="4" align="start">
-            {/* Presets Column */}
-            <VStack gap="2" style={{ minWidth: "140px" }}>
-              <Label size="small">Hurtigvalg</Label>
-              <Button
-                variant="tertiary"
-                size="small"
-                onClick={() => handlePreset("today")}
-                className="justify-start"
-              >
-                Hittil i dag
-              </Button>
-              <Button
-                variant="tertiary"
-                size="small"
-                onClick={() => handlePreset(7)}
-                className="justify-start"
-              >
-                Siste 7 dager
-              </Button>
-              <Button
-                variant="tertiary"
-                size="small"
-                onClick={() => handlePreset(30)}
-                className="justify-start"
-              >
-                Siste 30 dager
-              </Button>
-              <Button
-                variant="tertiary"
-                size="small"
-                onClick={() => handlePreset(90)}
-                className="justify-start"
-              >
-                Siste 3 måneder
-              </Button>
-              <Button
-                variant="tertiary"
-                size="small"
-                onClick={() => handlePreset("year")}
-                className="justify-start"
-              >
-                Hittil i år
-              </Button>
+        <Popover.Content
+          style={{
+            maxWidth: isMobile ? "calc(100vw - 2rem)" : "auto",
+            overflow: "auto",
+          }}
+        >
+          {/* Mobile: Stack vertically */}
+          <Show above="md">
+            <HStack gap="4" align="start">
+              {/* Presets Column */}
+              <VStack gap="2" style={{ minWidth: "140px" }}>
+                <Label size="small">Hurtigvalg</Label>
+                <PresetButtons onSelect={handlePreset} />
+              </VStack>
+
+              {/* Divider */}
+              <div
+                style={{
+                  width: "1px",
+                  backgroundColor: "var(--ax-border-neutral-subtle)",
+                  alignSelf: "stretch",
+                }}
+              />
+
+              {/* Custom Range Column */}
+              {open && <CustomPeriodInputs onApply={handleApply} />}
+            </HStack>
+          </Show>
+
+          {/* Mobile: Vertical layout */}
+          <Hide above="md">
+            <VStack gap="4">
+              <VStack gap="2">
+                <Label size="small">Hurtigvalg</Label>
+                <PresetButtons onSelect={handlePreset} compact />
+              </VStack>
+
+              <div
+                style={{
+                  height: "1px",
+                  backgroundColor: "var(--ax-border-neutral-subtle)",
+                  width: "100%",
+                }}
+              />
+
+              {open && <CustomPeriodInputs onApply={handleApply} />}
             </VStack>
-
-            {/* Divider */}
-            <div
-              style={{
-                width: "1px",
-                backgroundColor: "var(--ax-border-neutral-subtle)",
-                alignSelf: "stretch",
-              }}
-            />
-
-            {/* Custom Range Column */}
-            {open && <CustomPeriodInputs onApply={handleApply} />}
-          </HStack>
+          </Hide>
         </Popover.Content>
       </Popover>
+    </>
+  );
+}
+
+/**
+ * Preset period selection buttons
+ */
+function PresetButtons({
+  onSelect,
+  compact = false,
+}: {
+  onSelect: (days: number | "year" | "today") => void;
+  compact?: boolean;
+}) {
+  const presets = [
+    { label: compact ? "I dag" : "Hittil i dag", value: "today" as const },
+    { label: compact ? "7 dager" : "Siste 7 dager", value: 7 },
+    { label: compact ? "30 dager" : "Siste 30 dager", value: 30 },
+    { label: compact ? "3 mnd" : "Siste 3 måneder", value: 90 },
+    { label: "Hittil i år", value: "year" as const },
+  ];
+
+  // On mobile, show in a 2x3 grid for better touch targets
+  if (compact) {
+    return (
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+        {presets.map((preset) => (
+          <Button
+            key={preset.label}
+            variant="tertiary"
+            size="small"
+            onClick={() => onSelect(preset.value)}
+            style={{ flex: "1 1 45%" }}
+          >
+            {preset.label}
+          </Button>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {presets.map((preset) => (
+        <Button
+          key={preset.label}
+          variant="tertiary"
+          size="small"
+          onClick={() => onSelect(preset.value)}
+          className="justify-start"
+        >
+          {preset.label}
+        </Button>
+      ))}
     </>
   );
 }
