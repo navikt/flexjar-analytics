@@ -37,11 +37,11 @@ interface FilterBarProps {
 export function FilterBar({ showDetails = false }: FilterBarProps) {
   const { params, setParam, resetParams } = useSearchParams();
   // Use separate query for filter options so they don't change when filtering
-  const { data: filterOptions, isLoading: isLoadingOptions } =
+  const { data: filterOptions, isPending: isPendingOptions } =
     useFilterOptions();
-  const { data: surveysByApp, isLoading: isLoadingSurveys } = useSurveysByApp();
+  const { data: surveysByApp, isPending: isPendingSurveys } = useSurveysByApp();
   const { data: allTags = [] } = useTags();
-  const { data: stats, isLoading: isLoadingStats } = useStats();
+  const { data: stats, isPending: isPendingStats } = useStats();
 
   // Determine active features based on survey type
   const features = getSurveyFeatures(stats?.surveyType);
@@ -118,9 +118,11 @@ export function FilterBar({ showDetails = false }: FilterBarProps) {
     params.deviceType ||
     params.tags;
 
-  const isLoading = isLoadingOptions || isLoadingSurveys || isLoadingStats;
+  // isPending: no cached data AND fetching (TanStack Query v5 best practice)
+  // With placeholderData: keepPreviousData, isPending stays false during refetches
+  const isPending = isPendingOptions || isPendingSurveys || isPendingStats;
 
-  if (isLoading) {
+  if (isPending) {
     return (
       <FilterBarSkeleton
         showDetails={showDetails}

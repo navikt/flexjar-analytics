@@ -39,7 +39,7 @@ const EMOJIS = {
 };
 
 export function RatingChart() {
-  const { data: stats, isLoading } = useStats();
+  const { data: stats, isPending } = useStats();
   const { isMobile } = useBreakpoint();
 
   // Responsive chart margins - small left/right on mobile to prevent clipping
@@ -47,7 +47,7 @@ export function RatingChart() {
     ? { top: 10, right: 5, left: 5, bottom: 30 }
     : { top: 20, right: 30, left: 20, bottom: 40 };
 
-  if (isLoading) {
+  if (isPending) {
     return <Skeleton variant="rectangle" height={300} />;
   }
 

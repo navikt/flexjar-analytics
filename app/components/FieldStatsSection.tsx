@@ -8,12 +8,12 @@ import type { FieldStat, RatingStats, TextStats } from "~/types/api";
 import { FieldStatsSkeleton } from "./FieldStatsSection/FieldStatsSkeleton";
 
 export function FieldStatsSection() {
-  const { data: stats, isLoading } = useStats();
+  const { data: stats, isPending } = useStats();
   const { params } = useSearchParams();
   const hasSurveyFilter = !!params.feedbackId;
 
-  // Vis skeleton når det lastes og en survey er valgt
-  if (isLoading && hasSurveyFilter) {
+  // isPending: skeleton only during initial load when a survey is selected
+  if (isPending && hasSurveyFilter) {
     return <FieldStatsSkeleton />;
   }
 

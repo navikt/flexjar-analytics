@@ -50,12 +50,13 @@ export function StatCard({ icon, label, value, subtitle }: StatCardProps) {
 }
 
 export function StatsCards() {
-  const { data: stats, isLoading } = useStats();
+  const { data: stats, isPending } = useStats();
   const { params } = useSearchParams();
   const hasSurveyFilter = !!params.feedbackId;
 
-  // Vis default skeleton (3 kort) alltid for stabilitet
-  if (isLoading) {
+  // isPending: no cached data AND fetching (TanStack Query v5 best practice)
+  // With placeholderData: keepPreviousData, isPending stays false during refetches
+  if (isPending) {
     return <StatsCardsSkeleton />;
   }
 

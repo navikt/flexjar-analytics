@@ -33,7 +33,7 @@ import { FeedbackTableSkeleton } from "./FeedbackTable/FeedbackTableSkeleton";
 export function FeedbackTable() {
   const { params, setParam } = useSearchParams();
   const page = Number.parseInt(params.page || "1", 10);
-  const { data, isLoading, error } = useFeedback();
+  const { data, error, isPending } = useFeedback();
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [feedbackToDelete, setFeedbackToDelete] = useState<string | null>(null);
@@ -56,8 +56,10 @@ export function FeedbackTable() {
     return <Alert variant="error">Kunne ikke laste tilbakemeldinger</Alert>;
   }
 
-  if (isLoading) {
-    return <FeedbackTableSkeleton />;
+  // isPending: no cached data AND fetching (TanStack Query v5 best practice)
+  // With placeholderData: keepPreviousData, isPending stays false during refetches
+  if (isPending) {
+    return <FeedbackTableSkeleton showToolbar />;
   }
 
   // Data extraction

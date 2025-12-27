@@ -40,7 +40,7 @@ const CHART_COLORS_LIGHT = {
 };
 
 export function TimelineChart() {
-  const { data: stats, isLoading } = useStats();
+  const { data: stats, isPending } = useStats();
   const { theme } = useTheme();
   const navigate = useNavigate();
   const { params } = useSearchParams();
@@ -53,7 +53,7 @@ export function TimelineChart() {
     ? { top: 10, right: 5, left: 5, bottom: 10 }
     : { top: 20, right: 30, left: 20, bottom: 20 };
 
-  if (isLoading) {
+  if (isPending) {
     return <Skeleton variant="rectangle" height={300} />;
   }
 

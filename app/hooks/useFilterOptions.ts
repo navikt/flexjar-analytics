@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { fetchStatsServerFn } from "~/server/actions";
 
 // Re-export the FeedbackStats type for components that need it
@@ -17,5 +17,6 @@ export function useFilterOptions() {
         data: {},
       }),
     staleTime: 60000, // 1 minute - these don't change often
+    placeholderData: keepPreviousData,
   });
 }

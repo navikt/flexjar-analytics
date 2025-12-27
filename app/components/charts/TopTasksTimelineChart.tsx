@@ -41,12 +41,12 @@ const CHART_COLORS_LIGHT = {
 };
 
 export function TopTasksTimelineChart() {
-  const { data: stats, isLoading } = useTopTasksStats();
+  const { data: stats, isPending } = useTopTasksStats();
   const { theme } = useTheme();
 
   const colors = theme === "light" ? CHART_COLORS_LIGHT : CHART_COLORS;
 
-  if (isLoading) {
+  if (isPending) {
     return <Skeleton variant="rectangle" height={300} />;
   }
 

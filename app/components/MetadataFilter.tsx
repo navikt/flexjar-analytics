@@ -1,5 +1,5 @@
-import { Box, Chips, HStack, Label, Skeleton, VStack } from "@navikt/ds-react";
-import { useQuery } from "@tanstack/react-query";
+import { Box, Chips, Label, VStack } from "@navikt/ds-react";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "~/hooks/useSearchParams";
 import { fetchMetadataKeysServerFn } from "~/server/actions";
 
@@ -13,10 +13,11 @@ interface MetadataFilterProps {
  */
 export function MetadataFilter({ surveyId }: MetadataFilterProps) {
   const { params, setParam } = useSearchParams();
-  const { data, isLoading } = useQuery({
+  const { data } = useQuery({
     queryKey: ["metadataKeys", surveyId],
     queryFn: () => fetchMetadataKeysServerFn({ data: { surveyId } }),
     enabled: !!surveyId && surveyId !== "alle",
+    placeholderData: keepPreviousData,
   });
 
   // Parse current metadata filters from URL
@@ -36,26 +37,6 @@ export function MetadataFilter({ surveyId }: MetadataFilterProps) {
 
   if (!surveyId || surveyId === "alle") {
     return null;
-  }
-
-  if (isLoading) {
-    return (
-      <Box.New
-        padding="3"
-        background="raised"
-        borderRadius="medium"
-        borderColor="neutral-subtle"
-        borderWidth="1"
-      >
-        <VStack gap="2">
-          <Skeleton variant="text" width="100px" height="16px" />
-          <HStack gap="2">
-            <Skeleton variant="rounded" width="80px" height="28px" />
-            <Skeleton variant="rounded" width="60px" height="28px" />
-          </HStack>
-        </VStack>
-      </Box.New>
-    );
   }
 
   if (!hasMetadata) {

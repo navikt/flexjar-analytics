@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "~/hooks/useSearchParams";
 import { fetchTopTasksServerFn } from "~/server/actions";
 
@@ -27,5 +27,6 @@ export function useTopTasksStats() {
         },
       }),
     staleTime: 60000, // 1 minute
+    placeholderData: keepPreviousData,
   });
 }

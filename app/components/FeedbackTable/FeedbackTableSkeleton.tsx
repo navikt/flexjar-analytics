@@ -1,6 +1,12 @@
-import { Skeleton, Table } from "@navikt/ds-react";
+import { HStack, Skeleton, Table } from "@navikt/ds-react";
 
-export function FeedbackTableSkeleton() {
+interface FeedbackTableSkeletonProps {
+  showToolbar?: boolean;
+}
+
+export function FeedbackTableSkeleton({
+  showToolbar,
+}: FeedbackTableSkeletonProps) {
   // Inline styles to match .table in FeedbackTable.module.css
   const tableContainerStyle: React.CSSProperties = {
     background: "var(--ax-bg-default)",
@@ -10,8 +16,25 @@ export function FeedbackTableSkeleton() {
     overflow: "hidden",
   };
 
+  // Toolbar skeleton styles (matching .toolbar in FeedbackTable.module.css)
+  const toolbarStyle: React.CSSProperties = {
+    padding: "0.75rem 1rem",
+    background: "var(--ax-bg-neutral-moderate)",
+    borderBottom: "1px solid var(--ax-border-neutral-subtle)",
+  };
+
   return (
     <div style={tableContainerStyle}>
+      {/* Toolbar skeleton when survey is selected */}
+      {showToolbar && (
+        <div style={toolbarStyle}>
+          <HStack justify="space-between" align="center">
+            <Skeleton variant="text" width={280} height={20} />
+            <Skeleton variant="rounded" width={130} height={32} />
+          </HStack>
+        </div>
+      )}
+
       <Table>
         <Table.Header>
           <Table.Row>

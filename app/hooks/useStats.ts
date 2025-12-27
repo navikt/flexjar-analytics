@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "~/hooks/useSearchParams";
 import { fetchStatsServerFn } from "~/server/actions";
 
@@ -50,5 +50,6 @@ export function useStats() {
         },
       }),
     staleTime: 30000, // 30 seconds
+    placeholderData: keepPreviousData, // Prevent skeleton flash on param changes
   });
 }

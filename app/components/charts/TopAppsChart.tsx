@@ -34,12 +34,12 @@ const CHART_COLORS_LIGHT = {
 };
 
 export function TopAppsChart() {
-  const { data: stats, isLoading } = useStats();
+  const { data: stats, isPending } = useStats();
   const { theme } = useTheme();
 
   const colors = theme === "light" ? CHART_COLORS_LIGHT : CHART_COLORS;
 
-  if (isLoading) {
+  if (isPending) {
     return <Skeleton variant="rectangle" height={200} />;
   }
 
