@@ -8,7 +8,7 @@ import { StatsCards } from "~/components/StatsCards";
 import { TopTasksOverview } from "~/components/TopTasksOverview";
 import { UrgentUrls } from "~/components/UrgentUrls";
 import { DeviceBreakdownChart } from "~/components/charts/DeviceBreakdownChart";
-import { RatingChart } from "~/components/charts/RatingChart";
+
 import { RatingTrendChart } from "~/components/charts/RatingTrendChart";
 import { TimelineChart } from "~/components/charts/TimelineChart";
 import { TopAppsChart } from "~/components/charts/TopAppsChart";
@@ -101,25 +101,7 @@ function DashboardPage() {
               <UrgentUrls />
 
               {/* Survey-specific statistics - only when a survey is selected */}
-              {hasSurveyFilter && (
-                <>
-                  <FieldStatsSection />
-
-                  <DashboardCard padding={{ xs: "4", md: "6" }}>
-                    <VStack gap="4">
-                      <Heading size="small">Fordeling av vurderinger</Heading>
-                      <div
-                        style={{
-                          height: "clamp(200px, 40vw, 300px)",
-                          width: "100%",
-                        }}
-                      >
-                        <RatingChart />
-                      </div>
-                    </VStack>
-                  </DashboardCard>
-                </>
-              )}
+              {hasSurveyFilter && <FieldStatsSection />}
 
               {/* Apps and devices breakdown - only when no survey filter */}
               {!hasSurveyFilter && (
