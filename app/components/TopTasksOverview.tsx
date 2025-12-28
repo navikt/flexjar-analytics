@@ -3,7 +3,7 @@ import {
   CheckmarkCircleIcon,
   XMarkOctagonIcon,
 } from "@navikt/aksel-icons";
-import { Box, Heading, Show, Table } from "@navikt/ds-react";
+import { Box, Heading, Hide, Table } from "@navikt/ds-react";
 import { DashboardCard, DashboardGrid } from "~/components/DashboardComponents";
 import { TopTasksTimelineChart } from "~/components/charts/TopTasksTimelineChart";
 import { useTopTasksStats } from "~/hooks/useTopTasksStats";
@@ -73,16 +73,18 @@ export function TopTasksOverview() {
           <Table>
             <Table.Header>
               <Table.Row>
-                <Table.HeaderCell />
                 <Table.HeaderCell>Svaralternativer</Table.HeaderCell>
                 <Table.HeaderCell>Suksessrate</Table.HeaderCell>
                 <Table.HeaderCell align="right">Svar</Table.HeaderCell>
                 <Table.HeaderCell align="right">Suksess</Table.HeaderCell>
-                {/* Hide less critical columns on mobile */}
-                <Show above="md">
+                {/* Extra columns hidden on mobile */}
+                <Hide below="md" asChild>
                   <Table.HeaderCell align="right">Delvis</Table.HeaderCell>
+                </Hide>
+                <Hide below="md" asChild>
                   <Table.HeaderCell align="right">Feil</Table.HeaderCell>
-                </Show>
+                </Hide>
+                <Table.HeaderCell /> {/* For expand button on right */}
               </Table.Row>
             </Table.Header>
             <Table.Body>
@@ -147,14 +149,16 @@ export function TopTasksOverview() {
                     <Table.DataCell align="right">
                       {task.successCount}
                     </Table.DataCell>
-                    <Show above="md">
+                    <Hide below="md" asChild>
                       <Table.DataCell align="right">
                         {task.partialCount}
                       </Table.DataCell>
+                    </Hide>
+                    <Hide below="md" asChild>
                       <Table.DataCell align="right">
                         {task.failureCount}
                       </Table.DataCell>
-                    </Show>
+                    </Hide>
                   </Table.ExpandableRow>
                 );
               })}
