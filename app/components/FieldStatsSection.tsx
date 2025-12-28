@@ -25,7 +25,7 @@ export function FieldStatsSection() {
   const textFields = stats.fieldStats.filter((f) => f.fieldType === "TEXT");
 
   return (
-    <VStack gap="4" marginBlock="6 4">
+    <VStack gap="space-16" marginBlock="space-24 space-16">
       <Heading level="3" size="small">
         Statistikk per felt
       </Heading>
@@ -103,7 +103,7 @@ function RatingFieldCard({ field, totalCount }: FieldCardProps) {
         </span>
       </HStack>
 
-      <VStack gap="1" marginBlock="3 0">
+      <VStack gap="space-4" marginBlock="space-12 0">
         {[5, 4, 3, 2, 1].map((rating) => {
           const count = distribution[rating] || 0;
           // Skalér barene relativt til høyeste verdi, ikke prosent
@@ -111,7 +111,7 @@ function RatingFieldCard({ field, totalCount }: FieldCardProps) {
           return (
             <HStack
               key={rating}
-              gap="2"
+              gap="space-8"
               align="center"
               style={{ fontSize: "0.875rem" }}
             >

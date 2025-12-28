@@ -80,7 +80,7 @@ export function TagEditor({
   }
 
   return (
-    <HStack gap="2" align="center" wrap>
+    <HStack gap="space-8" align="center" wrap>
       {/* Existing tags as removable chips */}
       {currentTags.length > 0 && (
         <Chips size="small">
@@ -98,7 +98,7 @@ export function TagEditor({
 
       {/* Add tag button/input */}
       {isAdding ? (
-        <HStack gap="1" align="center">
+        <HStack gap="space-4" align="center">
           <Combobox
             size="small"
             label="Legg til tag"

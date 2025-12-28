@@ -39,8 +39,8 @@ function CustomPeriodInputs({
   });
 
   return (
-    <VStack gap="4">
-      <VStack gap="2">
+    <VStack gap="space-16">
+      <VStack gap="space-8">
         <Label size="small">Egendefinert periode</Label>
         <DatePicker {...fromProps}>
           <DatePicker.Input {...fromInputProps} label="Fra" size="small" />
@@ -155,9 +155,9 @@ export function PeriodSelector() {
         >
           {/* Mobile: Stack vertically */}
           <Show above="md">
-            <HStack gap="4" align="start">
+            <HStack gap="space-16" align="start">
               {/* Presets Column */}
-              <VStack gap="2" style={{ minWidth: "140px" }}>
+              <VStack gap="space-8" style={{ minWidth: "140px" }}>
                 <Label size="small">Hurtigvalg</Label>
                 <PresetButtons onSelect={handlePreset} />
               </VStack>
@@ -178,8 +178,8 @@ export function PeriodSelector() {
 
           {/* Mobile: Vertical layout */}
           <Hide above="md">
-            <VStack gap="4">
-              <VStack gap="2">
+            <VStack gap="space-16">
+              <VStack gap="space-8">
                 <Label size="small">Hurtigvalg</Label>
                 <PresetButtons onSelect={handlePreset} compact />
               </VStack>

@@ -108,8 +108,8 @@ export function ExportPanel() {
           Eksport fullført! Filen er lastet ned.
         </Alert>
       )}
-      <DashboardCard padding="6">
-        <VStack gap="4">
+      <DashboardCard padding="space-24">
+        <VStack gap="space-16">
           <Heading size="small">Velg format</Heading>
 
           <RadioGroup
@@ -119,7 +119,7 @@ export function ExportPanel() {
             onChange={(val) => setFormat(val as ExportFormat)}
           >
             <Radio value="csv">
-              <HStack gap="2" align="start">
+              <HStack gap="space-8" align="start">
                 <FilesIcon style={{ marginTop: "2px" }} />
                 <VStack gap="0">
                   <BodyShort weight="semibold">CSV</BodyShort>
@@ -130,7 +130,7 @@ export function ExportPanel() {
               </HStack>
             </Radio>
             <Radio value="excel">
-              <HStack gap="2" align="start">
+              <HStack gap="space-8" align="start">
                 <FileExcelIcon style={{ marginTop: "2px" }} />
                 <VStack gap="0">
                   <BodyShort weight="semibold">Excel (XLSX)</BodyShort>
@@ -141,7 +141,7 @@ export function ExportPanel() {
               </HStack>
             </Radio>
             <Radio value="json">
-              <HStack gap="2" align="start">
+              <HStack gap="space-8" align="start">
                 <FilesIcon style={{ marginTop: "2px" }} />
                 <VStack gap="0">
                   <BodyShort weight="semibold">JSON</BodyShort>
@@ -163,8 +163,8 @@ export function ExportPanel() {
         </VStack>
       </DashboardCard>
 
-      <DashboardCard padding="6">
-        <VStack gap="4">
+      <DashboardCard padding="space-24">
+        <VStack gap="space-16">
           <Heading size="small">Aktive filtre</Heading>
           <ActiveFilters params={params} />
           <BodyShort size="small" textColor="subtle">

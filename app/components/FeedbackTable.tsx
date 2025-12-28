@@ -127,7 +127,7 @@ export function FeedbackTable() {
 
           {/* Mobile: Card view */}
           <Hide above="md">
-            <VStack gap="3" padding="3">
+            <VStack gap="space-12" padding="space-12">
               {feedbackList.map((feedback) => (
                 <FeedbackCard
                   key={feedback.id}
@@ -192,7 +192,7 @@ function SurveyToolbar({
 }: { surveyId: string; totalCount: number; onDelete: () => void }) {
   return (
     <div className={styles.toolbar}>
-      <HStack justify="space-between" align="center" wrap gap="2">
+      <HStack justify="space-between" align="center" wrap gap="space-8">
         <BodyShort size="small" textColor="subtle">
           Viser {totalCount} svar for <strong>{surveyId}</strong>
         </BodyShort>
@@ -231,8 +231,8 @@ function PaginationBar({
   onPageChange: (page: number) => void;
 }) {
   return (
-    <Box padding="4">
-      <HStack justify="space-between" align="center" wrap gap="2">
+    <Box padding="space-16">
+      <HStack justify="space-between" align="center" wrap gap="space-8">
         <BodyShort size="small">
           <Hide below="sm" asChild>
             <span>

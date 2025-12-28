@@ -45,15 +45,15 @@ export function MetadataFilter({ surveyId }: MetadataFilterProps) {
 
   return (
     <Box.New
-      padding="3"
+      padding="space-12"
       background="raised"
       borderRadius="medium"
       borderColor="neutral-subtle"
       borderWidth="1"
     >
-      <VStack gap="3">
+      <VStack gap="space-12">
         {Object.entries(metadataKeys).map(([key, values]) => (
-          <VStack key={key} gap="1">
+          <VStack key={key} gap="space-4">
             <Label size="small">{formatMetadataKey(key)}</Label>
             <Chips>
               <Chips.Toggle

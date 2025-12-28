@@ -56,7 +56,7 @@ export function DeleteSurveyDialog({
       width="small"
     >
       <Modal.Body>
-        <VStack gap="4">
+        <VStack gap="space-16">
           <Alert variant="warning">
             Du er i ferd med å slette <strong>alle {feedbackCount} svar</strong>{" "}
             for survey <strong>"{surveyId}"</strong>. Denne handlingen kan ikke
@@ -83,7 +83,7 @@ export function DeleteSurveyDialog({
       </Modal.Body>
 
       <Modal.Footer>
-        <HStack gap="2" justify="end">
+        <HStack gap="space-8" justify="end">
           <Button variant="secondary" onClick={handleClose}>
             Avbryt
           </Button>

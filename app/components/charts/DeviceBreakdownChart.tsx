@@ -104,22 +104,22 @@ export function DeviceBreakdownChart() {
   const totalCount = data.reduce((sum, d) => sum + d.count, 0);
 
   return (
-    <VStack gap="4" style={{ width: "100%" }}>
+    <VStack gap="space-16" style={{ width: "100%" }}>
       {/* Mobile: Simple compact list with progress bars */}
       <Hide above="md">
-        <VStack gap="3" style={{ width: "100%" }}>
+        <VStack gap="space-12" style={{ width: "100%" }}>
           {data.map((d) => {
             const percentage = Math.round((d.count / totalCount) * 100);
             return (
               <div key={d.device}>
-                <HStack justify="space-between" align="center" gap="2">
-                  <HStack gap="2" align="center">
+                <HStack justify="space-between" align="center" gap="space-8">
+                  <HStack gap="space-8" align="center">
                     <span style={{ fontSize: "1rem" }}>{d.icon}</span>
                     <BodyShort size="small" weight="semibold">
                       {d.label}
                     </BodyShort>
                   </HStack>
-                  <HStack gap="2" align="center">
+                  <HStack gap="space-8" align="center">
                     <BodyShort size="small">{d.count}</BodyShort>
                     <BodyShort size="small" style={{ color: colors.textMuted }}>
                       ({percentage}%)
@@ -155,7 +155,7 @@ export function DeviceBreakdownChart() {
       {/* Desktop: Cards + Bar chart */}
       <Show above="md">
         {/* Summary cards */}
-        <HStack gap="4" wrap>
+        <HStack gap="space-16" wrap>
           {data.map((d) => (
             <div
               key={d.device}
@@ -172,7 +172,7 @@ export function DeviceBreakdownChart() {
               <span style={{ fontSize: "1.25rem" }}>{d.icon}</span>
               <VStack gap="0">
                 <Label size="small">{d.label}</Label>
-                <HStack gap="2" align="center">
+                <HStack gap="space-8" align="center">
                   <BodyShort size="small" weight="semibold">
                     {d.count}
                   </BodyShort>

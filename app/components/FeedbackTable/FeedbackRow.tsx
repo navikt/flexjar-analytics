@@ -69,9 +69,9 @@ export function FeedbackRow({
 
       {/* Feedback Content */}
       <Table.DataCell>
-        <VStack gap="1">
+        <VStack gap="space-4">
           {/* Rating emojis and preview */}
-          <HStack gap="2" align="center" wrap>
+          <HStack gap="space-8" align="center" wrap>
             {ratings.map((r) => (
               <Tooltip key={r.label} content={r.label}>
                 <span className={styles.ratingEmoji}>
@@ -83,7 +83,7 @@ export function FeedbackRow({
           </HStack>
 
           {/* Metadata row: device, survey, tags */}
-          <HStack gap="2" align="center">
+          <HStack gap="space-8" align="center">
             {feedback.context?.deviceType && (
               <Tooltip
                 content={`${feedback.context.deviceType}${feedback.context.viewportWidth ? ` (${feedback.context.viewportWidth}px)` : ""}`}
@@ -113,7 +113,7 @@ export function FeedbackRow({
 
       {/* Actions */}
       <Table.DataCell>
-        <HStack gap="1">
+        <HStack gap="space-4">
           <CopyButton copyText={copyText} size="xsmall" variant="neutral" />
           <Tooltip content="Slett denne tilbakemeldingen">
             <Button
@@ -160,7 +160,7 @@ function TagsPreview({ tags }: { tags?: string[] }) {
   if (!tags || tags.length === 0) return null;
 
   return (
-    <HStack gap="1" wrap>
+    <HStack gap="space-4" wrap>
       {tags.slice(0, 2).map((tag) => (
         <Tag key={tag} variant="neutral" size="small">
           {tag}

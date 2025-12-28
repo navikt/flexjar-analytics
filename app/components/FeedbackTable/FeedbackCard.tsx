@@ -60,7 +60,7 @@ export function FeedbackCard({
 
   return (
     <DashboardCard
-      padding="4"
+      padding="space-16"
       style={{
         cursor: "pointer",
         borderLeft: isExpanded
@@ -69,10 +69,10 @@ export function FeedbackCard({
       }}
       onClick={onToggleExpand}
     >
-      <VStack gap="3">
+      <VStack gap="space-12">
         {/* Header row: Date, Device, App */}
         <HStack justify="space-between" align="center" wrap>
-          <HStack gap="2" align="center">
+          <HStack gap="space-8" align="center">
             <Tooltip
               content={dayjs(feedback.submittedAt).format(
                 "YYYY-MM-DD HH:mm:ss",
@@ -95,7 +95,7 @@ export function FeedbackCard({
 
         {/* Rating emojis */}
         {ratings.length > 0 && (
-          <HStack gap="2" align="center">
+          <HStack gap="space-8" align="center">
             {ratings.map((r) => (
               <Tooltip key={r.label} content={r.label}>
                 <span className={styles.ratingEmoji}>
@@ -108,7 +108,7 @@ export function FeedbackCard({
 
         {/* Preview text (collapsed) */}
         {!isExpanded && preview && (
-          <VStack gap="1">
+          <VStack gap="space-4">
             <BodyShort truncate style={{ fontWeight: 500, maxWidth: "100%" }}>
               {preview.text}
             </BodyShort>
@@ -127,7 +127,7 @@ export function FeedbackCard({
 
         {/* ===== EXPANDED CONTENT ===== */}
         {isExpanded && (
-          <VStack gap="4">
+          <VStack gap="space-16">
             {/* Section: Svar (Answers) */}
             {feedback.answers && feedback.answers.length > 0 && (
               <div className={styles.expandedSection}>
@@ -138,7 +138,7 @@ export function FeedbackCard({
                 {showTimeline ? (
                   <TimelineView answers={feedback.answers} styles={styles} />
                 ) : (
-                  <VStack gap="2">
+                  <VStack gap="space-8">
                     {feedback.answers.map((answer) => (
                       <div key={answer.fieldId} className={styles.answerCard}>
                         <RenderAnswer answer={answer} styles={styles} />
@@ -211,7 +211,7 @@ export function FeedbackCard({
             {feedback.tags && feedback.tags.length > 0 && (
               <div className={styles.expandedSection}>
                 <span className={styles.expandedSectionLabel}>🏷️ Tagger</span>
-                <HStack gap="2" wrap>
+                <HStack gap="space-8" wrap>
                   {feedback.tags.map((tag) => (
                     <Tag key={tag} variant="neutral" size="small">
                       {tag}
@@ -257,7 +257,7 @@ export function FeedbackCard({
 
         {/* Collapsed: Survey ID and tags preview */}
         {!isExpanded && (
-          <HStack gap="2" align="center" wrap>
+          <HStack gap="space-8" align="center" wrap>
             <Detail textColor="subtle">{feedback.surveyId}</Detail>
             {feedback.tags && feedback.tags.length > 0 && (
               <>
@@ -295,7 +295,7 @@ export function FeedbackCard({
             {isExpanded ? "Skjul" : "Vis mer"}
           </Button>
 
-          <HStack gap="1">
+          <HStack gap="space-4">
             <CopyButton copyText={copyText} size="xsmall" variant="neutral" />
             <Tooltip content="Slett denne tilbakemeldingen">
               <Button
