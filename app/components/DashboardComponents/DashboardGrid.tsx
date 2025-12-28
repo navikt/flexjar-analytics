@@ -49,7 +49,7 @@ interface DashboardGridProps
 export function DashboardGrid({
   children,
   minColumnWidth = "300px",
-  gap = { xs: "4", md: "6" },
+  gap = { xs: "space-16", md: "space-24" },
   columns,
   ...props
 }: DashboardGridProps) {

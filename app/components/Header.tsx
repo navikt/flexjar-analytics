@@ -23,7 +23,7 @@ export function Header() {
 
   return (
     <Box.New
-      paddingInline={{ xs: "3", sm: "4" }}
+      paddingInline={{ xs: "space-12", sm: "space-16" }}
       background="raised"
       borderWidth="0 0 1 0"
       borderColor="neutral-subtle"
@@ -32,7 +32,7 @@ export function Header() {
       <HStack
         justify="space-between"
         align="center"
-        gap={{ xs: "2", md: "4" }}
+        gap={{ xs: "space-8", md: "space-16" }}
         style={{
           maxWidth: "1400px",
           margin: "0 auto",
@@ -71,7 +71,7 @@ export function Header() {
         </button>
 
         {/* Navigation */}
-        <HStack gap={{ xs: "1", sm: "2", md: "4" }}>
+        <HStack gap={{ xs: "space-4", sm: "space-8", md: "space-16" }}>
           <Link to="/" search={(prev) => prev}>
             <Button
               variant={getVariant("/")}

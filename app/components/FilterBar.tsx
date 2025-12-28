@@ -132,10 +132,10 @@ export function FilterBar({ showDetails = false }: FilterBarProps) {
   }
 
   return (
-    <VStack gap="3" style={{ width: "100%" }}>
+    <VStack gap="space-12" style={{ width: "100%" }}>
       {/* Primary Row: Common Filters (App, Survey, Period) */}
       <Box.New
-        padding={{ xs: "3", md: "4" }}
+        padding={{ xs: "space-12", md: "space-16" }}
         background="raised"
         borderRadius="large"
         style={{ boxShadow: "var(--ax-shadow-small)", minHeight: "52px" }}
@@ -145,7 +145,7 @@ export function FilterBar({ showDetails = false }: FilterBarProps) {
         {/* Responsive grid: stack on mobile, inline on tablet+ */}
         <HGrid
           columns={{ xs: 1, sm: 2, lg: "1fr 1fr auto auto" }}
-          gap={{ xs: "2", md: "3" }}
+          gap={{ xs: "space-8", md: "space-12" }}
           align="end"
         >
           <Select
@@ -209,7 +209,7 @@ export function FilterBar({ showDetails = false }: FilterBarProps) {
         {/* Period and reset on mobile/tablet - shown as separate row */}
         <Hide above="lg">
           <HStack
-            gap="2"
+            gap="space-8"
             justify="space-between"
             align="center"
             style={{ marginTop: "0.5rem" }}
@@ -235,8 +235,8 @@ export function FilterBar({ showDetails = false }: FilterBarProps) {
       {/* Secondary Row: Page Specific Filters (Feedback only for now) */}
       {showDetails && (
         <Box.New
-          paddingInline={{ xs: "3", md: "4" }}
-          paddingBlock="3"
+          paddingInline={{ xs: "space-12", md: "space-16" }}
+          paddingBlock="space-12"
           style={{
             background: "var(--ax-bg-default)",
             minHeight: "44px",
@@ -245,8 +245,8 @@ export function FilterBar({ showDetails = false }: FilterBarProps) {
           borderColor="neutral-subtle"
           borderWidth="1"
         >
-          <HStack gap="3" align="center" wrap>
-            <HStack gap="2" align="center" wrap>
+          <HStack gap="space-12" align="center" wrap>
+            <HStack gap="space-8" align="center" wrap>
               {features.showTextFilter && (
                 <TextField
                   label="Søk"
@@ -284,7 +284,7 @@ export function FilterBar({ showDetails = false }: FilterBarProps) {
               )}
             </HStack>
 
-            <HStack gap="2" align="center" wrap>
+            <HStack gap="space-8" align="center" wrap>
               {features.showDeviceFilter && (
                 <ToggleGroup
                   size="small"

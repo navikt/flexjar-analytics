@@ -17,7 +17,7 @@ export function DashboardCard({
   return (
     <Box.New
       as={as}
-      padding="6"
+      padding="space-24"
       background="raised"
       borderRadius="large"
       borderWidth="1"

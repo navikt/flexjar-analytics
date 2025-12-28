@@ -30,15 +30,15 @@ function DashboardPage() {
       <Header />
 
       <Box
-        paddingBlock={{ xs: "4", md: "6" }}
-        paddingInline={{ xs: "3", sm: "4" }}
+        paddingBlock={{ xs: "space-16", md: "space-24" }}
+        paddingInline={{ xs: "space-12", sm: "space-16" }}
         style={{ maxWidth: "1400px", margin: "0 auto" }}
         as="main"
       >
-        <VStack gap={{ xs: "4", md: "6" }}>
+        <VStack gap={{ xs: "space-16", md: "space-24" }}>
           {/* Page header */}
-          <HStack justify="space-between" align="center" wrap gap="2">
-            <HStack align="center" gap={{ xs: "2", md: "4" }}>
+          <HStack justify="space-between" align="center" wrap gap="space-8">
+            <HStack align="center" gap={{ xs: "space-8", md: "space-16" }}>
               <Heading size="large">Dashboard</Heading>
               {hasSurveyFilter && stats?.surveyType === "topTasks" && (
                 <Tag variant="info" size="small">
@@ -68,8 +68,8 @@ function DashboardPage() {
 
               {/* Timeline charts */}
               <DashboardGrid columns={{ xs: 1, lg: 2 }}>
-                <DashboardCard padding={{ xs: "4", md: "6" }}>
-                  <VStack gap="4">
+                <DashboardCard padding={{ xs: "space-16", md: "space-24" }}>
+                  <VStack gap="space-16">
                     <Heading size="small">Antall tilbakemeldinger</Heading>
                     <div
                       style={{
@@ -82,8 +82,8 @@ function DashboardPage() {
                   </VStack>
                 </DashboardCard>
 
-                <DashboardCard padding={{ xs: "4", md: "6" }}>
-                  <VStack gap="4">
+                <DashboardCard padding={{ xs: "space-16", md: "space-24" }}>
+                  <VStack gap="space-16">
                     <Heading size="small">Gjennomsnittlig vurdering</Heading>
                     <div
                       style={{
@@ -106,8 +106,8 @@ function DashboardPage() {
               {/* Apps and devices breakdown - only when no survey filter */}
               {!hasSurveyFilter && (
                 <DashboardGrid columns={{ xs: 1, md: 2 }}>
-                  <DashboardCard padding={{ xs: "4", md: "6" }}>
-                    <VStack gap="4">
+                  <DashboardCard padding={{ xs: "space-16", md: "space-24" }}>
+                    <VStack gap="space-16">
                       <Heading size="small">Tilbakemeldinger per app</Heading>
                       <div
                         style={{
@@ -120,8 +120,8 @@ function DashboardPage() {
                     </VStack>
                   </DashboardCard>
 
-                  <DashboardCard padding={{ xs: "4", md: "6" }}>
-                    <VStack gap="4">
+                  <DashboardCard padding={{ xs: "space-16", md: "space-24" }}>
+                    <VStack gap="space-16">
                       <Heading size="small">Enheter</Heading>
                       <div
                         style={{
@@ -138,8 +138,8 @@ function DashboardPage() {
 
               {/* Devices when survey is selected - standalone card */}
               {hasSurveyFilter && (
-                <DashboardCard padding={{ xs: "4", md: "6" }}>
-                  <VStack gap="4">
+                <DashboardCard padding={{ xs: "space-16", md: "space-24" }}>
+                  <VStack gap="space-16">
                     <Heading size="small">Enheter</Heading>
                     <div
                       style={{

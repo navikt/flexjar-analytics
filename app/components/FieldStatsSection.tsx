@@ -30,7 +30,10 @@ export function FieldStatsSection() {
         Statistikk per felt
       </Heading>
 
-      <DashboardGrid minColumnWidth="280px" gap="1rem">
+      <DashboardGrid
+        minColumnWidth="280px"
+        gap={{ xs: "space-16", md: "space-24" }}
+      >
         {ratingFields.map((field) => (
           <RatingFieldCard
             key={field.fieldId}
@@ -68,8 +71,8 @@ function RatingFieldCard({ field, totalCount }: FieldCardProps) {
   const maxCount = Math.max(...Object.values(distribution), 1);
 
   return (
-    <DashboardCard padding="5">
-      <HStack gap="2" align="start" marginBlock="0 2">
+    <DashboardCard padding="space-20">
+      <HStack gap="space-8" align="start" marginBlock="0 space-8">
         <StarIcon fontSize="1.25rem" aria-hidden />
         <VStack gap="0" style={{ flex: 1 }}>
           <Label size="small" style={{ flex: 1, minWidth: 0 }}>
@@ -85,7 +88,7 @@ function RatingFieldCard({ field, totalCount }: FieldCardProps) {
         </VStack>
       </HStack>
 
-      <HStack gap="2" align="center" marginBlock="2">
+      <HStack gap="space-8" align="center" marginBlock="space-8">
         <span
           style={{
             fontSize: "2rem",
@@ -166,13 +169,13 @@ function TextFieldCard({ field, totalCount }: FieldCardProps) {
 
   return (
     <DashboardCard
-      padding="5"
+      padding="space-20"
       style={{
         display: "flex",
         flexDirection: "column",
       }}
     >
-      <HStack gap="2" align="start" marginBlock="0 2">
+      <HStack gap="space-8" align="start" marginBlock="0 space-8">
         <ChatExclamationmarkIcon fontSize="1.25rem" aria-hidden />
         <VStack gap="0" style={{ flex: 1 }}>
           <Label size="small" style={{ flex: 1, minWidth: 0 }}>

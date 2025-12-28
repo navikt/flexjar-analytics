@@ -21,8 +21,8 @@ interface StatCardProps {
 
 export function StatCard({ icon, label, value, subtitle }: StatCardProps) {
   return (
-    <DashboardCard padding={{ xs: "4", md: "5" }}>
-      <HStack gap="2" align="center" style={{ marginBottom: "0.5rem" }}>
+    <DashboardCard padding={{ xs: "space-16", md: "space-20" }}>
+      <HStack gap="space-8" align="center" style={{ marginBottom: "0.5rem" }}>
         <span
           style={{ color: "var(--ax-text-neutral-subtle)", display: "flex" }}
         >
@@ -86,7 +86,7 @@ export function StatsCards() {
     return (
       <DashboardGrid
         columns={{ xs: 1, sm: 2, md: 4 }}
-        gap={{ xs: "3", md: "4" }}
+        gap={{ xs: "space-12", md: "space-16" }}
       >
         <StatCard
           icon={<CalendarIcon fontSize="1.25rem" aria-hidden />}
@@ -130,7 +130,10 @@ export function StatsCards() {
 
   // Aggregert visning når "alle surveys" er valgt
   return (
-    <DashboardGrid columns={{ xs: 1, sm: 2, md: 3 }} gap={{ xs: "3", md: "4" }}>
+    <DashboardGrid
+      columns={{ xs: 1, sm: 2, md: 3 }}
+      gap={{ xs: "space-12", md: "space-16" }}
+    >
       <StatCard
         icon={<CalendarIcon fontSize="1.25rem" aria-hidden />}
         label="Periode"

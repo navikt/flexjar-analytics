@@ -24,7 +24,10 @@ export function TopTasksOverview() {
 
   return (
     <>
-      <DashboardGrid columns={{ xs: 2, sm: 3 }} gap={{ xs: "3", md: "4" }}>
+      <DashboardGrid
+        columns={{ xs: 2, sm: 3 }}
+        gap={{ xs: "space-12", md: "space-16" }}
+      >
         <StatCard
           icon={<ChatIcon fontSize="1.25rem" aria-hidden />}
           label="Antall svar"
@@ -47,8 +50,8 @@ export function TopTasksOverview() {
         />
       </DashboardGrid>
 
-      <DashboardCard padding={{ xs: "4", md: "6" }}>
-        <Box.New paddingBlock="0 4">
+      <DashboardCard padding={{ xs: "space-16", md: "space-24" }}>
+        <Box.New paddingBlock="0 space-16">
           <Heading size="small">Suksessrate over tid</Heading>
         </Box.New>
         <div style={{ height: "clamp(200px, 40vw, 300px)", width: "100%" }}>
@@ -58,7 +61,7 @@ export function TopTasksOverview() {
 
       <DashboardCard padding="0" style={{ overflow: "hidden" }}>
         <Box.New
-          padding={{ xs: "4", md: "6" }}
+          padding={{ xs: "space-16", md: "space-24" }}
           borderWidth="0 0 1 0"
           borderColor="neutral-subtle"
         >

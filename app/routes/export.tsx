@@ -14,7 +14,7 @@ function ExportPage() {
       <Header />
 
       <main className="main-content">
-        <VStack gap="6">
+        <VStack gap="space-24">
           <Heading size="large">Eksporter data</Heading>
 
           <FilterBar showDetails />
