@@ -3,7 +3,7 @@ import { Box, Skeleton, VStack } from "@navikt/ds-react";
 function FieldStatCardSkeleton() {
   return (
     <Box.New
-      padding="5"
+      padding="space-20"
       background="raised"
       borderRadius="large"
       style={{ boxShadow: "var(--ax-shadow-small)", width: "100%" }}
@@ -12,7 +12,7 @@ function FieldStatCardSkeleton() {
     >
       <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
         <Skeleton variant="circle" width={20} height={20} />
-        <VStack gap="1">
+        <VStack gap="space-4">
           <Skeleton variant="text" width={120} />
           <Skeleton variant="text" width={100} height={14} />
         </VStack>
@@ -20,7 +20,7 @@ function FieldStatCardSkeleton() {
       <div style={{ marginTop: "1rem" }}>
         <Skeleton variant="text" width={80} height={40} />
       </div>
-      <VStack gap="2" style={{ marginTop: "1rem" }}>
+      <VStack gap="space-8" style={{ marginTop: "1rem" }}>
         {[1, 2, 3, 4, 5].map((i) => (
           <div
             key={i}
@@ -43,7 +43,7 @@ export function FieldStatsSkeleton() {
   };
 
   return (
-    <VStack gap="6">
+    <VStack gap="space-24">
       <div style={{ marginBottom: "1rem" }}>
         <Skeleton variant="text" width={150} height={32} />
       </div>

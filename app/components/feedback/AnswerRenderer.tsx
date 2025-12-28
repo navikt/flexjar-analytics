@@ -35,9 +35,9 @@ function AnswerCardLayout({
 }: AnswerCardLayoutProps) {
   return (
     <div className={`${styles.answerCard} ${className}`}>
-      <HStack gap="4" align="start">
+      <HStack gap="space-16" align="start">
         <div className={styles.answerIcon}>{icon}</div>
-        <VStack gap="2" style={{ flex: 1 }}>
+        <VStack gap="space-8" style={{ flex: 1 }}>
           <div>
             <Label size="small">{label}</Label>
             {description && <Detail textColor="subtle">{description}</Detail>}
@@ -73,7 +73,7 @@ export function RenderAnswer({
           label={answer.question.label}
           description={answer.question.description}
         >
-          <HStack align="center" gap="2">
+          <HStack align="center" gap="space-8">
             <div className={styles.ratingBar}>
               {[1, 2, 3, 4, 5].map((n) => (
                 <span

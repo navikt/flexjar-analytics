@@ -32,7 +32,7 @@ export function UrgentUrls() {
   return (
     <DashboardCard padding="0" style={{ overflow: "hidden" }}>
       <Box.New
-        padding={{ xs: "4", md: "5" }}
+        padding={{ xs: "space-16", md: "space-20" }}
         borderWidth="0 0 1 0"
         borderColor="neutral-subtle"
       >
@@ -76,11 +76,11 @@ export function UrgentUrls() {
           {urls.map((row) => (
             <Box.New
               key={row.path}
-              padding="3"
+              padding="space-12"
               borderWidth="0 0 1 0"
               borderColor="neutral-subtle"
             >
-              <VStack gap="1">
+              <VStack gap="space-4">
                 <UrlLink path={row.path} truncate />
                 <BodyShort size="small" textColor="subtle">
                   Snitt: {row.average.toFixed(1)} • {row.count} svar

@@ -7,7 +7,7 @@ interface StatCardSkeletonProps {
 function StatCardSkeleton({ labelWidth = 140 }: StatCardSkeletonProps) {
   return (
     <Box.New
-      padding="5"
+      padding="space-20"
       background="raised"
       borderRadius="large"
       style={{ boxShadow: "var(--ax-shadow-small)" }}

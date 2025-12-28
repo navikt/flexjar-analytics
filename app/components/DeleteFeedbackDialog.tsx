@@ -30,7 +30,7 @@ export function DeleteFeedbackDialog({
         </BodyLong>
       </Modal.Body>
       <Modal.Footer>
-        <HStack gap="3" justify="end">
+        <HStack gap="space-12" justify="end">
           <Button variant="secondary" onClick={onClose} disabled={isPending}>
             Avbryt
           </Button>

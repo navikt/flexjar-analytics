@@ -18,10 +18,10 @@ export function FilterBarSkeleton({
   hasActiveFilters,
 }: FilterBarSkeletonProps) {
   return (
-    <VStack gap="3" style={{ width: "100%" }}>
+    <VStack gap="space-12" style={{ width: "100%" }}>
       {/* Primary Row: Mirrors FilterBar's HGrid layout */}
       <Box.New
-        padding={{ xs: "3", md: "4" }}
+        padding={{ xs: "space-12", md: "space-16" }}
         background="raised"
         borderRadius="large"
         style={{ boxShadow: "var(--ax-shadow-small)" }}
@@ -30,7 +30,7 @@ export function FilterBarSkeleton({
       >
         <HGrid
           columns={{ xs: 1, sm: 2, lg: "1fr 1fr auto auto" }}
-          gap={{ xs: "2", md: "3" }}
+          gap={{ xs: "space-8", md: "space-12" }}
           align="end"
         >
           {/* App Select Skeleton */}
@@ -53,7 +53,7 @@ export function FilterBarSkeleton({
         {/* Period and reset on mobile/tablet */}
         <Hide above="lg">
           <HStack
-            gap="2"
+            gap="space-8"
             justify="space-between"
             align="center"
             style={{ marginTop: "0.5rem" }}
@@ -69,8 +69,8 @@ export function FilterBarSkeleton({
       {/* Secondary Row: Detail Filters */}
       {showDetails && (
         <Box.New
-          paddingInline="4"
-          paddingBlock="3"
+          paddingInline="space-16"
+          paddingBlock="space-12"
           style={{
             background: "var(--ax-bg-default)",
             minHeight: "44px",
@@ -79,14 +79,14 @@ export function FilterBarSkeleton({
           borderColor="neutral-subtle"
           borderWidth="1"
         >
-          <HStack gap="3" align="center" wrap>
-            <HStack gap="2" align="center">
+          <HStack gap="space-12" align="center" wrap>
+            <HStack gap="space-8" align="center">
               {/* Search + Tags */}
               <Skeleton variant="rounded" width={200} height={32} />
               <Skeleton variant="rounded" width={200} height={32} />
             </HStack>
 
-            <HStack gap="2" align="center">
+            <HStack gap="space-8" align="center">
               {/* Device Toggle + Buttons */}
               <Skeleton variant="rounded" width={150} height={32} />
               <div
