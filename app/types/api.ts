@@ -84,6 +84,10 @@ export interface TextStats {
   type: "text";
   responseCount: number;
   responseRate: number;
+  /** Top keywords extracted from text responses */
+  topKeywords: Array<{ word: string; count: number }>;
+  /** Most recent text responses with timestamps */
+  recentResponses: Array<{ text: string; submittedAt: string }>;
 }
 
 export interface ChoiceStats {

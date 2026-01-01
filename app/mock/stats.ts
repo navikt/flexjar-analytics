@@ -9,6 +9,7 @@ import type {
   TopTaskStats,
   TopTasksResponse,
 } from "~/types/api";
+import { getTopKeywords } from "~/utils/wordAnalysis";
 import { getRating, hasTextResponse } from "./helpers";
 
 // Note: circular dependency if we import mockFeedbackItems here directly while mockData imports stats.
@@ -43,6 +44,11 @@ export function calculatePeriod(
   };
 }
 
+interface TextResponseWithTimestamp {
+  text: string;
+  submittedAt: string;
+}
+
 export function calculateFieldStats(items: FeedbackDto[]): FieldStat[] {
   // Collect all unique fields across all items
   const fieldMap = new Map<
@@ -52,6 +58,7 @@ export function calculateFieldStats(items: FeedbackDto[]): FieldStat[] {
       fieldType: string;
       label: string;
       values: Answer["value"][];
+      textResponses: TextResponseWithTimestamp[];
     }
   >();
 
@@ -64,9 +71,19 @@ export function calculateFieldStats(items: FeedbackDto[]): FieldStat[] {
           fieldType: answer.fieldType,
           label: answer.question.label,
           values: [],
+          textResponses: [],
         });
       }
-      fieldMap.get(key)?.values.push(answer.value);
+      const fieldData = fieldMap.get(key);
+      fieldData?.values.push(answer.value);
+
+      // Track text responses with timestamps for sorting
+      if (answer.fieldType === "TEXT" && answer.value.type === "text") {
+        fieldData?.textResponses.push({
+          text: answer.value.text,
+          submittedAt: item.submittedAt,
+        });
+      }
     }
   }
 
@@ -109,6 +126,19 @@ export function calculateFieldStats(items: FeedbackDto[]): FieldStat[] {
 
       const nonEmpty = texts.filter((t) => t && t.trim().length > 0);
 
+      // Get top keywords from text responses
+      const topKeywords = getTopKeywords(nonEmpty, 5);
+
+      // Get 3 most recent non-empty responses, sorted by date descending
+      const recentResponses = field.textResponses
+        .filter((r) => r.text && r.text.trim().length > 0)
+        .sort(
+          (a, b) =>
+            new Date(b.submittedAt).getTime() -
+            new Date(a.submittedAt).getTime(),
+        )
+        .slice(0, 3);
+
       fieldStats.push({
         fieldId: field.fieldId,
         fieldType: "TEXT",
@@ -118,6 +148,8 @@ export function calculateFieldStats(items: FeedbackDto[]): FieldStat[] {
           responseCount: nonEmpty.length,
           // responseRate is calculated in UI based on totalCount
           responseRate: 0,
+          topKeywords,
+          recentResponses,
         },
       });
     }

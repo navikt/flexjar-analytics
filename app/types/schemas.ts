@@ -192,6 +192,10 @@ const TextStatsSchema = z.object({
   type: z.literal("text"),
   responseCount: z.number(),
   responseRate: z.number(),
+  topKeywords: z.array(z.object({ word: z.string(), count: z.number() })),
+  recentResponses: z.array(
+    z.object({ text: z.string(), submittedAt: z.string() }),
+  ),
 });
 
 const ChoiceStatsSchema = z.object({

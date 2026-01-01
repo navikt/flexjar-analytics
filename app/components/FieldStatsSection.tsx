@@ -1,9 +1,17 @@
 import { ChatExclamationmarkIcon, StarIcon } from "@navikt/aksel-icons";
-import { BodyShort, HStack, Heading, Label, VStack } from "@navikt/ds-react";
+import {
+  BodyShort,
+  HStack,
+  Heading,
+  Label,
+  Tag,
+  VStack,
+} from "@navikt/ds-react";
 import { DashboardCard, DashboardGrid } from "~/components/DashboardComponents";
 import { useSearchParams } from "~/hooks/useSearchParams";
 import { useStats } from "~/hooks/useStats";
 import type { FieldStat, RatingStats, TextStats } from "~/types/api";
+import { formatRelativeTime } from "~/utils/wordAnalysis";
 
 import { FieldStatsSkeleton } from "./FieldStatsSection/FieldStatsSkeleton";
 
@@ -167,6 +175,10 @@ function TextFieldCard({ field, totalCount }: FieldCardProps) {
   const responseRate =
     totalCount > 0 ? Math.round((stats.responseCount / totalCount) * 100) : 0;
 
+  const hasKeywords = stats.topKeywords && stats.topKeywords.length > 0;
+  const hasRecentResponses =
+    stats.recentResponses && stats.recentResponses.length > 0;
+
   return (
     <DashboardCard
       padding="space-20"
@@ -175,6 +187,7 @@ function TextFieldCard({ field, totalCount }: FieldCardProps) {
         flexDirection: "column",
       }}
     >
+      {/* Header */}
       <HStack gap="space-8" align="start" marginBlock="0 space-8">
         <ChatExclamationmarkIcon fontSize="1.25rem" aria-hidden />
         <VStack gap="0" style={{ flex: 1 }}>
@@ -190,39 +203,99 @@ function TextFieldCard({ field, totalCount }: FieldCardProps) {
         </VStack>
       </HStack>
 
-      <div style={{ fontSize: "1.5rem", fontWeight: 600, marginTop: "0.5rem" }}>
-        {stats.responseCount} svar
-      </div>
+      {/* Top Keywords */}
+      {hasKeywords && (
+        <VStack gap="space-8" marginBlock="space-12 0">
+          <BodyShort
+            size="small"
+            weight="semibold"
+            style={{ color: "var(--ax-text-neutral-subtle)" }}
+          >
+            Hyppigste ord
+          </BodyShort>
+          <HStack gap="space-8" wrap>
+            {stats.topKeywords.map(({ word, count }) => (
+              <Tag key={word} size="small" variant="neutral">
+                {word}
+                <span
+                  style={{
+                    opacity: 0.5,
+                    marginLeft: "0.35rem",
+                    fontSize: "0.75rem",
+                  }}
+                >
+                  {count}
+                </span>
+              </Tag>
+            ))}
+          </HStack>
+        </VStack>
+      )}
 
-      <div
-        style={{
-          width: "100%",
-          height: 8,
-          background: "var(--ax-bg-neutral-moderate)",
-          borderRadius: 4,
-          overflow: "hidden",
-          marginTop: "0.75rem",
-        }}
-      >
-        <div
+      {/* Recent Responses */}
+      {hasRecentResponses && (
+        <VStack gap="space-8" marginBlock="space-16 0">
+          <BodyShort
+            size="small"
+            weight="semibold"
+            style={{ color: "var(--ax-text-neutral-subtle)" }}
+          >
+            Siste svar
+          </BodyShort>
+          <VStack gap="space-8">
+            {stats.recentResponses.map((response, index) => (
+              <div
+                key={`${response.submittedAt}-${index}`}
+                style={{
+                  padding: "0.5rem 0.75rem",
+                  backgroundColor: "var(--ax-bg-neutral-soft)",
+                  borderRadius: "var(--ax-border-radius-medium)",
+                  borderLeft: "3px solid var(--ax-border-info)",
+                }}
+              >
+                <BodyShort
+                  size="small"
+                  style={{
+                    display: "-webkit-box",
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: "vertical",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  "{response.text}"
+                </BodyShort>
+                <BodyShort
+                  size="small"
+                  style={{
+                    color: "var(--ax-text-neutral-subtle)",
+                    marginTop: "0.25rem",
+                    fontSize: "0.75rem",
+                  }}
+                >
+                  {formatRelativeTime(response.submittedAt)}
+                </BodyShort>
+              </div>
+            ))}
+          </VStack>
+        </VStack>
+      )}
+
+      {/* Fallback if no keywords or responses */}
+      {!hasKeywords && !hasRecentResponses && (
+        <BodyShort
+          size="small"
           style={{
-            width: `${responseRate}% `,
-            height: "100%",
-            borderRadius: 4,
-            backgroundColor: getResponseRateColor(responseRate),
-            transition: "width 0.3s ease",
+            color: "var(--ax-text-neutral-subtle)",
+            marginTop: "0.5rem",
+            fontStyle: "italic",
           }}
-        />
-      </div>
+        >
+          Ingen tekstsvar ennå
+        </BodyShort>
+      )}
     </DashboardCard>
   );
-}
-
-// Farge basert på svarprosent
-function getResponseRateColor(rate: number): string {
-  if (rate >= 70) return "#22C55E"; // Grønn - bra
-  if (rate >= 40) return "#EAB308"; // Gul - ok
-  return "#9CA3AF"; // Grå - lav
 }
 
 function getRatingEmoji(rating: number): string {
