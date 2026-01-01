@@ -4,7 +4,9 @@ import {
   XMarkOctagonIcon,
 } from "@navikt/aksel-icons";
 import { Box, Heading, Hide, Table } from "@navikt/ds-react";
+import { BlockerAnalysis } from "~/components/BlockerAnalysis";
 import { DashboardCard, DashboardGrid } from "~/components/DashboardComponents";
+import { TaskQuadrantChart } from "~/components/charts/TaskQuadrantChart";
 import { TopTasksTimelineChart } from "~/components/charts/TopTasksTimelineChart";
 import { useTopTasksStats } from "~/hooks/useTopTasksStats";
 import { StatCard } from "./StatsCards";
@@ -56,6 +58,21 @@ export function TopTasksOverview() {
         </Box.New>
         <div style={{ height: "clamp(200px, 40vw, 300px)", width: "100%" }}>
           <TopTasksTimelineChart />
+        </div>
+      </DashboardCard>
+
+      <DashboardCard padding={{ xs: "space-16", md: "space-24" }}>
+        <Box.New paddingBlock="0 space-16">
+          <Heading size="small">Oppgavekvadranten</Heading>
+          <p
+            style={{ margin: "0.5rem 0 0", fontSize: "0.875rem", opacity: 0.7 }}
+          >
+            Volum vs suksessrate. Røde punkter i nedre høyre hjørne krever
+            umiddelbar oppmerksomhet.
+          </p>
+        </Box.New>
+        <div style={{ height: "clamp(280px, 50vw, 400px)", width: "100%" }}>
+          <TaskQuadrantChart />
         </div>
       </DashboardCard>
 
@@ -166,6 +183,8 @@ export function TopTasksOverview() {
           </Table>
         </Box>
       </DashboardCard>
+
+      <BlockerAnalysis tasks={data.tasks} />
     </>
   );
 }

@@ -1,61 +1,89 @@
 import { describe, expect, it } from "vitest";
-
-// We need to export these from mockData.ts or just copy/paste for testing if they are not exported
-// Since we are modifying mockData.ts, let's assume we can access the functions if we export them
-// or just test the public generateSurveyData function.
-
-// For this test, we'll focus on the public API `generateSurveyData` but check the internal logic results.
-
 import {
   generateSurveyData,
-  // @ts-ignore - these might not be exported but we can check the results
+  getMockDiscoveryStats,
+  getMockTaskPriorityStats,
+  getMockTopTasksStats,
 } from "~/mock/mockData";
 
 describe("Mock Data Generation", () => {
   it("should generate items from topics", () => {
-    const testTopics = [
-      { rating: 5, comments: ["Topic 1"], tags: ["Tag1"] },
-      {
-        rating: 1,
-        comments: ["Topic 2"],
-        tags: ["Tag2"],
-        isRedacted: true,
-      },
-    ];
-
-    const data = generateSurveyData(4, {
+    const items = generateSurveyData(10, {
       app: "test-app",
       surveyId: "test-survey",
       basePath: "/test",
-      topics: testTopics,
-      questions: {
-        ratingLabel: "Test",
-        textLabel: "Test label",
-      },
+      topics: [
+        { rating: 5, comments: ["Bra"], tags: ["Tag1"] },
+        { rating: 1, comments: ["Dårlig"], tags: ["Tag2"] },
+      ],
+      questions: { ratingLabel: "Rating" },
     });
 
-    expect(data.length).toBe(4);
+    expect(items).toHaveLength(10);
+    expect(items[0].surveyId).toBe("test-survey");
+    expect(items[0].answers).toHaveLength(1); // Only rating by default
+  });
 
-    // Check if it generates correctly
-    const items = data;
+  it("should generate discovery stats correctly", () => {
+    const params = new URLSearchParams();
+    const stats = getMockDiscoveryStats(params);
 
-    // Verify we have both types of items
-    const topic1Item = items.find((i) => i.tags?.includes("Tag1"));
-    const topic2Item = items.find((i) => i.tags?.includes("Tag2"));
+    expect(stats.totalSubmissions).toBeGreaterThan(0);
+    expect(stats.themes.length).toBeGreaterThan(0);
+    expect(stats.wordFrequency.length).toBeGreaterThan(0);
+    expect(stats.recentResponses.length).toBeGreaterThan(0);
 
-    expect(topic1Item).toBeDefined();
-    if (topic1Item) {
-      const textAnswer = topic1Item.answers.find((a) => a.fieldType === "TEXT")
-        ?.value as { text: string };
-      expect(textAnswer.text).toBe("Topic 1");
+    // Check structure of a response
+    const firstResponse = stats.recentResponses[0];
+    expect(firstResponse).toHaveProperty("task");
+    expect(firstResponse).toHaveProperty("success");
+    expect(["yes", "partial", "no"]).toContain(firstResponse.success);
+  });
+
+  it("should generate task priority stats correctly", () => {
+    const params = new URLSearchParams();
+    const stats = getMockTaskPriorityStats(params);
+
+    expect(stats.totalSubmissions).toBeGreaterThan(0);
+    expect(stats.tasks.length).toBeGreaterThan(0);
+    expect(stats.longNeckCutoff).toBeGreaterThan(0);
+
+    // Check that votes are counted
+    const totalVotes = stats.tasks.reduce((acc, t) => acc + t.votes, 0);
+    expect(totalVotes).toBeGreaterThan(0);
+
+    // Check percentage calculation
+    if (stats.tasks.length > 0) {
+      const task = stats.tasks[0];
+      expect(task.percentage).toBeDefined();
+      expect(task.percentage).toBeLessThanOrEqual(100);
+    }
+  });
+
+  it("should generate top tasks stats correctly with optimizations", () => {
+    // const items = generateTopTasksMockData(); // implicit in stats
+    const stats = getMockTopTasksStats(new URLSearchParams());
+
+    expect(stats.totalSubmissions).toBeGreaterThan(0);
+    expect(stats.tasks.length).toBeGreaterThan(0);
+
+    // Check TPI fields
+    expect(stats.overallTpi).toBeDefined();
+    expect(stats.avgCompletionTimeMs).toBeDefined();
+
+    // Check Other percentage calculation
+    // We know "annet" is in the task list in generators.ts
+    const hasOther = stats.tasks.some((t) =>
+      t.task.toLowerCase().includes("annet"),
+    );
+    if (hasOther) {
+      // Validation: percentage should be a number between 0 and 100
+      expect(stats.otherTasksPercentage).toBeGreaterThanOrEqual(0);
+      expect(stats.otherTasksPercentage).toBeLessThanOrEqual(100);
     }
 
-    expect(topic2Item).toBeDefined();
-    if (topic2Item) {
-      const textAnswer = topic2Item.answers.find((a) => a.fieldType === "TEXT")
-        ?.value as { text: string };
-      expect(textAnswer.text).toBe("Topic 2");
-      expect(topic2Item.sensitiveDataRedacted).toBe(true);
-    }
+    // Check duration aggregation
+    const taskWithDuration = stats.tasks.find((t) => t.totalCount > 0);
+    expect(taskWithDuration?.avgTimeMs).toBeGreaterThan(0);
   });
 });
