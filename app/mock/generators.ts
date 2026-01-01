@@ -244,9 +244,17 @@ export function generateTopTasksMockData(): FeedbackDto[] {
         visitStartedAt: startedAt,
         durationMs,
         app: "dialogmote-frontend",
-        surveyId: "meld-motebehov-ag",
+        surveyId: "survey-top-tasks",
         surveyType: "topTasks",
-        context: createContext("/motebehov/arbeidsgiver", "desktop"),
+        // Realistic device distribution: 55% desktop, 35% mobile, 10% tablet
+        context: createContext(
+          "/motebehov/arbeidsgiver",
+          Math.random() < 0.55
+            ? "desktop"
+            : Math.random() < 0.8
+              ? "mobile"
+              : "tablet",
+        ),
         answers: [
           createSingleChoiceAnswer(
             "task",
@@ -446,7 +454,7 @@ export function generateDiscoveryMockData(): FeedbackDto[] {
       id: `disc-${i}`,
       submittedAt: timestamp,
       app: "nav-no-frontend",
-      surveyId: "nav-forside-discovery",
+      surveyId: "survey-discovery",
       surveyType: "discovery",
       context: createContext("/", Math.random() > 0.6 ? "mobile" : "desktop"),
       answers,
@@ -524,7 +532,7 @@ export function generateTaskPriorityMockData(): FeedbackDto[] {
       id: `prior-${i}`,
       submittedAt: timestamp,
       app: "nav-no-frontend",
-      surveyId: "nav-task-priority-q4",
+      surveyId: "survey-task-priority",
       surveyType: "taskPriority",
       context: createContext(
         "/minside",
@@ -549,27 +557,206 @@ export function generateComplexSurveyData(): FeedbackDto[] {
   const items: FeedbackDto[] = [];
   const now = new Date();
 
-  for (let i = 0; i < 40; i++) {
-    const metric = Math.random() > 0.5 ? "Privatperson" : "Arbeidsgiver";
-    const rating = Math.ceil(Math.random() * 5);
+  // Extensive comment pools for maximum variety
+  const privatePersonComments = {
+    positive: [
+      "Veldig enkelt å fylle ut skjemaet, tok under 5 minutter!",
+      "Endelig en løsning som fungerer på mobil. Tusen takk!",
+      "God oversikt over alle stegene i prosessen.",
+      "Mye bedre enn det gamle systemet.",
+      "Likte at jeg kunne lagre og fortsette senere.",
+      "Tydelig og forståelig språk gjennom hele prosessen.",
+      "Rask og smidig prosess fra start til slutt.",
+      "Intuitivt grensesnitt som var lett å navigere.",
+      "Fikk all informasjonen jeg trengte underveis.",
+      "Bra at det var mulig å se forhåndsvisning før innsending.",
+      "Enklere enn jeg fryktet!",
+      "Fornøyd med at jeg slapp å ringe inn.",
+      "Perfekt at man kan gjøre dette når det passer en selv.",
+      "Oversiktlig og strukturert. Godt jobba!",
+      "Imponert over hvor raskt det gikk.",
+    ],
+    neutral: [
+      "Greit nok, men tok litt tid å finne frem.",
+      "Fungerte, men kunne vært mer oversiktlig.",
+      "Noen av feltene var litt uklare.",
+      "Savner mulighet til å se status etterpå.",
+      "Litt vanskelig å forstå hva som var neste steg.",
+      "OK, men hjelpetekstene kunne vært bedre.",
+      "Gikk greit til slutt, men måtte lete litt.",
+      "Hadde foretrukket færre obligatoriske felt.",
+      "Burde vært tydeligere hva som skjer etter innsending.",
+      "Fungerte på PC, men har ikke testet mobil.",
+      "Kunne ønske meg bedre bekreftelse på at alt var sendt.",
+      "Litt rotete layout på noen av sidene.",
+      "Tok lengre tid enn forventet.",
+      "Grunnleggende funksjonalitet på plass.",
+      "",
+      "",
+    ],
+    negative: [
+      "Fikk feilmelding flere ganger uten forklaring.",
+      "Måtte starte på nytt fordi økten utløp.",
+      "Vanskelig å forstå hva dere ville ha.",
+      "For mange obligatoriske felt som ikke var relevante for meg.",
+      "Innloggingen fungerte dårlig.",
+      "Ble kastet ut midt i utfyllingen. Frustrerende.",
+      "Knappen for å gå videre virket ikke i Chrome.",
+      "Tekstfeltene var for små til å skrive ordentlig.",
+      "Fikk ikke lastet opp vedlegg, prøvde 3 ganger.",
+      "Skjemaet hang seg opp på mobilen min.",
+      "Ingenting fungerte som det skulle.",
+      "Brukte over en time på noe som burde ta 10 min.",
+      "Dårlig brukeropplevelse fra start til slutt.",
+      "Hvorfor må jeg logge inn flere ganger?",
+    ],
+  };
+
+  const employerComments = {
+    positive: [
+      "Effektivt verktøy som sparer oss for mye administrasjon.",
+      "Bra at vi kan håndtere flere ansatte samtidig.",
+      "Oversiktlig dashboard med god rapportering.",
+      "Integrasjonen med Altinn fungerer bra nå.",
+      "Mye raskere prosess enn tidligere.",
+      "Endelig et system som gir oss kontroll.",
+      "Liker at vi kan delegere oppgaver til HR.",
+      "God historikk og sporbarhet.",
+      "Varslingene på e-post er nyttige.",
+      "Enkel import og eksport av data.",
+      "Profesjonelt verktøy som dekker våre behov.",
+      "Support-teamet var raske til å hjelpe.",
+      "Dokumentasjonen var grundig og nyttig.",
+    ],
+    neutral: [
+      "Fungerer til vanlig bruk, men mangler noen rapporter.",
+      "Kunne vært enklere å finne historikk.",
+      "Greit, men vi savner eksport til Excel.",
+      "Litt tungvint ved store mengder data.",
+      "Noe tregt ved mange samtidige brukere.",
+      "Grensesnittet trenger oppdatering.",
+      "Hadde forventet mer avansert filtrering.",
+      "Fungerer, men konkurrenten har bedre UX.",
+      "Vi klarer oss, men det er rom for forbedring.",
+      "Basis-funksjonene er på plass.",
+      "",
+      "",
+    ],
+    negative: [
+      "Rettighetsstyringen er for komplisert.",
+      "Får ofte timeout ved store operasjoner.",
+      "Vanskelig å delegere til underordnede.",
+      "Mangler integrasjon med vårt HR-system.",
+      "API-et er ustabilt og dårlig dokumentert.",
+      "Rapporten vi trenger finnes ikke.",
+      "Systemet krasjer ved batch-operasjoner.",
+      "For dyrt i forhold til hva vi får.",
+      "Support svarer ikke på henvendelser.",
+      "Har rapportert samme bug tre ganger.",
+    ],
+  };
+
+  // Feature combinations with weighted probability
+  const featureCombinations = [
+    { features: ["innsending"], weight: 0.35 },
+    { features: ["arkiv"], weight: 0.2 },
+    { features: ["innsending", "arkiv"], weight: 0.25 },
+    { features: ["kalkulator"], weight: 0.05 },
+    { features: ["innsending", "kalkulator"], weight: 0.05 },
+    { features: ["arkiv", "kalkulator"], weight: 0.05 },
+    { features: ["innsending", "arkiv", "kalkulator"], weight: 0.05 },
+  ];
+
+  // Track used comments to avoid exact duplicates
+  const usedComments = new Set<string>();
+
+  // Generate 80 submissions over the last 30 days
+  for (let i = 0; i < 80; i++) {
+    // Varied timestamps over last 30 days
+    const daysAgo = Math.floor(Math.random() * 30);
+    const date = new Date(now);
+    date.setDate(date.getDate() - daysAgo);
+    // Realistic working hours with some evening submissions
+    const isEvening = Math.random() < 0.15;
+    const hour = isEvening
+      ? 19 + Math.floor(Math.random() * 3)
+      : 8 + Math.floor(Math.random() * 10);
+    const minute = Math.floor(Math.random() * 60);
+    const second = Math.floor(Math.random() * 60);
+    date.setHours(hour, minute, second, 0);
+    const timestamp = date.toISOString();
+
+    // Role distribution: 70% private persons, 30% employers
+    const isEmployer = Math.random() < 0.3;
+    const role = isEmployer ? "Arbeidsgiver" : "Privatperson";
+
+    // Rating with realistic distribution (skewed toward 3-4)
+    const ratingRand = Math.random();
+    let rating: number;
+    if (ratingRand < 0.08) rating = 1;
+    else if (ratingRand < 0.18) rating = 2;
+    else if (ratingRand < 0.4) rating = 3;
+    else if (ratingRand < 0.75) rating = 4;
+    else rating = 5;
+
+    // Select comment based on satisfaction and role, avoiding duplicates
+    const comments = isEmployer ? employerComments : privatePersonComments;
+    let commentPool: string[];
+    if (rating >= 4) commentPool = comments.positive;
+    else if (rating >= 3) commentPool = comments.neutral;
+    else commentPool = comments.negative;
+
+    // Try to find an unused comment, or pick randomly if all used
+    let comment = "";
+    const availableComments = commentPool.filter((c) => !usedComments.has(c));
+    if (availableComments.length > 0) {
+      comment =
+        availableComments[Math.floor(Math.random() * availableComments.length)];
+      if (comment) usedComments.add(comment);
+    } else {
+      comment = commentPool[Math.floor(Math.random() * commentPool.length)];
+    }
+
+    // Weighted feature selection
+    const featureRand = Math.random();
+    let cumulative = 0;
+    let features: string[] = ["innsending"];
+    for (const combo of featureCombinations) {
+      cumulative += combo.weight;
+      if (featureRand <= cumulative) {
+        features = combo.features;
+        break;
+      }
+    }
+
+    // Random incident date within last 6 months
+    const incidentDaysAgo = Math.floor(Math.random() * 180);
+    const incidentDate = new Date(now);
+    incidentDate.setDate(incidentDate.getDate() - incidentDaysAgo);
+    const incidentDateStr = incidentDate.toISOString().split("T")[0];
+
+    // Device distribution
+    const deviceRand = Math.random();
+    const device =
+      deviceRand < 0.5 ? "desktop" : deviceRand < 0.85 ? "mobile" : "tablet";
 
     items.push({
       id: `comp-${i}`,
-      submittedAt: now.toISOString(),
-      app: "complex-app",
-      surveyId: "complex-survey",
+      submittedAt: timestamp,
+      app: "syfo-oppfolgingsplan-frontend",
+      surveyId: "survey-custom",
       surveyType: "custom",
-      context: createContext("/complex", "tablet"),
+      context: createContext("/advanced-feedback", device),
       answers: [
         createRatingAnswer("satisfaction", "Hvor fornøyd er du?", rating),
-        createSingleChoiceAnswer("role", "Rolle", metric, undefined, [
+        createSingleChoiceAnswer("role", "Rolle", role, undefined, [
           { id: "Privatperson", label: "Privatperson" },
           { id: "Arbeidsgiver", label: "Arbeidsgiver" },
         ]),
         createMultiChoiceAnswer(
           "features",
           "Hva brukte du?",
-          ["innsending", "arkiv"],
+          features,
           undefined,
           [
             { id: "innsending", label: "Innsending" },
@@ -577,8 +764,8 @@ export function generateComplexSurveyData(): FeedbackDto[] {
             { id: "kalkulator", label: "Kalkulator" },
           ],
         ),
-        createDateAnswer("incidentDate", "Når skjedde dette?", "2023-01-01"),
-        createTextAnswer("comment", "Kommentar", "Ingen kommentar"),
+        createDateAnswer("incidentDate", "Når skjedde dette?", incidentDateStr),
+        ...(comment ? [createTextAnswer("comment", "Kommentar", comment)] : []),
       ],
       sensitiveDataRedacted: false,
     });

@@ -50,6 +50,16 @@ function DashboardPage() {
                   Vurdering
                 </Tag>
               )}
+              {hasSurveyFilter && stats?.surveyType === "discovery" && (
+                <Tag variant="warning" size="small">
+                  Discovery
+                </Tag>
+              )}
+              {hasSurveyFilter && stats?.surveyType === "taskPriority" && (
+                <Tag variant="alt1" size="small">
+                  Task Priority
+                </Tag>
+              )}
               {hasSurveyFilter && stats?.surveyType === "custom" && (
                 <Tag variant="neutral" size="small">
                   Custom

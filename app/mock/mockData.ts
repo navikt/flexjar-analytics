@@ -31,73 +31,63 @@ import {
   getMockTopTasksStats as calculateTopTasksStats,
 } from "./stats";
 
-import { arbeidsgiverTopics, sykmeldtTopics } from "./topics";
+import { sykmeldtTopics } from "./topics";
 export {
   sykmeldtTopics,
-  arbeidsgiverTopics,
   PRIORITY_TASKS,
   DISCOVERY_RESPONSES,
 } from "./topics";
 
 // ============================================
-// Mock feedback data
+// Mock feedback data - One survey per type for showcase
 // ============================================
 
 export const mockFeedbackItems: FeedbackDto[] = [
-  ...generateSurveyData(83, {
+  // ===========================================
+  // 1. RATING SURVEY (type: "rating")
+  // Standard feedback with rating + optional text
+  // ===========================================
+  ...generateSurveyData(120, {
     app: "syfo-oppfolgingsplan-frontend",
-    surveyId: "ny-oppfolgingsplan-sykmeldt",
+    surveyId: "survey-vurdering",
     basePath: "/syk/oppfolgingsplaner",
     topics: sykmeldtTopics,
     questions: {
       ratingLabel: "Er oppfølgingsplanen til hjelp for deg?",
       textLabel: "Legg gjerne til en begrunnelse",
     },
-    // Add metadata for demo purposes
+    // Showcase custom metadata fields
     metadataGenerator: () => ({
-      harDialogmote: Math.random() > 0.5 ? "true" : "false",
-      sykmeldingstype: ["avventende", "standard", "gradert"][
+      behandlingsstatus: ["ny", "pågående", "avsluttet"][
         Math.floor(Math.random() * 3)
       ],
+      sykmeldingsuke: String(Math.floor(Math.random() * 16) + 1),
+      harDialogmote: Math.random() > 0.6 ? "ja" : "nei",
     }),
   }),
 
-  ...generateSurveyData(62, {
-    app: "syfo-oppfolgingsplan-frontend",
-    surveyId: "ny-oppfolgingsplan-arbeidsgiver",
-    basePath: "/syk/oppfolgingsplaner/arbeidsgiver",
-    topics: arbeidsgiverTopics,
-    questions: {
-      ratingLabel: "Hvordan var det å bruke oppfølgingsplanen?",
-      textLabel2: "True", // Triggers special handling for 2 text fields
-    },
-  }),
-
-  ...generateSurveyData(95, {
-    app: "oppfolgingsplan-frontend",
-    surveyId: "oppfolgingsplan-gammel-sykmeldt",
-    basePath: "/oppfolgingsplan/sykmeldt",
-    topics: sykmeldtTopics,
-    questions: {
-      ratingLabel: "Er oppfølgingsplanen til hjelp for deg?",
-      textLabel: "Legg gjerne til en begrunnelse",
-    },
-  }),
-
-  ...generateSurveyData(55, {
-    app: "oppfolgingsplan-frontend",
-    surveyId: "oppfolgingsplan-gammel-arbeidsgiver",
-    basePath: "/oppfolgingsplan/arbeidsgiver",
-    topics: arbeidsgiverTopics,
-    questions: {
-      ratingLabel: "Hvordan var det å bruke oppfølgingsplanen?",
-      textLabel: "Legg gjerne til en begrunnelse",
-    },
-  }),
-
+  // ===========================================
+  // 2. TOP TASKS SURVEY (type: "topTasks")
+  // Measures task completion + blockers + time
+  // ===========================================
   ...generateTopTasksMockData(),
+
+  // ===========================================
+  // 3. DISCOVERY SURVEY (type: "discovery")
+  // Open-ended "what did you come to do" analysis
+  // ===========================================
   ...generateDiscoveryMockData(),
+
+  // ===========================================
+  // 4. TASK PRIORITY SURVEY (type: "taskPriority")
+  // Vote-based task prioritization
+  // ===========================================
   ...generateTaskPriorityMockData(),
+
+  // ===========================================
+  // 5. CUSTOM SURVEY (type: "custom")
+  // Multi-field complex survey
+  // ===========================================
   ...generateComplexSurveyData(),
 ];
 
