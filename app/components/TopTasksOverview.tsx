@@ -1,9 +1,21 @@
 import {
   ChatIcon,
   CheckmarkCircleIcon,
+  XMarkIcon,
   XMarkOctagonIcon,
 } from "@navikt/aksel-icons";
-import { Box, Heading, Hide, Table, Tooltip } from "@navikt/ds-react";
+import {
+  BodyShort,
+  Box,
+  Button,
+  HStack,
+  Heading,
+  Hide,
+  Table,
+  Tag,
+  Tooltip,
+} from "@navikt/ds-react";
+import { useState } from "react";
 import { BlockerAnalysis } from "~/components/BlockerAnalysis";
 import { DashboardCard, DashboardGrid } from "~/components/DashboardComponents";
 import { TaskQuadrantChart } from "~/components/charts/TaskQuadrantChart";
@@ -13,6 +25,7 @@ import { StatCard } from "./StatsCards";
 
 export function TopTasksOverview() {
   const { data, isLoading } = useTopTasksStats();
+  const [selectedTask, setSelectedTask] = useState<string | null>(null);
 
   if (isLoading) return null;
   if (!data) return null;
@@ -23,6 +36,18 @@ export function TopTasksOverview() {
     0,
   );
   const successRate = total > 0 ? Math.round((totalSuccess / total) * 100) : 0;
+
+  // Sort tasks by problem degree (high volume + low success = high priority)
+  const sortedTasks = [...data.tasks].sort((a, b) => {
+    const aScore = a.totalCount * (1 - a.successRate);
+    const bScore = b.totalCount * (1 - b.successRate);
+    return bScore - aScore;
+  });
+
+  // Filter tasks if a quadrant point is selected
+  const displayTasks = selectedTask
+    ? sortedTasks.filter((t) => t.task === selectedTask)
+    : sortedTasks;
 
   return (
     <>
@@ -67,12 +92,14 @@ export function TopTasksOverview() {
           <p
             style={{ margin: "0.5rem 0 0", fontSize: "0.875rem", opacity: 0.7 }}
           >
-            Volum vs suksessrate. Røde punkter i nedre høyre hjørne krever
-            umiddelbar oppmerksomhet.
+            Volum vs suksessrate. Klikk på et punkt for å filtrere tabellen.
           </p>
         </Box.New>
         <div style={{ height: "clamp(280px, 50vw, 400px)", width: "100%" }}>
-          <TaskQuadrantChart />
+          <TaskQuadrantChart
+            selectedTask={selectedTask}
+            onTaskSelect={setSelectedTask}
+          />
         </div>
       </DashboardCard>
 
@@ -82,9 +109,30 @@ export function TopTasksOverview() {
           borderWidth="0 0 1 0"
           borderColor="neutral-subtle"
         >
-          <Heading size="small">
-            {data.questionText ? `Spørsmål: ${data.questionText}` : "Spørsmål"}
-          </Heading>
+          <HStack justify="space-between" align="center" wrap gap="space-8">
+            <Heading size="small">
+              {data.questionText
+                ? `Spørsmål: ${data.questionText}`
+                : "Spørsmål"}
+            </Heading>
+            {selectedTask && (
+              <HStack gap="space-8" align="center">
+                <BodyShort size="small" textColor="subtle">
+                  Filtrert:
+                </BodyShort>
+                <Tag size="small" variant="info">
+                  {selectedTask}
+                  <Button
+                    variant="tertiary-neutral"
+                    size="xsmall"
+                    icon={<XMarkIcon aria-hidden />}
+                    onClick={() => setSelectedTask(null)}
+                    style={{ marginLeft: "0.25rem" }}
+                  />
+                </Tag>
+              </HStack>
+            )}
+          </HStack>
         </Box.New>
         <Box overflowX="auto">
           <Table>
@@ -109,7 +157,7 @@ export function TopTasksOverview() {
               </Table.Row>
             </Table.Header>
             <Table.Body>
-              {data.tasks.map((task) => {
+              {displayTasks.map((task) => {
                 const hasBlockers = Object.keys(task.blockerCounts).length > 0;
 
                 return (

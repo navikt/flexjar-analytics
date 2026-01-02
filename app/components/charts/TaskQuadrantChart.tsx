@@ -33,6 +33,7 @@ const CHART_COLORS = {
     good: "rgba(34, 197, 94, 0.1)",
     lowPriority: "rgba(107, 114, 128, 0.05)",
   },
+  selected: "#ffffff",
 };
 
 const CHART_COLORS_LIGHT = {
@@ -53,6 +54,7 @@ const CHART_COLORS_LIGHT = {
     good: "rgba(22, 163, 74, 0.06)",
     lowPriority: "rgba(156, 163, 175, 0.04)",
   },
+  selected: "#262626",
 };
 
 // Thresholds for quadrant classification
@@ -92,7 +94,17 @@ function getZoneColor(
   }
 }
 
-export function TaskQuadrantChart() {
+interface TaskQuadrantChartProps {
+  /** Callback when a task point is clicked */
+  onTaskSelect?: (taskName: string | null) => void;
+  /** Currently selected task name */
+  selectedTask?: string | null;
+}
+
+export function TaskQuadrantChart({
+  onTaskSelect,
+  selectedTask,
+}: TaskQuadrantChartProps) {
   const { data: stats, isPending } = useTopTasksStats();
   const { theme } = useTheme();
 
@@ -131,6 +143,13 @@ export function TaskQuadrantChart() {
     ...data.map((d) => d.volume),
     VOLUME_THRESHOLD * 2,
   );
+
+  const handleClick = (data: TaskDataPoint) => {
+    if (onTaskSelect) {
+      // Toggle selection: if clicking the same task, deselect
+      onTaskSelect(data.name === selectedTask ? null : data.name);
+    }
+  };
 
   return (
     <ResponsiveContainer width="100%" height="100%">
@@ -267,6 +286,17 @@ export function TaskQuadrantChart() {
                   >
                     {zoneLabels[d.zone]}
                   </div>
+                  {onTaskSelect && (
+                    <div
+                      style={{
+                        marginTop: "0.5rem",
+                        fontSize: "0.75rem",
+                        color: colors.textMuted,
+                      }}
+                    >
+                      Klikk for å filtrere tabellen
+                    </div>
+                  )}
                 </div>
               );
             }
@@ -274,15 +304,32 @@ export function TaskQuadrantChart() {
           }}
         />
 
-        <Scatter name="Oppgaver" data={data}>
-          {data.map((entry) => (
-            <Cell
-              key={`cell-${entry.name}`}
-              fill={getZoneColor(entry.zone, colors)}
-              stroke={getZoneColor(entry.zone, colors)}
-              strokeWidth={2}
-            />
-          ))}
+        <Scatter
+          name="Oppgaver"
+          data={data}
+          cursor={onTaskSelect ? "pointer" : "default"}
+          onClick={(data) => handleClick(data as unknown as TaskDataPoint)}
+        >
+          {data.map((entry) => {
+            const isSelected = entry.name === selectedTask;
+            return (
+              <Cell
+                key={`cell-${entry.name}`}
+                fill={getZoneColor(entry.zone, colors)}
+                stroke={
+                  isSelected
+                    ? colors.selected
+                    : getZoneColor(entry.zone, colors)
+                }
+                strokeWidth={isSelected ? 3 : 2}
+                style={{
+                  filter: isSelected
+                    ? "drop-shadow(0 0 6px rgba(255,255,255,0.5))"
+                    : undefined,
+                }}
+              />
+            );
+          })}
         </Scatter>
       </ScatterChart>
     </ResponsiveContainer>
