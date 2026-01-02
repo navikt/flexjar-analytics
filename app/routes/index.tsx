@@ -6,6 +6,7 @@ import { DefaultDashboard } from "~/components/DefaultDashboard";
 import { DiscoveryDashboard } from "~/components/DiscoveryDashboard";
 import { FilterBar } from "~/components/FilterBar";
 import { Header } from "~/components/Header";
+import { PrivacyMaskedNotice } from "~/components/PrivacyMaskedNotice";
 import { TaskPriorityDashboard } from "~/components/TaskPriorityDashboard";
 import { TopTasksOverview } from "~/components/TopTasksOverview";
 import { useSearchParams } from "~/hooks/useSearchParams";
@@ -70,21 +71,38 @@ const SURVEY_CONFIG: Record<
   },
 };
 
-export const Route = createFileRoute("/")({
-  component: DashboardPage,
-});
+export const Route = createFileRoute("/")(
+  Object.assign({ component: DashboardPage }),
+);
 
 function DashboardPage() {
   const { params } = useSearchParams();
   const { data: stats, isPending } = useStats();
   const hasSurveyFilter = !!params.feedbackId;
   const surveyType = stats?.surveyType;
+  const isPrivacyMasked = stats?.privacy?.masked;
 
   const config = surveyType ? SURVEY_CONFIG[surveyType] : null;
 
   // Show generic skeleton during initial load when a survey is selected
   // This prevents showing the wrong dashboard type before we know the surveyType
   const showInitialSkeleton = hasSurveyFilter && isPending && !stats;
+
+  // Render dashboard content based on privacy and survey type
+  const renderDashboardContent = () => {
+    if (showInitialSkeleton) return null;
+
+    // Show privacy notice if data is masked
+    if (isPrivacyMasked && stats?.privacy) {
+      return <PrivacyMaskedNotice privacy={stats.privacy} />;
+    }
+
+    if (config) {
+      return config.dashboard(hasSurveyFilter);
+    }
+
+    return <DefaultDashboard hasSurveyFilter={hasSurveyFilter} />;
+  };
 
   return (
     <>
@@ -118,11 +136,7 @@ function DashboardPage() {
           <FilterBar />
 
           {/* Type-specific dashboard view */}
-          {showInitialSkeleton ? null : config ? (
-            config.dashboard(hasSurveyFilter)
-          ) : (
-            <DefaultDashboard hasSurveyFilter={hasSurveyFilter} />
-          )}
+          {renderDashboardContent()}
         </VStack>
       </Box>
     </>

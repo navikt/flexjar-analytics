@@ -184,6 +184,19 @@ export interface FeedbackStats {
     to: string | null;
     days: number;
   };
+
+  // Privacy threshold info
+  privacy?: PrivacyInfo;
+}
+
+/**
+ * Privacy information for aggregation threshold
+ * Used to prevent identification of individuals in small datasets
+ */
+export interface PrivacyInfo {
+  masked: boolean;
+  reason?: string;
+  threshold: number;
 }
 
 export interface TeamsAndApps {

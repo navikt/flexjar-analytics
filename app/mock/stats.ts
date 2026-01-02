@@ -376,23 +376,40 @@ export function calculateStats(
   // Calculate new field stats
   const fieldStats = calculateFieldStats(filtered);
 
+  // Privacy threshold check
+  const MIN_AGGREGATION_THRESHOLD = 5;
+  const totalCount = filtered.length;
+  const shouldMask = totalCount > 0 && totalCount < MIN_AGGREGATION_THRESHOLD;
+
+  const privacy = shouldMask
+    ? {
+        masked: true,
+        reason: `Antall svar (${totalCount}) er under ${MIN_AGGREGATION_THRESHOLD}. Statistikk vises ikke av hensyn til personvern.`,
+        threshold: MIN_AGGREGATION_THRESHOLD,
+      }
+    : undefined;
+
   return {
-    totalCount: filtered.length,
+    totalCount,
     countWithText,
-    countWithoutText: filtered.length - countWithText,
-    byRating,
-    byApp,
-    byDate,
-    byFeedbackId,
-    averageRating: ratingCount > 0 ? totalRating / ratingCount : null,
-    ratingByDate,
-    byDevice,
-    byPathname,
-    lowestRatingPaths,
-    fieldStats,
+    countWithoutText: totalCount - countWithText,
+    byRating: shouldMask ? {} : byRating,
+    byApp: shouldMask ? {} : byApp,
+    byDate: shouldMask ? {} : byDate,
+    byFeedbackId: shouldMask ? {} : byFeedbackId,
+    averageRating: shouldMask
+      ? null
+      : ratingCount > 0
+        ? totalRating / ratingCount
+        : null,
+    ratingByDate: shouldMask ? {} : ratingByDate,
+    byDevice: shouldMask ? {} : byDevice,
+    byPathname: shouldMask ? {} : byPathname,
+    lowestRatingPaths: shouldMask ? {} : lowestRatingPaths,
+    fieldStats: shouldMask ? [] : fieldStats,
     period: calculatePeriod(from, to),
-    surveyType:
-      filtered.length > 0 ? filtered[0].surveyType || "rating" : undefined,
+    surveyType: totalCount > 0 ? filtered[0].surveyType || "rating" : undefined,
+    privacy,
   };
 }
 
