@@ -60,11 +60,15 @@ export const Route = createFileRoute("/")({
 
 function DashboardPage() {
   const { params } = useSearchParams();
-  const { data: stats } = useStats();
+  const { data: stats, isPending } = useStats();
   const hasSurveyFilter = !!params.feedbackId;
   const surveyType = stats?.surveyType;
 
   const config = surveyType ? SURVEY_CONFIG[surveyType] : null;
+
+  // Show generic skeleton during initial load when a survey is selected
+  // This prevents showing the wrong dashboard type before we know the surveyType
+  const showInitialSkeleton = hasSurveyFilter && isPending && !stats;
 
   return (
     <>
@@ -92,7 +96,7 @@ function DashboardPage() {
           <FilterBar />
 
           {/* Type-specific dashboard view */}
-          {config ? (
+          {showInitialSkeleton ? null : config ? (
             config.dashboard(hasSurveyFilter)
           ) : (
             <DefaultDashboard hasSurveyFilter={hasSurveyFilter} />

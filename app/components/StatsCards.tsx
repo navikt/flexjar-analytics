@@ -62,7 +62,7 @@ export function StatsCards({ showRating = false }: StatsCardsProps) {
   // isPending: no cached data AND fetching (TanStack Query v5 best practice)
   // With placeholderData: keepPreviousData, isPending stays false during refetches
   if (isPending) {
-    return <StatsCardsSkeleton />;
+    return <StatsCardsSkeleton showRating={showRating} />;
   }
 
   const totalCount = stats?.totalCount || 0;

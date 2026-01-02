@@ -1,4 +1,5 @@
-import { Box, Skeleton } from "@navikt/ds-react";
+import { Skeleton } from "@navikt/ds-react";
+import { DashboardCard, DashboardGrid } from "~/components/DashboardComponents";
 
 interface StatCardSkeletonProps {
   labelWidth?: number;
@@ -6,14 +7,7 @@ interface StatCardSkeletonProps {
 
 function StatCardSkeleton({ labelWidth = 140 }: StatCardSkeletonProps) {
   return (
-    <Box.New
-      padding="space-20"
-      background="raised"
-      borderRadius="large"
-      style={{ boxShadow: "var(--ax-shadow-small)" }}
-      borderColor="neutral-subtle"
-      borderWidth="1"
-    >
+    <DashboardCard padding={{ xs: "space-16", md: "space-20" }}>
       <div
         style={{
           display: "flex",
@@ -31,22 +25,25 @@ function StatCardSkeleton({ labelWidth = 140 }: StatCardSkeletonProps) {
       </div>
 
       <Skeleton variant="text" width={120} height={20} />
-    </Box.New>
+    </DashboardCard>
   );
 }
 
-export function StatsCardsSkeleton() {
-  const gridStyle: React.CSSProperties = {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-    gap: "1rem",
-  };
+interface StatsCardsSkeletonProps {
+  showRating?: boolean;
+}
+
+export function StatsCardsSkeleton({
+  showRating = false,
+}: StatsCardsSkeletonProps) {
+  const columns = { xs: 1, sm: 2, md: showRating ? 4 : 3 };
 
   return (
-    <div style={gridStyle}>
-      <StatCardSkeleton labelWidth={160} />
-      <StatCardSkeleton labelWidth={180} />
-      <StatCardSkeleton labelWidth={80} />
-    </div>
+    <DashboardGrid columns={columns} gap={{ xs: "space-12", md: "space-16" }}>
+      <StatCardSkeleton labelWidth={80} /> {/* Periode */}
+      <StatCardSkeleton labelWidth={140} /> {/* Tilbakemeldinger */}
+      {showRating && <StatCardSkeleton labelWidth={120} />} {/* Snitt/Rating */}
+      <StatCardSkeleton labelWidth={100} /> {/* Tekstsvar/Med tekst */}
+    </DashboardGrid>
   );
 }
