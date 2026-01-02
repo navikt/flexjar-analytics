@@ -60,11 +60,24 @@ const CHART_COLORS_LIGHT = {
   },
 };
 
-export function DeviceBreakdownChart() {
+interface DeviceBreakdownChartProps {
+  /** Override rating visibility. If not provided, auto-detects based on survey type. */
+  showRating?: boolean;
+}
+
+export function DeviceBreakdownChart({
+  showRating,
+}: DeviceBreakdownChartProps = {}) {
   const { data: stats, isPending } = useStats();
   const { theme } = useTheme();
 
   const colors = theme === "light" ? CHART_COLORS_LIGHT : CHART_COLORS;
+
+  // Auto-detect whether to show rating based on survey type
+  // Rating is only relevant for "rating" and "custom" surveys
+  const surveyType = stats?.surveyType;
+  const shouldShowRating =
+    showRating ?? (surveyType === "rating" || surveyType === "custom");
 
   if (isPending) {
     return <Skeleton variant="rectangle" height={200} />;
@@ -179,19 +192,21 @@ export function DeviceBreakdownChart() {
                   <BodyShort size="small" style={{ color: colors.textMuted }}>
                     ({Math.round((d.count / totalCount) * 100)}%)
                   </BodyShort>
-                  <BodyShort
-                    size="small"
-                    style={{
-                      color:
-                        d.averageRating >= 4
-                          ? "#34D399"
-                          : d.averageRating <= 2
-                            ? "#F87171"
-                            : colors.text,
-                    }}
-                  >
-                    ⭐ {d.averageRating.toFixed(1)}
-                  </BodyShort>
+                  {shouldShowRating && (
+                    <BodyShort
+                      size="small"
+                      style={{
+                        color:
+                          d.averageRating >= 4
+                            ? "#34D399"
+                            : d.averageRating <= 2
+                              ? "#F87171"
+                              : colors.text,
+                      }}
+                    >
+                      ⭐ {d.averageRating.toFixed(1)}
+                    </BodyShort>
+                  )}
                 </HStack>
               </VStack>
             </div>
@@ -242,7 +257,11 @@ export function DeviceBreakdownChart() {
                           {d.count} tilbakemeldinger (
                           {Math.round((d.count / totalCount) * 100)}%)
                         </div>
-                        <div>Snittrating: {d.averageRating.toFixed(1)} ⭐</div>
+                        {shouldShowRating && (
+                          <div>
+                            Snittrating: {d.averageRating.toFixed(1)} ⭐
+                          </div>
+                        )}
                       </div>
                     );
                   }

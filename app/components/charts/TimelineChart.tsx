@@ -2,8 +2,9 @@ import { Skeleton } from "@navikt/ds-react";
 import { useNavigate } from "@tanstack/react-router";
 import dayjs from "dayjs";
 import {
-  Area,
-  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -86,11 +87,11 @@ export function TimelineChart() {
 
   return (
     <ResponsiveContainer width="100%" height="100%">
-      <AreaChart
+      <BarChart
         data={data}
         margin={chartMargin}
         role="img"
-        aria-label={`Tidslinjediagram som viser ${data.length} datapunkter med tilbakemeldinger over tid`}
+        aria-label={`Stolpediagram som viser ${data.length} dager med tilbakemeldinger`}
         onClick={(e) => {
           if (e?.activePayload && e.activePayload.length > 0) {
             const clickData = e.activePayload[0].payload;
@@ -108,12 +109,7 @@ export function TimelineChart() {
         }}
         style={{ cursor: "pointer" }}
       >
-        <defs>
-          <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor={colors.primary} stopOpacity={0.4} />
-            <stop offset="95%" stopColor={colors.primary} stopOpacity={0.05} />
-          </linearGradient>
-        </defs>
+        <CartesianGrid strokeDasharray="3 3" opacity={0.1} vertical={false} />
         <XAxis
           dataKey="displayDate"
           axisLine={false}
@@ -154,15 +150,13 @@ export function TimelineChart() {
             return null;
           }}
         />
-        <Area
-          type="monotone"
+        <Bar
           dataKey="count"
-          stroke={colors.primary}
-          strokeWidth={2}
-          fillOpacity={1}
-          fill="url(#colorCount)"
+          fill={colors.primary}
+          radius={[4, 4, 0, 0]}
+          maxBarSize={50}
         />
-      </AreaChart>
+      </BarChart>
     </ResponsiveContainer>
   );
 }

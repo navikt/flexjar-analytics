@@ -76,7 +76,8 @@ export function TaskPriorityAnalysis({ data }: TaskPriorityAnalysisProps) {
             textColor="subtle"
             style={{ marginTop: "0.25rem" }}
           >
-            Oppgavene brukerne mener er viktigst (sortert etter stemmer)
+            Oppgavene brukerne mener er viktigst. Prosent = andel av alle
+            stemmer.
           </BodyShort>
         </Box.New>
 

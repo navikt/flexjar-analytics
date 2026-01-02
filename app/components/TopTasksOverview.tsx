@@ -3,7 +3,7 @@ import {
   CheckmarkCircleIcon,
   XMarkOctagonIcon,
 } from "@navikt/aksel-icons";
-import { Box, Heading, Hide, Table } from "@navikt/ds-react";
+import { Box, Heading, Hide, Table, Tooltip } from "@navikt/ds-react";
 import { BlockerAnalysis } from "~/components/BlockerAnalysis";
 import { DashboardCard, DashboardGrid } from "~/components/DashboardComponents";
 import { TaskQuadrantChart } from "~/components/charts/TaskQuadrantChart";
@@ -96,7 +96,11 @@ export function TopTasksOverview() {
                 <Table.HeaderCell align="right">Suksess</Table.HeaderCell>
                 {/* Extra columns hidden on mobile */}
                 <Hide below="md" asChild>
-                  <Table.HeaderCell align="right">Delvis</Table.HeaderCell>
+                  <Tooltip content="Brukeren kom delvis i mål med oppgaven">
+                    <Table.HeaderCell align="right" style={{ cursor: "help" }}>
+                      Delvis
+                    </Table.HeaderCell>
+                  </Tooltip>
                 </Hide>
                 <Hide below="md" asChild>
                   <Table.HeaderCell align="right">Feil</Table.HeaderCell>

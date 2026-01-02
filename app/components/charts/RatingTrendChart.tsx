@@ -185,7 +185,7 @@ export function RatingTrendChart() {
           }}
         />
         <Line
-          type="monotone"
+          type="natural"
           dataKey="average"
           stroke={colors.primary}
           strokeWidth={2}

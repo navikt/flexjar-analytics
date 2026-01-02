@@ -1,5 +1,16 @@
-import { MagnifyingGlassIcon } from "@navikt/aksel-icons";
-import { BodyShort, Box, HStack, Heading, Tag, VStack } from "@navikt/ds-react";
+import {
+  InformationSquareIcon,
+  MagnifyingGlassIcon,
+} from "@navikt/aksel-icons";
+import {
+  BodyShort,
+  Box,
+  HStack,
+  Heading,
+  Tag,
+  Tooltip,
+  VStack,
+} from "@navikt/ds-react";
 import { DashboardCard } from "~/components/DashboardComponents";
 import type { DiscoveryResponse, DiscoveryTheme } from "~/types/api";
 
@@ -101,7 +112,19 @@ export function DiscoveryAnalysis({ data }: DiscoveryAnalysisProps) {
             borderWidth="0 0 1 0"
             borderColor="neutral-subtle"
           >
-            <Heading size="small">Identifiserte temaer</Heading>
+            <HStack gap="space-8" align="center">
+              <Heading size="small">Identifiserte temaer</Heading>
+              <Tooltip content="Gruppert basert på nøkkelord i fritekst-svarene">
+                <InformationSquareIcon
+                  fontSize="1rem"
+                  style={{
+                    cursor: "help",
+                    color: "var(--ax-text-neutral-subtle)",
+                  }}
+                  aria-hidden
+                />
+              </Tooltip>
+            </HStack>
             <BodyShort
               size="small"
               textColor="subtle"

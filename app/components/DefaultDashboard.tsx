@@ -1,4 +1,4 @@
-import { Heading, VStack } from "@navikt/ds-react";
+import { BodyShort, Heading, VStack } from "@navikt/ds-react";
 import { DashboardCard, DashboardGrid } from "~/components/DashboardComponents";
 import { FieldStatsSection } from "~/components/FieldStatsSection";
 import { StatsCards } from "~/components/StatsCards";
@@ -39,7 +39,12 @@ export function DefaultDashboard({ hasSurveyFilter }: DefaultDashboardProps) {
         {/* Rating trend chart */}
         <DashboardCard padding={{ xs: "space-16", md: "space-24" }}>
           <VStack gap="space-16">
-            <Heading size="small">Gjennomsnittlig vurdering</Heading>
+            <VStack gap="space-4">
+              <Heading size="small">Gjennomsnittlig vurdering</Heading>
+              <BodyShort size="small" textColor="subtle">
+                Kun rating-surveys
+              </BodyShort>
+            </VStack>
             <div
               style={{
                 height: "clamp(200px, 40vw, 300px)",
