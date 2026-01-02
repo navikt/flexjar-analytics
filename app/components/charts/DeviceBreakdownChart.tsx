@@ -183,6 +183,7 @@ export function DeviceBreakdownChart({
               type="button"
               key={d.device}
               onClick={() => handleDeviceClick(d.device)}
+              className="device-card"
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -199,20 +200,36 @@ export function DeviceBreakdownChart({
                 textAlign: "left",
               }}
             >
-              <span style={{ fontSize: "1.25rem" }}>{d.icon}</span>
-              <VStack gap="0">
-                <Label size="small">{d.label}</Label>
-                <HStack gap="space-8" align="center">
-                  <BodyShort size="small" weight="semibold">
+              <span style={{ fontSize: "1.25rem", cursor: "inherit" }}>
+                {d.icon}
+              </span>
+              <VStack gap="0" style={{ cursor: "inherit" }}>
+                <Label size="small" style={{ cursor: "inherit" }}>
+                  {d.label}
+                </Label>
+                <HStack
+                  gap="space-8"
+                  align="center"
+                  style={{ cursor: "inherit" }}
+                >
+                  <BodyShort
+                    size="small"
+                    weight="semibold"
+                    style={{ cursor: "inherit" }}
+                  >
                     {d.count}
                   </BodyShort>
-                  <BodyShort size="small" style={{ color: colors.textMuted }}>
+                  <BodyShort
+                    size="small"
+                    style={{ color: colors.textMuted, cursor: "inherit" }}
+                  >
                     ({Math.round((d.count / totalCount) * 100)}%)
                   </BodyShort>
                   {shouldShowRating && (
                     <BodyShort
                       size="small"
                       style={{
+                        cursor: "inherit",
                         color:
                           d.averageRating >= 4
                             ? "#34D399"

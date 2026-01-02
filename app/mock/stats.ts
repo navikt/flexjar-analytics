@@ -226,6 +226,7 @@ export function calculateStats(
   const from = params.get("from");
   const to = params.get("to");
   const surveyId = params.get("feedbackId"); // Keep old param name for backwards compat
+  const deviceType = params.get("deviceType");
 
   if (app) {
     filtered = filtered.filter((item) => item.app === app);
@@ -238,6 +239,11 @@ export function calculateStats(
   }
   if (surveyId) {
     filtered = filtered.filter((item) => item.surveyId === surveyId);
+  }
+  if (deviceType) {
+    filtered = filtered.filter(
+      (item) => item.context?.deviceType === deviceType,
+    );
   }
 
   // Legacy aggregations
@@ -422,6 +428,7 @@ function applyFiltersToItems(
   const from = params.get("from");
   const to = params.get("to");
   const surveyId = params.get("feedbackId");
+  const deviceType = params.get("deviceType");
 
   if (app) filtered = filtered.filter((item) => item.app === app);
   if (from) filtered = filtered.filter((item) => item.submittedAt >= from);
@@ -429,6 +436,10 @@ function applyFiltersToItems(
     filtered = filtered.filter((item) => item.submittedAt <= `${to}T23:59:59Z`);
   if (surveyId)
     filtered = filtered.filter((item) => item.surveyId === surveyId);
+  if (deviceType)
+    filtered = filtered.filter(
+      (item) => item.context?.deviceType === deviceType,
+    );
 
   return filtered;
 }
