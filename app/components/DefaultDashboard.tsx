@@ -5,6 +5,7 @@ import { StatsCards } from "~/components/StatsCards";
 import { UrgentUrls } from "~/components/UrgentUrls";
 import { DeviceBreakdownChart } from "~/components/charts/DeviceBreakdownChart";
 import { RatingTrendChart } from "~/components/charts/RatingTrendChart";
+import { SurveyTypeDistribution } from "~/components/charts/SurveyTypeDistribution";
 import { TimelineChart } from "~/components/charts/TimelineChart";
 import { TopAppsChart } from "~/components/charts/TopAppsChart";
 
@@ -63,15 +64,15 @@ export function DefaultDashboard({ hasSurveyFilter }: DefaultDashboardProps) {
       {/* Survey-specific statistics - only when a survey is selected */}
       {hasSurveyFilter && <FieldStatsSection />}
 
-      {/* Apps and devices breakdown - only when no survey filter */}
+      {/* Apps, devices, and survey types breakdown - only when no survey filter */}
       {!hasSurveyFilter && (
-        <DashboardGrid columns={{ xs: 1, md: 2 }}>
+        <DashboardGrid columns={{ xs: 1, md: 3 }}>
           <DashboardCard padding={{ xs: "space-16", md: "space-24" }}>
             <VStack gap="space-16">
               <Heading size="small">Tilbakemeldinger per app</Heading>
               <div
                 style={{
-                  height: "clamp(150px, 30vw, 200px)",
+                  height: "clamp(150px, 30vw, 180px)",
                   width: "100%",
                 }}
               >
@@ -85,12 +86,19 @@ export function DefaultDashboard({ hasSurveyFilter }: DefaultDashboardProps) {
               <Heading size="small">Enheter</Heading>
               <div
                 style={{
-                  height: "clamp(150px, 30vw, 200px)",
+                  height: "clamp(150px, 30vw, 180px)",
                   width: "100%",
                 }}
               >
                 <DeviceBreakdownChart />
               </div>
+            </VStack>
+          </DashboardCard>
+
+          <DashboardCard padding={{ xs: "space-16", md: "space-24" }}>
+            <VStack gap="space-16">
+              <Heading size="small">Survey-typer</Heading>
+              <SurveyTypeDistribution height={150} />
             </VStack>
           </DashboardCard>
         </DashboardGrid>

@@ -152,8 +152,64 @@ export function calculateFieldStats(items: FeedbackDto[]): FieldStat[] {
           recentResponses,
         },
       });
+    } else if (
+      field.fieldType === "SINGLE_CHOICE" ||
+      field.fieldType === "MULTI_CHOICE"
+    ) {
+      // Get options from first answer with options
+      const firstAnswerWithOptions = items
+        .flatMap((i) => i.answers)
+        .find((a) => a.fieldId === field.fieldId && a.question.options?.length);
+      const options = firstAnswerWithOptions?.question.options || [];
+
+      // Count selections
+      const selectionCounts: Record<string, number> = {};
+      for (const opt of options) {
+        selectionCounts[opt.id] = 0;
+      }
+
+      for (const value of field.values) {
+        if (value.type === "singleChoice") {
+          const id = value.selectedOptionId;
+          selectionCounts[id] = (selectionCounts[id] || 0) + 1;
+        } else if (value.type === "multiChoice") {
+          for (const id of value.selectedOptionIds) {
+            selectionCounts[id] = (selectionCounts[id] || 0) + 1;
+          }
+        }
+      }
+
+      const totalSelections = Object.values(selectionCounts).reduce(
+        (sum, c) => sum + c,
+        0,
+      );
+
+      const distribution: Record<
+        string,
+        { label: string; count: number; percentage: number }
+      > = {};
+      for (const opt of options) {
+        const count = selectionCounts[opt.id] || 0;
+        distribution[opt.id] = {
+          label: opt.label,
+          count,
+          percentage:
+            totalSelections > 0
+              ? Math.round((count / totalSelections) * 100)
+              : 0,
+        };
+      }
+
+      fieldStats.push({
+        fieldId: field.fieldId,
+        fieldType: field.fieldType as "SINGLE_CHOICE" | "MULTI_CHOICE",
+        label: field.label,
+        stats: {
+          type: "choice",
+          distribution,
+        },
+      });
     }
-    // We could add logic for SINGLE_CHOICE / MULTI_CHOICE stats here as well
   }
 
   return fieldStats;

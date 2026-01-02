@@ -1,4 +1,8 @@
-import { ChatExclamationmarkIcon, StarIcon } from "@navikt/aksel-icons";
+import {
+  ChatElipsisIcon,
+  ChatExclamationmarkIcon,
+  StarIcon,
+} from "@navikt/aksel-icons";
 import {
   BodyShort,
   HStack,
@@ -10,7 +14,12 @@ import {
 import { DashboardCard, DashboardGrid } from "~/components/DashboardComponents";
 import { useSearchParams } from "~/hooks/useSearchParams";
 import { useStats } from "~/hooks/useStats";
-import type { FieldStat, RatingStats, TextStats } from "~/types/api";
+import type {
+  ChoiceStats,
+  FieldStat,
+  RatingStats,
+  TextStats,
+} from "~/types/api";
 import { formatRelativeTime } from "~/utils/wordAnalysis";
 
 import { FieldStatsSkeleton } from "./FieldStatsSection/FieldStatsSkeleton";
@@ -31,6 +40,9 @@ export function FieldStatsSection() {
 
   const ratingFields = stats.fieldStats.filter((f) => f.fieldType === "RATING");
   const textFields = stats.fieldStats.filter((f) => f.fieldType === "TEXT");
+  const choiceFields = stats.fieldStats.filter(
+    (f) => f.fieldType === "SINGLE_CHOICE" || f.fieldType === "MULTI_CHOICE",
+  );
 
   return (
     <VStack gap="space-16" marginBlock="space-24 space-16">
@@ -51,6 +63,13 @@ export function FieldStatsSection() {
         ))}
         {textFields.map((field) => (
           <TextFieldCard
+            key={field.fieldId}
+            field={field}
+            totalCount={stats.totalCount}
+          />
+        ))}
+        {choiceFields.map((field) => (
+          <ChoiceFieldCard
             key={field.fieldId}
             field={field}
             totalCount={stats.totalCount}
@@ -323,4 +342,104 @@ function getRatingColor(rating: number): string {
     default:
       return "#9CA3AF";
   }
+}
+
+// Bar colors for choice options (cycle through if more than 5 options)
+const CHOICE_COLORS = [
+  "#3B82F6", // Blue
+  "#22C55E", // Green
+  "#F59E0B", // Amber
+  "#8B5CF6", // Purple
+  "#EC4899", // Pink
+  "#06B6D4", // Cyan
+];
+
+function ChoiceFieldCard({ field, totalCount }: FieldCardProps) {
+  const stats = field.stats as ChoiceStats;
+  const distribution = stats.distribution;
+
+  // Convert to array and sort by count descending
+  const choices = Object.entries(distribution)
+    .map(([id, data]) => ({ id, ...data }))
+    .sort((a, b) => b.count - a.count);
+
+  const maxCount = Math.max(...choices.map((c) => c.count), 1);
+  const totalResponses = choices.reduce((sum, c) => sum + c.count, 0);
+
+  return (
+    <DashboardCard
+      padding="space-20"
+      style={{ display: "flex", flexDirection: "column" }}
+    >
+      {/* Header */}
+      <HStack gap="space-8" align="start" marginBlock="0 space-8">
+        <ChatElipsisIcon fontSize="1.25rem" aria-hidden />
+        <VStack gap="0" style={{ flex: 1 }}>
+          <Label size="small" style={{ flex: 1, minWidth: 0 }}>
+            {field.label}
+          </Label>
+          <BodyShort
+            size="small"
+            style={{ color: "var(--ax-text-neutral-subtle)" }}
+          >
+            {totalResponses} av {totalCount} har svart (
+            {Math.round((totalResponses / totalCount) * 100)}%)
+          </BodyShort>
+        </VStack>
+      </HStack>
+
+      {/* Bar chart */}
+      <VStack gap="space-8" marginBlock="space-12 0">
+        {choices.map((choice, index) => {
+          const barWidth = maxCount > 0 ? (choice.count / maxCount) * 100 : 0;
+          const color = CHOICE_COLORS[index % CHOICE_COLORS.length];
+
+          return (
+            <VStack key={choice.id} gap="space-4">
+              <HStack justify="space-between" align="center">
+                <BodyShort
+                  size="small"
+                  style={{
+                    flex: 1,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {choice.label}
+                </BodyShort>
+                <BodyShort
+                  size="small"
+                  style={{
+                    color: "var(--ax-text-neutral-subtle)",
+                    marginLeft: "0.5rem",
+                  }}
+                >
+                  {choice.count} ({choice.percentage}%)
+                </BodyShort>
+              </HStack>
+              <div
+                style={{
+                  height: 8,
+                  background: "var(--ax-bg-neutral-moderate)",
+                  borderRadius: 4,
+                  overflow: "hidden",
+                }}
+              >
+                <div
+                  style={{
+                    width: `${barWidth}%`,
+                    height: "100%",
+                    borderRadius: 4,
+                    backgroundColor: color,
+                    transition: "width 0.3s ease",
+                  }}
+                />
+              </div>
+            </VStack>
+          );
+        })}
+      </VStack>
+    </DashboardCard>
+  );
 }
