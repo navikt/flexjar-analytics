@@ -122,9 +122,26 @@ export function generateSurveyData(
       width = 768;
       height = 1024;
     }
+    // Use a small set of realistic subpaths to ensure multiple feedbacks per path
+    // This enables lowestRatingPaths to work (requires 3+ feedbacks per path)
 
-    const suffix = Math.floor(Math.random() * 10000);
-    const path = `${config.basePath}/${suffix}`;
+    // Correlate low ratings with specific "problem" paths for realistic UrgentUrls data
+    const problemPaths = ["/opplasting", "/innlogging", "/innsending"];
+    const normalPaths = [
+      "/oversikt",
+      "/status",
+      "/historikk",
+      "/hjelp",
+      "/dokumenter",
+    ];
+
+    // Low ratings (1-2) go to problem paths, others to normal paths
+    let path: string;
+    if (poolItem.rating <= 2) {
+      path = `${config.basePath}${problemPaths[i % problemPaths.length]}`;
+    } else {
+      path = `${config.basePath}${normalPaths[i % normalPaths.length]}`;
+    }
 
     items.push({
       id: `gen-${config.surveyId}-${i}`,
@@ -144,26 +161,67 @@ export function generateSurveyData(
 
 export function generateTopTasksMockData(): FeedbackDto[] {
   const items: FeedbackDto[] = [];
+
+  // Expanded task list with realistic weights and success rates (10 tasks)
   const tasks = [
+    // High-volume tasks
     {
       id: "lese-om-dialogmote",
       label: "Lese om dialogmøte",
-      weight: 0.4,
-      successRate: 0.9,
+      weight: 0.2,
+      successRate: 0.88,
     },
     {
       id: "melde-motebehov",
       label: "Melde behov for møte",
-      weight: 0.3,
-      successRate: 0.6,
-    }, // Hard path
+      weight: 0.18,
+      successRate: 0.55, // Hard path
+    },
     {
       id: "svare-pa-innkalling",
       label: "Svare på innkalling",
-      weight: 0.2,
+      weight: 0.15,
       successRate: 0.8,
     },
-    { id: "annet", label: "Noe annet", weight: 0.1, successRate: 0.5 },
+    {
+      id: "sjekke-status",
+      label: "Sjekke status på sak",
+      weight: 0.12,
+      successRate: 0.75,
+    },
+    // Medium-volume tasks
+    {
+      id: "laste-opp-dokument",
+      label: "Laste opp dokumentasjon",
+      weight: 0.1,
+      successRate: 0.6, // File upload issues
+    },
+    {
+      id: "se-tidligere-mote",
+      label: "Se tidligere møtereferater",
+      weight: 0.08,
+      successRate: 0.7,
+    },
+    {
+      id: "endre-tidspunkt",
+      label: "Endre møtetidspunkt",
+      weight: 0.06,
+      successRate: 0.45, // Problematic
+    },
+    // Lower-volume tasks
+    {
+      id: "kontakte-nav",
+      label: "Kontakte NAV om møtet",
+      weight: 0.05,
+      successRate: 0.35, // Hard to find
+    },
+    {
+      id: "avlyse-mote",
+      label: "Avlyse eller utsette møte",
+      weight: 0.04,
+      successRate: 0.5,
+    },
+    { id: "annet", label: "Noe annet", weight: 0.02, successRate: 0.4 },
   ];
 
   const now = new Date();
@@ -191,28 +249,52 @@ export function generateTopTasksMockData(): FeedbackDto[] {
       let successValue = "Ja";
       let blocker: string | undefined = undefined;
 
-      // Diverse blocker reasons for pattern analysis
-      const blockerReasons = [
-        "Skjønte ikke skjemaet",
-        "Fant ikke all info",
-        "Teknisk feil på siden",
+      // Task-specific blocker reasons for better pattern analysis
+      const taskBlockers: Record<string, string[]> = {
+        "melde-motebehov": [
+          "Skjønte ikke forskjellen på alternativene",
+          "Fant ikke knappen for å melde behov",
+          "Fikk feilmelding: 'Ugyldig dato'",
+          "Systemet godtok ikke begrunnelsen min",
+        ],
+        "laste-opp-dokument": [
+          "Filen var for stor",
+          "Systemet aksepterte ikke PDF-formatet",
+          "Opplastingen stoppet halvveis",
+          "Fikk ikke til å velge fil på mobilen",
+        ],
+        "endre-tidspunkt": [
+          "Fant ikke alternativ for å endre",
+          "Alle tider var opptatt",
+          "Kalenderen viste feil måned",
+          "Knappen var grået ut",
+        ],
+        "kontakte-nav": [
+          "Fant ikke telefonnummer",
+          "Chat-boten forstod ikke spørsmålet",
+          "Ventet i kø i over 30 min",
+        ],
+      };
+
+      const defaultBlockers = [
+        "Siden lastet tregt",
         "Ble logget ut underveis",
-        "Visste ikke hva jeg skulle velge",
-        "Knappen fungerte ikke",
-        "Siden tok for lang tid å laste",
-        "Fikk feilmelding",
+        "Teknisk feil uten forklaring",
+        "Fant ikke det jeg lette etter",
+        "Navigasjonen var forvirrende",
+        "Mobilvennlig visning fungerte dårlig",
       ];
+
+      const blockerPool = taskBlockers[selectedTask.id] || defaultBlockers;
 
       if (successRand > selectedTask.successRate) {
         // Fail or partial
         if (Math.random() > 0.4) {
           successValue = "Nei";
-          blocker =
-            blockerReasons[Math.floor(Math.random() * blockerReasons.length)];
+          blocker = blockerPool[Math.floor(Math.random() * blockerPool.length)];
         } else {
           successValue = "Delvis";
-          blocker =
-            blockerReasons[Math.floor(Math.random() * blockerReasons.length)];
+          blocker = blockerPool[Math.floor(Math.random() * blockerPool.length)];
         }
       }
 

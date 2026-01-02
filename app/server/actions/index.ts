@@ -14,6 +14,12 @@ export { fetchFeedbackServerFn } from "./fetchFeedback";
 // Top Tasks
 export { fetchTopTasksServerFn } from "./fetchTopTasks";
 
+// Discovery
+export { fetchDiscoveryServerFn } from "./fetchDiscovery";
+
+// Task Priority
+export { fetchTaskPriorityServerFn } from "./fetchTaskPriority";
+
 // Teams
 export { fetchTeamsServerFn } from "./fetchTeams";
 

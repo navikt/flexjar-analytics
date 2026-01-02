@@ -1,19 +1,58 @@
 import { Box, HStack, Heading, Tag, VStack } from "@navikt/ds-react";
+import type { TagProps } from "@navikt/ds-react";
 import { createFileRoute } from "@tanstack/react-router";
-import { DashboardCard, DashboardGrid } from "~/components/DashboardComponents";
-import { FieldStatsSection } from "~/components/FieldStatsSection";
+import type { ReactNode } from "react";
+import { DefaultDashboard } from "~/components/DefaultDashboard";
+import { DiscoveryDashboard } from "~/components/DiscoveryDashboard";
 import { FilterBar } from "~/components/FilterBar";
 import { Header } from "~/components/Header";
-import { StatsCards } from "~/components/StatsCards";
+import { TaskPriorityDashboard } from "~/components/TaskPriorityDashboard";
 import { TopTasksOverview } from "~/components/TopTasksOverview";
-import { UrgentUrls } from "~/components/UrgentUrls";
-import { DeviceBreakdownChart } from "~/components/charts/DeviceBreakdownChart";
-
-import { RatingTrendChart } from "~/components/charts/RatingTrendChart";
-import { TimelineChart } from "~/components/charts/TimelineChart";
-import { TopAppsChart } from "~/components/charts/TopAppsChart";
 import { useSearchParams } from "~/hooks/useSearchParams";
 import { useStats } from "~/hooks/useStats";
+import type { SurveyType } from "~/types/api";
+
+/**
+ * Survey type configuration - centralizes labels, variants, and dashboards
+ */
+const SURVEY_CONFIG: Record<
+  SurveyType,
+  {
+    label: string;
+    variant: TagProps["variant"];
+    dashboard: (hasSurveyFilter: boolean) => ReactNode;
+  }
+> = {
+  topTasks: {
+    label: "Top Tasks",
+    variant: "info",
+    dashboard: () => <TopTasksOverview />,
+  },
+  rating: {
+    label: "Vurdering",
+    variant: "success",
+    dashboard: (hasSurveyFilter) => (
+      <DefaultDashboard hasSurveyFilter={hasSurveyFilter} />
+    ),
+  },
+  discovery: {
+    label: "Discovery",
+    variant: "warning",
+    dashboard: () => <DiscoveryDashboard />,
+  },
+  taskPriority: {
+    label: "Task Priority",
+    variant: "alt1",
+    dashboard: () => <TaskPriorityDashboard />,
+  },
+  custom: {
+    label: "Custom",
+    variant: "neutral",
+    dashboard: (hasSurveyFilter) => (
+      <DefaultDashboard hasSurveyFilter={hasSurveyFilter} />
+    ),
+  },
+};
 
 export const Route = createFileRoute("/")({
   component: DashboardPage,
@@ -23,7 +62,9 @@ function DashboardPage() {
   const { params } = useSearchParams();
   const { data: stats } = useStats();
   const hasSurveyFilter = !!params.feedbackId;
-  const isTopTasks = stats?.surveyType === "topTasks";
+  const surveyType = stats?.surveyType;
+
+  const config = surveyType ? SURVEY_CONFIG[surveyType] : null;
 
   return (
     <>
@@ -40,29 +81,9 @@ function DashboardPage() {
           <HStack justify="space-between" align="center" wrap gap="space-8">
             <HStack align="center" gap={{ xs: "space-8", md: "space-16" }}>
               <Heading size="large">Dashboard</Heading>
-              {hasSurveyFilter && stats?.surveyType === "topTasks" && (
-                <Tag variant="info" size="small">
-                  Top Tasks
-                </Tag>
-              )}
-              {hasSurveyFilter && stats?.surveyType === "rating" && (
-                <Tag variant="success" size="small">
-                  Vurdering
-                </Tag>
-              )}
-              {hasSurveyFilter && stats?.surveyType === "discovery" && (
-                <Tag variant="warning" size="small">
-                  Discovery
-                </Tag>
-              )}
-              {hasSurveyFilter && stats?.surveyType === "taskPriority" && (
-                <Tag variant="alt1" size="small">
-                  Task Priority
-                </Tag>
-              )}
-              {hasSurveyFilter && stats?.surveyType === "custom" && (
-                <Tag variant="neutral" size="small">
-                  Custom
+              {hasSurveyFilter && config && (
+                <Tag variant={config.variant} size="small">
+                  {config.label}
                 </Tag>
               )}
             </HStack>
@@ -70,99 +91,11 @@ function DashboardPage() {
 
           <FilterBar />
 
-          {isTopTasks ? (
-            <TopTasksOverview />
+          {/* Type-specific dashboard view */}
+          {config ? (
+            config.dashboard(hasSurveyFilter)
           ) : (
-            <>
-              <StatsCards />
-
-              {/* Timeline charts */}
-              <DashboardGrid columns={{ xs: 1, lg: 2 }}>
-                <DashboardCard padding={{ xs: "space-16", md: "space-24" }}>
-                  <VStack gap="space-16">
-                    <Heading size="small">Antall tilbakemeldinger</Heading>
-                    <div
-                      style={{
-                        height: "clamp(200px, 40vw, 300px)",
-                        width: "100%",
-                      }}
-                    >
-                      <TimelineChart />
-                    </div>
-                  </VStack>
-                </DashboardCard>
-
-                <DashboardCard padding={{ xs: "space-16", md: "space-24" }}>
-                  <VStack gap="space-16">
-                    <Heading size="small">Gjennomsnittlig vurdering</Heading>
-                    <div
-                      style={{
-                        height: "clamp(200px, 40vw, 300px)",
-                        width: "100%",
-                      }}
-                    >
-                      <RatingTrendChart />
-                    </div>
-                  </VStack>
-                </DashboardCard>
-              </DashboardGrid>
-
-              {/* Urgent URLs - full width */}
-              <UrgentUrls />
-
-              {/* Survey-specific statistics - only when a survey is selected */}
-              {hasSurveyFilter && <FieldStatsSection />}
-
-              {/* Apps and devices breakdown - only when no survey filter */}
-              {!hasSurveyFilter && (
-                <DashboardGrid columns={{ xs: 1, md: 2 }}>
-                  <DashboardCard padding={{ xs: "space-16", md: "space-24" }}>
-                    <VStack gap="space-16">
-                      <Heading size="small">Tilbakemeldinger per app</Heading>
-                      <div
-                        style={{
-                          height: "clamp(150px, 30vw, 200px)",
-                          width: "100%",
-                        }}
-                      >
-                        <TopAppsChart />
-                      </div>
-                    </VStack>
-                  </DashboardCard>
-
-                  <DashboardCard padding={{ xs: "space-16", md: "space-24" }}>
-                    <VStack gap="space-16">
-                      <Heading size="small">Enheter</Heading>
-                      <div
-                        style={{
-                          height: "clamp(150px, 30vw, 200px)",
-                          width: "100%",
-                        }}
-                      >
-                        <DeviceBreakdownChart />
-                      </div>
-                    </VStack>
-                  </DashboardCard>
-                </DashboardGrid>
-              )}
-
-              {/* Devices when survey is selected - standalone card */}
-              {hasSurveyFilter && (
-                <DashboardCard padding={{ xs: "space-16", md: "space-24" }}>
-                  <VStack gap="space-16">
-                    <Heading size="small">Enheter</Heading>
-                    <div
-                      style={{
-                        height: "clamp(150px, 30vw, 200px)",
-                        width: "100%",
-                      }}
-                    >
-                      <DeviceBreakdownChart />
-                    </div>
-                  </VStack>
-                </DashboardCard>
-              )}
-            </>
+            <DefaultDashboard hasSurveyFilter={hasSurveyFilter} />
           )}
         </VStack>
       </Box>

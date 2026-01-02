@@ -7,7 +7,7 @@
  * provide meaningful insights. Includes common Norwegian function words,
  * pronouns, conjunctions, and frequently occurring generic words.
  */
-const IGNORED_WORDS = new Set([
+export const IGNORED_WORDS = new Set([
   // ---------------------------------------------------------
   // Norwegian function words (prepositions, conjunctions, etc.)
   // ---------------------------------------------------------

@@ -9,7 +9,7 @@ import type {
   TopTaskStats,
   TopTasksResponse,
 } from "~/types/api";
-import { getTopKeywords } from "~/utils/wordAnalysis";
+import { IGNORED_WORDS, getTopKeywords } from "~/utils/wordAnalysis";
 import { getRating, hasTextResponse } from "./helpers";
 
 // Note: circular dependency if we import mockFeedbackItems here directly while mockData imports stats.
@@ -205,6 +205,20 @@ export function calculateStats(
   let countWithText = 0;
 
   for (const item of filtered) {
+    // Device stats - always track regardless of rating
+    const device = item.context?.deviceType || "unknown";
+    if (!byDeviceAccum[device]) {
+      byDeviceAccum[device] = { total: 0, count: 0 };
+    }
+    byDeviceAccum[device].count++;
+
+    // Pathname stats - always track regardless of rating
+    const pathname = item.context?.pathname || "unknown";
+    if (!byPathnameAccum[pathname]) {
+      byPathnameAccum[pathname] = { total: 0, count: 0 };
+    }
+    byPathnameAccum[pathname].count++;
+
     // Rating
     const rating = getRating(item);
     if (rating !== null) {
@@ -220,21 +234,11 @@ export function calculateStats(
       ratingByDateAccum[date].total += rating;
       ratingByDateAccum[date].count++;
 
-      // Device stats
-      const device = item.context?.deviceType || "unknown";
-      if (!byDeviceAccum[device]) {
-        byDeviceAccum[device] = { total: 0, count: 0 };
-      }
+      // Add rating to device stats
       byDeviceAccum[device].total += rating;
-      byDeviceAccum[device].count++;
 
-      // Pathname stats
-      const pathname = item.context?.pathname || "unknown";
-      if (!byPathnameAccum[pathname]) {
-        byPathnameAccum[pathname] = { total: 0, count: 0 };
-      }
+      // Add rating to pathname stats
       byPathnameAccum[pathname].total += rating;
-      byPathnameAccum[pathname].count++;
     }
 
     // App
@@ -286,6 +290,33 @@ export function calculateStats(
     };
   }
 
+  // Calculate lowestRatingPaths - paths with low average rating (< 3.0) and at least 3 submissions
+  const lowestRatingPaths: Record<
+    string,
+    { count: number; averageRating: number }
+  > = {};
+  const lowRatingPathEntries = Object.entries(byPathnameAccum)
+    .filter(([pathname, data]) => {
+      // Exclude unknown paths and require at least 3 submissions
+      if (pathname === "unknown" || data.count < 3) return false;
+      const avg = data.total / data.count;
+      return avg < 3.0 && avg > 0; // Low rating but not zero (which means no ratings)
+    })
+    .map(([pathname, data]) => ({
+      pathname,
+      count: data.count,
+      averageRating: Math.round((data.total / data.count) * 10) / 10,
+    }))
+    .sort((a, b) => a.averageRating - b.averageRating) // Lowest first
+    .slice(0, 5); // Top 5 worst
+
+  for (const entry of lowRatingPathEntries) {
+    lowestRatingPaths[entry.pathname] = {
+      count: entry.count,
+      averageRating: entry.averageRating,
+    };
+  }
+
   // Calculate new field stats
   const fieldStats = calculateFieldStats(filtered);
 
@@ -301,7 +332,7 @@ export function calculateStats(
     ratingByDate,
     byDevice,
     byPathname,
-    lowestRatingPaths: {},
+    lowestRatingPaths,
     fieldStats,
     period: calculatePeriod(from, to),
     surveyType:
@@ -342,13 +373,11 @@ export function getMockDiscoveryStats(
     const successAnswer = item.answers.find((a) => a.fieldId === "success");
 
     let task = "Ukjent oppgave";
-    if (
-      taskAnswer &&
-      (taskAnswer.fieldType === "SINGLE_CHOICE" ||
-        taskAnswer.fieldType === "TEXT")
-    ) {
-      // Handle text fallback or other types?
-      if (taskAnswer.fieldType === "SINGLE_CHOICE") {
+    if (taskAnswer) {
+      if (taskAnswer.fieldType === "TEXT") {
+        // TEXT type - get the text value directly
+        task = taskAnswer.value.text || "Ukjent oppgave";
+      } else if (taskAnswer.fieldType === "SINGLE_CHOICE") {
         const option = taskAnswer.question.options?.find(
           (o) => o.id === taskAnswer.value.selectedOptionId,
         );
@@ -371,24 +400,8 @@ export function getMockDiscoveryStats(
     };
   });
 
-  // Calculate word frequency
+  // Calculate word frequency using shared IGNORED_WORDS list
   const wordCounts = new Map<string, number>();
-  const stopWords = new Set([
-    "og",
-    "i",
-    "på",
-    "for",
-    "til",
-    "om",
-    "av",
-    "jeg",
-    "min",
-    "mine",
-    "det",
-    "en",
-    "et",
-    "å",
-  ]);
 
   for (const response of responses) {
     const words = response.task
@@ -396,7 +409,7 @@ export function getMockDiscoveryStats(
       .replace(/[^\wæøå\s]/g, "")
       .split(/\s+/);
     for (const word of words) {
-      if (word.length > 2 && !stopWords.has(word)) {
+      if (word.length > 2 && !IGNORED_WORDS.has(word)) {
         wordCounts.set(word, (wordCounts.get(word) || 0) + 1);
       }
     }
@@ -418,7 +431,7 @@ export function getMockDiscoveryStats(
     },
     {
       theme: "Sykemelding",
-      keywords: ["sykmeldt", "sykemelding", "sykefravær"],
+      keywords: ["sykmeldt", "sykemelding", "sykefravær", "sykepenger"],
       examples: [] as string[],
       successCount: 0,
       totalCount: 0,
@@ -439,13 +452,20 @@ export function getMockDiscoveryStats(
     },
   ];
 
+  // Track unique examples to avoid duplicates
+  const usedExamples = new Set<string>();
+
   for (const response of responses) {
     const taskLower = response.task.toLowerCase();
     for (const theme of themes) {
       if (theme.keywords.some((k) => taskLower.includes(k))) {
         theme.totalCount++;
         if (response.success === "yes") theme.successCount++;
-        if (theme.examples.length < 3) theme.examples.push(response.task);
+        // Only add unique examples
+        if (theme.examples.length < 3 && !usedExamples.has(response.task)) {
+          theme.examples.push(response.task);
+          usedExamples.add(response.task);
+        }
         break;
       }
     }

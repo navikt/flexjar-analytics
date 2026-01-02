@@ -49,7 +49,12 @@ export function StatCard({ icon, label, value, subtitle }: StatCardProps) {
   );
 }
 
-export function StatsCards() {
+interface StatsCardsProps {
+  /** Whether to show the rating card. Defaults to false. */
+  showRating?: boolean;
+}
+
+export function StatsCards({ showRating = false }: StatsCardsProps) {
   const { data: stats, isPending } = useStats();
   const { params } = useSearchParams();
   const hasSurveyFilter = !!params.feedbackId;
@@ -85,7 +90,7 @@ export function StatsCards() {
 
     return (
       <DashboardGrid
-        columns={{ xs: 1, sm: 2, md: 4 }}
+        columns={{ xs: 1, sm: 2, md: showRating ? 4 : 3 }}
         gap={{ xs: "space-12", md: "space-16" }}
       >
         <StatCard
@@ -102,21 +107,22 @@ export function StatsCards() {
           subtitle={`Siste ${periodDays} dager`}
         />
 
-        {ratingStats ? (
-          <StatCard
-            icon={<StarIcon fontSize="1.25rem" aria-hidden />}
-            label="Snitt vurdering"
-            value={`${avgRating} ${getRatingEmoji(Number(avgRating))}`}
-            subtitle="av 5 mulige"
-          />
-        ) : (
-          <StatCard
-            icon={<StarIcon fontSize="1.25rem" aria-hidden />}
-            label="Vurdering"
-            value="–"
-            subtitle="Ingen rating"
-          />
-        )}
+        {showRating &&
+          (ratingStats ? (
+            <StatCard
+              icon={<StarIcon fontSize="1.25rem" aria-hidden />}
+              label="Snitt vurdering"
+              value={`${avgRating} ${getRatingEmoji(Number(avgRating))}`}
+              subtitle="av 5 mulige"
+            />
+          ) : (
+            <StatCard
+              icon={<StarIcon fontSize="1.25rem" aria-hidden />}
+              label="Vurdering"
+              value="–"
+              subtitle="Ingen rating"
+            />
+          ))}
 
         <StatCard
           icon={<ChatExclamationmarkIcon fontSize="1.25rem" aria-hidden />}
