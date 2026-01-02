@@ -256,6 +256,35 @@ export function getMockTaskPriorityStats(
   return calculateTaskPriorityStats(mockFeedbackItems, params);
 }
 
+export function getMockSurveyTypeDistribution(): {
+  totalSurveys: number;
+  distribution: { type: string; count: number; percentage: number }[];
+} {
+  const typeCounts: Record<string, number> = {};
+  const seenSurveys = new Set<string>();
+
+  for (const item of mockFeedbackItems) {
+    const surveyId = item.surveyId;
+    if (seenSurveys.has(surveyId)) continue;
+    seenSurveys.add(surveyId);
+
+    const surveyType = item.surveyType || "custom";
+    typeCounts[surveyType] = (typeCounts[surveyType] || 0) + 1;
+  }
+
+  const totalSurveys = seenSurveys.size;
+  const distribution = Object.entries(typeCounts)
+    .map(([type, count]) => ({
+      type,
+      count,
+      percentage:
+        totalSurveys > 0 ? Math.round((count / totalSurveys) * 100) : 0,
+    }))
+    .sort((a, b) => b.count - a.count);
+
+  return { totalSurveys, distribution };
+}
+
 export function getMockSurveysByApp(): Record<string, string[]> {
   const surveysByApp: Record<string, string[]> = {};
 

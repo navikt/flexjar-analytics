@@ -10,7 +10,7 @@ import {
   YAxis,
 } from "recharts";
 import { useTheme } from "~/context/ThemeContext";
-import { useSurveysByApp } from "~/hooks/useSurveysByApp";
+import { useSurveyTypeDistribution } from "~/hooks/useSurveyTypeDistribution";
 import type { SurveyType } from "~/types/api";
 
 /**
@@ -46,21 +46,6 @@ const CHART_COLORS_LIGHT = {
   },
 };
 
-/**
- * Infer survey type from survey ID using naming conventions
- */
-function inferSurveyType(surveyId: string): SurveyType {
-  const id = surveyId.toLowerCase();
-  if (id.includes("top-tasks") || id.includes("toptasks")) return "topTasks";
-  if (id.includes("discovery")) return "discovery";
-  if (id.includes("priority") || id.includes("taskpriority"))
-    return "taskPriority";
-  if (id.includes("vurdering") || id.includes("rating")) return "rating";
-  if (id.includes("custom") || id.includes("complex")) return "custom";
-  // Default to rating for unknown surveys
-  return "rating";
-}
-
 interface SurveyTypeDistributionProps {
   /** Height of the chart in pixels */
   height?: number;
@@ -69,7 +54,7 @@ interface SurveyTypeDistributionProps {
 export function SurveyTypeDistribution({
   height = 200,
 }: SurveyTypeDistributionProps) {
-  const { data: surveysByApp, isPending } = useSurveysByApp();
+  const { data: distribution, isPending } = useSurveyTypeDistribution();
   const { theme } = useTheme();
 
   const colors = theme === "light" ? CHART_COLORS_LIGHT : CHART_COLORS;
@@ -78,38 +63,7 @@ export function SurveyTypeDistribution({
     return <Skeleton variant="rectangle" height={height} />;
   }
 
-  if (!surveysByApp) {
-    return null;
-  }
-
-  // Count surveys by type
-  const typeCounts: Record<SurveyType, number> = {
-    rating: 0,
-    topTasks: 0,
-    discovery: 0,
-    taskPriority: 0,
-    custom: 0,
-  };
-
-  for (const app of Object.keys(surveysByApp)) {
-    for (const surveyId of surveysByApp[app]) {
-      const type = inferSurveyType(surveyId);
-      typeCounts[type]++;
-    }
-  }
-
-  // Transform to chart data, filter out zeros
-  const data = Object.entries(typeCounts)
-    .filter(([, count]) => count > 0)
-    .map(([type, count]) => ({
-      type: type as SurveyType,
-      label: SURVEY_TYPE_CONFIG[type as SurveyType].label,
-      count,
-      color: SURVEY_TYPE_CONFIG[type as SurveyType].color,
-    }))
-    .sort((a, b) => b.count - a.count);
-
-  if (data.length === 0) {
+  if (!distribution || distribution.distribution.length === 0) {
     return (
       <div
         style={{
@@ -125,7 +79,21 @@ export function SurveyTypeDistribution({
     );
   }
 
-  const totalSurveys = data.reduce((sum, d) => sum + d.count, 0);
+  // Transform API data to chart format
+  const data = distribution.distribution.map((item) => {
+    const surveyType = item.type as SurveyType;
+    const config = SURVEY_TYPE_CONFIG[surveyType] || {
+      label: item.type,
+      color: "#6b7280",
+    };
+    return {
+      type: surveyType,
+      label: config.label,
+      count: item.count,
+      percentage: item.percentage,
+      color: config.color,
+    };
+  });
 
   return (
     <ResponsiveContainer width="100%" height={height}>
@@ -148,7 +116,6 @@ export function SurveyTypeDistribution({
           content={({ active, payload }) => {
             if (active && payload && payload.length) {
               const d = payload[0].payload;
-              const percentage = Math.round((d.count / totalSurveys) * 100);
               return (
                 <div
                   style={{
@@ -165,7 +132,7 @@ export function SurveyTypeDistribution({
                   </div>
                   <div>
                     {d.count} {d.count === 1 ? "survey" : "surveys"} (
-                    {percentage}%)
+                    {d.percentage}%)
                   </div>
                 </div>
               );
