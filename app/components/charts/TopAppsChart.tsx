@@ -8,6 +8,7 @@ import {
   YAxis,
 } from "recharts";
 import { useTheme } from "~/context/ThemeContext";
+import { useSearchParams } from "~/hooks/useSearchParams";
 import { useStats } from "~/hooks/useStats";
 
 // Chart colors for dark mode
@@ -36,6 +37,7 @@ const CHART_COLORS_LIGHT = {
 export function TopAppsChart() {
   const { data: stats, isPending } = useStats();
   const { theme } = useTheme();
+  const { setParam } = useSearchParams();
 
   const colors = theme === "light" ? CHART_COLORS_LIGHT : CHART_COLORS;
 
@@ -66,6 +68,10 @@ export function TopAppsChart() {
       </div>
     );
   }
+
+  const handleBarClick = (data: { app: string }) => {
+    setParam("app", data.app);
+  };
 
   return (
     <ResponsiveContainer width="100%" height="100%">
@@ -111,6 +117,15 @@ export function TopAppsChart() {
                   <div>
                     {data.count.toLocaleString("no-NO")} tilbakemeldinger
                   </div>
+                  <div
+                    style={{
+                      fontSize: "0.75rem",
+                      marginTop: "0.25rem",
+                      opacity: 0.7,
+                    }}
+                  >
+                    Klikk for å filtrere
+                  </div>
                 </div>
               );
             }
@@ -121,6 +136,8 @@ export function TopAppsChart() {
           dataKey="count"
           fill={CHART_COLORS.primary}
           radius={[0, 4, 4, 0]}
+          cursor="pointer"
+          onClick={handleBarClick}
         />
       </BarChart>
     </ResponsiveContainer>

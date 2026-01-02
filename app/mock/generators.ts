@@ -148,6 +148,7 @@ export function generateSurveyData(
       submittedAt: timestamp,
       app: config.app,
       surveyId: config.surveyId,
+      surveyType: "rating",
       context: createContext(path, device, width, height),
       tags: poolItem.tags,
       metadata: config.metadataGenerator?.(),

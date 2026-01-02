@@ -84,12 +84,7 @@ export function DefaultDashboard({ hasSurveyFilter }: DefaultDashboardProps) {
           <DashboardCard padding={{ xs: "space-16", md: "space-24" }}>
             <VStack gap="space-16">
               <Heading size="small">Enheter</Heading>
-              <div
-                style={{
-                  height: "clamp(150px, 30vw, 180px)",
-                  width: "100%",
-                }}
-              >
+              <div style={{ width: "100%" }}>
                 <DeviceBreakdownChart />
               </div>
             </VStack>

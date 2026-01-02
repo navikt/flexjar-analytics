@@ -2,6 +2,7 @@ import { Box, HStack, Heading, Tag, Tooltip, VStack } from "@navikt/ds-react";
 import type { TagProps } from "@navikt/ds-react";
 import { createFileRoute } from "@tanstack/react-router";
 import type { ReactNode } from "react";
+import { ActiveFiltersChips } from "~/components/ActiveFiltersChips";
 import { DefaultDashboard } from "~/components/DefaultDashboard";
 import { DiscoveryDashboard } from "~/components/DiscoveryDashboard";
 import { FilterBar } from "~/components/FilterBar";
@@ -134,6 +135,9 @@ function DashboardPage() {
           </HStack>
 
           <FilterBar />
+
+          {/* Active drill-down filters (global) */}
+          <ActiveFiltersChips />
 
           {/* Type-specific dashboard view */}
           {renderDashboardContent()}

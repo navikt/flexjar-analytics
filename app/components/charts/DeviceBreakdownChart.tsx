@@ -7,16 +7,8 @@ import {
   Skeleton,
   VStack,
 } from "@navikt/ds-react";
-import {
-  Bar,
-  BarChart,
-  Cell,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
 import { useTheme } from "~/context/ThemeContext";
+import { useSearchParams } from "~/hooks/useSearchParams";
 import { useStats } from "~/hooks/useStats";
 
 const DEVICE_COLORS: Record<string, string> = {
@@ -70,6 +62,11 @@ export function DeviceBreakdownChart({
 }: DeviceBreakdownChartProps = {}) {
   const { data: stats, isPending } = useStats();
   const { theme } = useTheme();
+  const { setParam } = useSearchParams();
+
+  const handleDeviceClick = (device: string) => {
+    setParam("deviceType", device);
+  };
 
   const colors = theme === "light" ? CHART_COLORS_LIGHT : CHART_COLORS;
 
@@ -124,7 +121,19 @@ export function DeviceBreakdownChart({
           {data.map((d) => {
             const percentage = Math.round((d.count / totalCount) * 100);
             return (
-              <div key={d.device}>
+              <button
+                type="button"
+                key={d.device}
+                onClick={() => handleDeviceClick(d.device)}
+                style={{
+                  cursor: "pointer",
+                  background: "none",
+                  border: "none",
+                  padding: 0,
+                  width: "100%",
+                  textAlign: "left",
+                }}
+              >
                 <HStack justify="space-between" align="center" gap="space-8">
                   <HStack gap="space-8" align="center">
                     <span style={{ fontSize: "1rem" }}>{d.icon}</span>
@@ -159,7 +168,7 @@ export function DeviceBreakdownChart({
                     }}
                   />
                 </div>
-              </div>
+              </button>
             );
           })}
         </VStack>
@@ -170,16 +179,24 @@ export function DeviceBreakdownChart({
         {/* Summary cards */}
         <HStack gap="space-16" wrap>
           {data.map((d) => (
-            <div
+            <button
+              type="button"
               key={d.device}
+              onClick={() => handleDeviceClick(d.device)}
               style={{
                 display: "flex",
                 alignItems: "center",
                 gap: "0.5rem",
                 padding: "0.5rem 0.75rem",
                 background: "var(--ax-bg-neutral-soft)",
+                cursor: "pointer",
                 borderRadius: "6px",
+                borderTop: "none",
+                borderRight: "none",
+                borderBottom: "none",
                 borderLeft: `3px solid ${d.color}`,
+                font: "inherit",
+                textAlign: "left",
               }}
             >
               <span style={{ fontSize: "1.25rem" }}>{d.icon}</span>
@@ -209,73 +226,9 @@ export function DeviceBreakdownChart({
                   )}
                 </HStack>
               </VStack>
-            </div>
+            </button>
           ))}
         </HStack>
-
-        {/* Bar chart - only on desktop */}
-        <div
-          style={{ height: "120px" }}
-          role="img"
-          aria-label={`Enhetsfordeling: ${data.map((d) => `${d.label} ${d.count} svar`).join(", ")}`}
-        >
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={data}
-              layout="vertical"
-              margin={{ top: 0, right: 30, left: 80, bottom: 0 }}
-            >
-              <XAxis type="number" hide />
-              <YAxis
-                type="category"
-                dataKey="label"
-                axisLine={false}
-                tickLine={false}
-                tick={{ fill: colors.text, fontSize: 12 }}
-              />
-              <Tooltip
-                content={({ active, payload }) => {
-                  if (active && payload && payload.length) {
-                    const d = payload[0].payload;
-                    return (
-                      <div
-                        style={{
-                          background: colors.tooltip.bg,
-                          color: colors.tooltip.text,
-                          padding: "0.75rem",
-                          borderRadius: "4px",
-                          border: `1px solid ${colors.tooltip.border}`,
-                          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                        }}
-                      >
-                        <div
-                          style={{ fontWeight: 600, marginBottom: "0.25rem" }}
-                        >
-                          {d.icon} {d.label}
-                        </div>
-                        <div>
-                          {d.count} tilbakemeldinger (
-                          {Math.round((d.count / totalCount) * 100)}%)
-                        </div>
-                        {shouldShowRating && (
-                          <div>
-                            Snittrating: {d.averageRating.toFixed(1)} ⭐
-                          </div>
-                        )}
-                      </div>
-                    );
-                  }
-                  return null;
-                }}
-              />
-              <Bar dataKey="count" radius={[0, 4, 4, 0]}>
-                {data.map((entry) => (
-                  <Cell key={entry.device} fill={entry.color} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
       </Show>
     </VStack>
   );
