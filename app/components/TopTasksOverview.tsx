@@ -19,8 +19,8 @@ import { useState } from "react";
 import { BlockerAnalysis } from "~/components/BlockerAnalysis";
 import { DashboardCard, DashboardGrid } from "~/components/DashboardComponents";
 import { DeviceBreakdownSection } from "~/components/DeviceBreakdownSection";
+import { TimelineSection } from "~/components/TimelineSection";
 import { TaskQuadrantChart } from "~/components/charts/TaskQuadrantChart";
-import { TopTasksTimelineChart } from "~/components/charts/TopTasksTimelineChart";
 import { useTopTasksStats } from "~/hooks/useTopTasksStats";
 import { StatCard } from "./StatsCards";
 
@@ -78,14 +78,7 @@ export function TopTasksOverview() {
         />
       </DashboardGrid>
 
-      <DashboardCard padding={{ xs: "space-16", md: "space-24" }}>
-        <Box.New paddingBlock="0 space-16">
-          <Heading size="small">Suksessrate over tid</Heading>
-        </Box.New>
-        <div style={{ height: "clamp(200px, 40vw, 300px)", width: "100%" }}>
-          <TopTasksTimelineChart />
-        </div>
-      </DashboardCard>
+      <TimelineSection title="Suksessrate over tid" variant="topTasks" />
 
       <DashboardCard padding={{ xs: "space-16", md: "space-24" }}>
         <Box.New paddingBlock="0 space-16">

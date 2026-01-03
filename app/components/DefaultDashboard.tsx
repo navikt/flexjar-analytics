@@ -3,11 +3,11 @@ import { DashboardCard, DashboardGrid } from "~/components/DashboardComponents";
 import { DeviceBreakdownSection } from "~/components/DeviceBreakdownSection";
 import { FieldStatsSection } from "~/components/FieldStatsSection";
 import { StatsCards } from "~/components/StatsCards";
+import { TimelineSection } from "~/components/TimelineSection";
 import { UrgentUrls } from "~/components/UrgentUrls";
 import { DeviceBreakdownChart } from "~/components/charts/DeviceBreakdownChart";
 import { RatingTrendChart } from "~/components/charts/RatingTrendChart";
 import { SurveyTypeDistribution } from "~/components/charts/SurveyTypeDistribution";
-import { TimelineChart } from "~/components/charts/TimelineChart";
 import { TopAppsChart } from "~/components/charts/TopAppsChart";
 
 interface DefaultDashboardProps {
@@ -24,19 +24,7 @@ export function DefaultDashboard({ hasSurveyFilter }: DefaultDashboardProps) {
 
       {/* Timeline charts */}
       <DashboardGrid columns={{ xs: 1, lg: 2 }}>
-        <DashboardCard padding={{ xs: "space-16", md: "space-24" }}>
-          <VStack gap="space-16">
-            <Heading size="small">Antall tilbakemeldinger</Heading>
-            <div
-              style={{
-                height: "clamp(200px, 40vw, 300px)",
-                width: "100%",
-              }}
-            >
-              <TimelineChart />
-            </div>
-          </VStack>
-        </DashboardCard>
+        <TimelineSection title="Antall tilbakemeldinger" />
 
         {/* Rating trend chart */}
         <DashboardCard padding={{ xs: "space-16", md: "space-24" }}>

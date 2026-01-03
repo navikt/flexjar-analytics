@@ -1,11 +1,9 @@
-import { Heading, VStack } from "@navikt/ds-react";
-import { DashboardCard } from "~/components/DashboardComponents";
 import { DeviceBreakdownSection } from "~/components/DeviceBreakdownSection";
 import {
   TaskPriorityAnalysis,
   TaskPriorityAnalysisSkeleton,
 } from "~/components/TaskPriorityAnalysis";
-import { TimelineChart } from "~/components/charts/TimelineChart";
+import { TimelineSection } from "~/components/TimelineSection";
 import { useTaskPriorityStats } from "~/hooks/useTaskPriorityStats";
 
 /**
@@ -24,14 +22,7 @@ export function TaskPriorityDashboard() {
       )}
 
       {/* Timeline */}
-      <DashboardCard padding={{ xs: "space-16", md: "space-24" }}>
-        <VStack gap="space-16">
-          <Heading size="small">Stemmer over tid</Heading>
-          <div style={{ height: "clamp(200px, 40vw, 300px)", width: "100%" }}>
-            <TimelineChart />
-          </div>
-        </VStack>
-      </DashboardCard>
+      <TimelineSection title="Stemmer over tid" />
 
       {/* Device breakdown */}
       <DeviceBreakdownSection />
