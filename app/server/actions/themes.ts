@@ -114,7 +114,12 @@ export const updateThemeServerFn = createServerFn({ method: "POST" })
       await mockDelay();
       const theme = mockThemes.find((t) => t.id === themeId);
       if (!theme) throw new Error("Theme not found");
-      Object.assign(theme, updateData);
+
+      // Filter out undefined values to prevent overwriting existing data
+      const cleanUpdateData = Object.fromEntries(
+        Object.entries(updateData).filter(([_, v]) => v !== undefined),
+      );
+      Object.assign(theme, cleanUpdateData);
       return theme;
     }
 

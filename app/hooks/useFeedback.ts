@@ -48,6 +48,7 @@ export function useFeedback() {
       params.lavRating,
       params.pathname,
       params.deviceType,
+      params.theme,
     ],
     queryFn: () =>
       fetchFeedbackServerFn({
@@ -65,6 +66,7 @@ export function useFeedback() {
           lavRating: params.lavRating,
           pathname: params.pathname,
           deviceType: params.deviceType,
+          theme: params.theme,
         },
       }),
     staleTime: 10000, // 10 seconds

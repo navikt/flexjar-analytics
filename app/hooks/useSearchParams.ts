@@ -20,6 +20,9 @@ export interface SearchParams {
 
   stjerne?: string;
   ubehandlet?: string;
+
+  /** Filter by theme (for discovery drill-down) */
+  theme?: string;
 }
 
 // Store for managing search params reactively

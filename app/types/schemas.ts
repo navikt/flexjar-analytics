@@ -29,6 +29,8 @@ export const FeedbackParamsSchema = z.object({
   lavRating: z.string().optional(),
   pathname: z.string().optional(),
   deviceType: z.string().optional(),
+  /** Filter by theme (themeId or 'uncategorized') */
+  theme: z.string().optional(),
 });
 
 export type FeedbackParams = z.infer<typeof FeedbackParamsSchema>;

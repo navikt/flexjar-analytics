@@ -1,6 +1,7 @@
 import { XMarkIcon } from "@navikt/aksel-icons";
 import { HStack, Tag } from "@navikt/ds-react";
 import { useSearchParams } from "~/hooks/useSearchParams";
+import { useThemes } from "~/hooks/useThemes";
 
 interface FilterChip {
   key: string;
@@ -26,6 +27,7 @@ const DEVICE_LABELS: Record<string, string> = {
  */
 export function ActiveFiltersChips() {
   const { params, setParam } = useSearchParams();
+  const { themes } = useThemes();
 
   const chips: FilterChip[] = [];
 
@@ -56,6 +58,22 @@ export function ActiveFiltersChips() {
       label: "Rating",
       value: "Lav (1-2)",
       onRemove: () => setParam("lavRating", undefined),
+    });
+  }
+
+  // Theme filter - from discovery drill-down
+  if (params.theme) {
+    // Look up theme name by ID
+    let themeName = "Usortert";
+    if (params.theme !== "uncategorized") {
+      const matchedTheme = themes.find((t) => t.id === params.theme);
+      themeName = matchedTheme?.name || params.theme;
+    }
+    chips.push({
+      key: "theme",
+      label: "Tema",
+      value: themeName,
+      onRemove: () => setParam("theme", undefined),
     });
   }
 

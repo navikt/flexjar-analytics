@@ -1,7 +1,7 @@
 import {
-  CogIcon,
   InformationSquareIcon,
   MagnifyingGlassIcon,
+  PencilIcon,
   PlusIcon,
 } from "@navikt/aksel-icons";
 import {
@@ -17,6 +17,7 @@ import {
 import { useCallback, useState } from "react";
 import { DashboardCard } from "~/components/DashboardComponents";
 import { ThemeModal } from "~/components/ThemeModal";
+import { WordPopover } from "~/components/WordPopover";
 import { useThemes } from "~/hooks/useThemes";
 import type {
   CreateThemeInput,
@@ -50,6 +51,11 @@ export function DiscoveryAnalysis({ data }: DiscoveryAnalysisProps) {
   const [editingTheme, setEditingTheme] = useState<TextTheme | undefined>();
   const [initialKeywords, setInitialKeywords] = useState<string[]>([]);
 
+  // Popover state for categorized words
+  const [popoverAnchor, setPopoverAnchor] = useState<HTMLElement | null>(null);
+  const [popoverWord, setPopoverWord] = useState<string>("");
+  const [popoverTheme, setPopoverTheme] = useState<TextTheme | null>(null);
+
   // Open modal for creating new theme
   const handleOpenCreate = useCallback((keyword?: string) => {
     setEditingTheme(undefined);
@@ -62,6 +68,8 @@ export function DiscoveryAnalysis({ data }: DiscoveryAnalysisProps) {
     setEditingTheme(theme);
     setInitialKeywords([]);
     setIsModalOpen(true);
+    // Close popover if open
+    setPopoverAnchor(null);
   }, []);
 
   // Handle modal submit
@@ -90,29 +98,111 @@ export function DiscoveryAnalysis({ data }: DiscoveryAnalysisProps) {
     [deleteTheme],
   );
 
+  // Combine defined themes with stats
+  const allThemesDisplay = definedThemes.map((definedTheme) => {
+    const stats = themes.find((t) => t.theme === definedTheme.name);
+    return {
+      theme: definedTheme.name,
+      // Use stats if available, otherwise defaults
+      count: stats?.count ?? 0,
+      successRate: stats?.successRate ?? 0,
+      examples: stats?.examples ?? [],
+      // Keep reference to the defined theme object for editing
+      definedTheme: definedTheme as TextTheme | undefined,
+    };
+  });
+
+  // Also include themes from stats that might not be in definedThemes (e.g. "Annet" or deleted timestamps)
+  // mostly "Annet" which shouldn't be editable usually, but good to show
+  for (const statTheme of themes) {
+    if (!definedThemes.some((dt) => dt.name === statTheme.theme)) {
+      allThemesDisplay.push({
+        theme: statTheme.theme,
+        count: statTheme.count,
+        successRate: statTheme.successRate,
+        examples: statTheme.examples,
+        definedTheme: undefined,
+      });
+    }
+  }
+
+  // Sort by count (descending), then by name
+  // Sort by count (descending), then by name, but keep "Annet" at the bottom
+  allThemesDisplay.sort((a, b) => {
+    // Always put "Annet" at the bottom
+    if (a.theme === "Annet") return 1;
+    if (b.theme === "Annet") return -1;
+
+    if (b.count !== a.count) return b.count - a.count;
+    // Guard against undefined names (e.g. from corrupted state)
+    const nameA = a.theme || "";
+    const nameB = b.theme || "";
+    return nameA.localeCompare(nameB);
+  });
+
   // Handle word click from word cloud
   const handleWordClick = useCallback(
-    (word: string) => {
-      handleOpenCreate(word);
+    (word: string, event: React.MouseEvent<HTMLButtonElement>) => {
+      // Check if word belongs to an existing theme
+      const existingTheme = definedThemes.find((t) =>
+        t.keywords.some((k) => k.toLowerCase() === word.toLowerCase()),
+      );
+
+      if (existingTheme) {
+        // Show popover for categorized words
+        setPopoverWord(word);
+        setPopoverTheme(existingTheme);
+        setPopoverAnchor(event.currentTarget);
+      } else {
+        handleOpenCreate(word);
+      }
     },
-    [handleOpenCreate],
+    [definedThemes, handleOpenCreate],
   );
 
-  if (totalSubmissions === 0) {
+  // Handle removing word from theme (via popover)
+  const handleRemoveWord = useCallback(
+    (themeId: string, word: string) => {
+      const theme = definedThemes.find((t) => t.id === themeId);
+      if (!theme) return;
+
+      const updatedKeywords = theme.keywords.filter(
+        (k) => k.toLowerCase() !== word.toLowerCase(),
+      );
+      updateTheme({ themeId, keywords: updatedKeywords });
+    },
+    [definedThemes, updateTheme],
+  );
+
+  // Get theme for a word (for coloring)
+  const getThemeForWord = useCallback(
+    (word: string): TextTheme | undefined => {
+      return definedThemes.find((t) =>
+        t.keywords.some((k) => k.toLowerCase() === word.toLowerCase()),
+      );
+    },
+    [definedThemes],
+  );
+
+  if (totalSubmissions === 0 && definedThemes.length === 0) {
     return (
       <DashboardCard>
         <BodyShort textColor="subtle">
           Ingen discovery-data tilgjengelig ennå. Data vises når brukere
           begynner å svare på discovery-surveyen.
         </BodyShort>
+        <Button
+          variant="secondary"
+          size="small"
+          icon={<PlusIcon aria-hidden />}
+          onClick={() => handleOpenCreate()}
+          style={{ marginTop: "1rem" }}
+        >
+          Opprett første tema
+        </Button>
       </DashboardCard>
     );
   }
-
-  // Map discovery themes to their ID if possible to allow editing
-  const getThemeObject = (themeName: string) => {
-    return definedThemes.find((t) => t.name === themeName);
-  };
 
   return (
     <>
@@ -149,7 +239,7 @@ export function DiscoveryAnalysis({ data }: DiscoveryAnalysisProps) {
             textColor="subtle"
             style={{ marginTop: "0.25rem" }}
           >
-            Klikk på et ord for å lage tema
+            Klikk på et ord for å lage tema eller redigere eksisterende
           </BodyShort>
         </Box.New>
 
@@ -166,42 +256,52 @@ export function DiscoveryAnalysis({ data }: DiscoveryAnalysisProps) {
               // Scale font size based on frequency
               const maxCount = wordFrequency[0]?.count ?? 1;
               const scale = 0.75 + (count / maxCount) * 0.75; // 0.75 to 1.5 rem
+              const wordTheme = getThemeForWord(word);
+              const isCategorized = !!wordTheme;
+
+              // Base color: use theme color if categorized, otherwise neutral based on rank
+              const baseColor = isCategorized
+                ? wordTheme.color
+                : index < 3
+                  ? "var(--ax-text-default)"
+                  : index < 10
+                    ? "var(--ax-text-neutral-subtle)"
+                    : "var(--ax-text-muted)";
 
               return (
                 <button
                   key={word}
                   type="button"
-                  onClick={() => handleWordClick(word)}
+                  onClick={(e) => handleWordClick(word, e)}
                   style={{
                     fontSize: `${scale}rem`,
                     fontWeight: index < 5 ? 600 : 400,
-                    color:
-                      index < 3
-                        ? "var(--ax-text-default)"
-                        : index < 10
-                          ? "var(--ax-text-neutral-subtle)"
-                          : "var(--ax-text-muted)",
+                    color: baseColor,
                     cursor: "pointer",
                     transition: "all 0.2s ease",
-                    background: "none",
+                    background: isCategorized ? `${wordTheme.color}15` : "none",
                     border: "none",
                     padding: "0.125rem 0.25rem",
                     borderRadius: "var(--ax-border-radius-small)",
                   }}
-                  title={`${word}: ${count} ganger – klikk for å opprette tema`}
+                  title={
+                    isCategorized
+                      ? `${word}: tilhører "${wordTheme.name}" – klikk for å administrere`
+                      : `${word}: ${count} ganger – klikk for å kategorisere`
+                  }
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor =
-                      "var(--ax-bg-neutral-soft-hover)";
-                    e.currentTarget.style.color = "var(--ax-text-action)";
+                    e.currentTarget.style.backgroundColor = isCategorized
+                      ? `${wordTheme.color || "#888"}30`
+                      : "var(--ax-bg-neutral-soft-hover)";
+                    e.currentTarget.style.color = isCategorized
+                      ? wordTheme.color || "#888"
+                      : "var(--ax-text-action)";
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "transparent";
-                    e.currentTarget.style.color =
-                      index < 3
-                        ? "var(--ax-text-default)"
-                        : index < 10
-                          ? "var(--ax-text-neutral-subtle)"
-                          : "var(--ax-text-muted)";
+                    e.currentTarget.style.backgroundColor = isCategorized
+                      ? `${wordTheme.color || "#888"}15`
+                      : "transparent";
+                    e.currentTarget.style.color = baseColor || "";
                   }}
                 >
                   {word}
@@ -236,10 +336,10 @@ export function DiscoveryAnalysis({ data }: DiscoveryAnalysisProps) {
             <Button
               variant="tertiary"
               size="small"
-              icon={<CogIcon aria-hidden />}
+              icon={<PlusIcon aria-hidden />}
               onClick={() => handleOpenCreate()}
             >
-              Administrer temaer
+              Opprett nytt tema
             </Button>
           </HStack>
           <BodyShort
@@ -247,23 +347,41 @@ export function DiscoveryAnalysis({ data }: DiscoveryAnalysisProps) {
             textColor="subtle"
             style={{ marginTop: "0.25rem" }}
           >
-            {themes.length > 0
-              ? `${themes.length} temaer funnet basert på nøkkelord`
-              : "Ingen temaer definert ennå. Klikk på 'Administrer temaer' for å komme i gang."}
+            {allThemesDisplay.length > 0
+              ? `${allThemesDisplay.length} temaer definert`
+              : "Ingen temaer definert ennå."}
           </BodyShort>
         </Box.New>
 
         <Box.New padding={{ xs: "space-16", md: "space-24" }}>
-          {themes.length > 0 ? (
+          {allThemesDisplay.length > 0 ? (
             <VStack gap="space-16">
-              {themes.map((theme) => {
-                const themeObj = getThemeObject(theme.theme);
+              {allThemesDisplay.map((theme) => {
+                const themeId =
+                  theme.definedTheme?.id ??
+                  (theme.theme === "Annet" ? "uncategorized" : null);
                 return (
                   <ThemeCard
                     key={theme.theme}
                     theme={theme}
                     onClick={
-                      themeObj ? () => handleOpenEdit(themeObj) : undefined
+                      themeId
+                        ? () => {
+                            // Preserve existing search params when navigating
+                            const url = new URL(window.location.href);
+                            url.pathname = "/feedback";
+                            url.searchParams.set("theme", themeId);
+                            window.location.href = url.toString();
+                          }
+                        : undefined
+                    }
+                    onEdit={
+                      theme.definedTheme && theme.theme !== "Annet"
+                        ? () => {
+                            const dt = theme.definedTheme;
+                            if (dt) handleOpenEdit(dt);
+                          }
+                        : undefined
                     }
                   />
                 );
@@ -348,6 +466,19 @@ export function DiscoveryAnalysis({ data }: DiscoveryAnalysisProps) {
         </Box.New>
       </DashboardCard>
 
+      {/* Word Popover for categorized words */}
+      {popoverTheme && (
+        <WordPopover
+          word={popoverWord}
+          theme={popoverTheme}
+          anchorEl={popoverAnchor}
+          isOpen={!!popoverAnchor}
+          onClose={() => setPopoverAnchor(null)}
+          onRemoveWord={handleRemoveWord}
+          onEditTheme={handleOpenEdit}
+        />
+      )}
+
       {/* Theme Modal */}
       <ThemeModal
         isOpen={isModalOpen}
@@ -357,15 +488,27 @@ export function DiscoveryAnalysis({ data }: DiscoveryAnalysisProps) {
         isSubmitting={isCreating || isUpdating}
         theme={editingTheme}
         initialKeywords={initialKeywords}
+        availableWords={wordFrequency.map((w) => w.word)}
+        allThemes={definedThemes}
       />
     </>
   );
 }
 
+// Local type for display
+interface DiscoveryThemeDisplay extends DiscoveryTheme {
+  definedTheme?: TextTheme;
+}
+
 function ThemeCard({
   theme,
   onClick,
-}: { theme: DiscoveryTheme; onClick?: () => void }) {
+  onEdit,
+}: {
+  theme: DiscoveryThemeDisplay;
+  onClick?: () => void;
+  onEdit?: () => void;
+}) {
   const successPercent = Math.round(theme.successRate * 100);
 
   return (
@@ -388,11 +531,13 @@ function ThemeCard({
         backgroundColor: "var(--ax-bg-neutral-soft)",
         borderRadius: "var(--ax-border-radius-medium)",
         borderLeft: `3px solid ${
-          successPercent >= 80
-            ? "var(--ax-status-success)"
-            : successPercent >= 50
-              ? "var(--ax-status-warning)" // Fixed: was "var(--ax-status-warning)"
-              : "var(--ax-status-danger)"
+          theme.definedTheme?.color
+            ? theme.definedTheme.color
+            : successPercent >= 80
+              ? "var(--ax-status-success)"
+              : successPercent >= 50
+                ? "var(--ax-status-warning)"
+                : "var(--ax-status-danger)"
         }`,
         cursor: onClick ? "pointer" : "default",
         transition: "background-color 0.2s ease",
@@ -408,7 +553,19 @@ function ThemeCard({
       }}
     >
       <HStack justify="space-between" align="baseline">
-        <BodyShort weight="semibold">{theme.theme}</BodyShort>
+        <HStack align="center" gap="space-8">
+          <BodyShort weight="semibold">
+            {theme.theme === "Annet" ? "Usortert" : theme.theme}
+          </BodyShort>
+          {theme.theme === "Annet" && (
+            <Tooltip content="Tilbakemeldinger som ikke matcher noen av de definerte temaene.">
+              <InformationSquareIcon
+                style={{ color: "var(--ax-text-neutral-subtle)" }}
+                aria-hidden
+              />
+            </Tooltip>
+          )}
+        </HStack>
         <HStack gap="space-8">
           <BodyShort size="small" textColor="subtle">
             {theme.count} svar
@@ -443,6 +600,24 @@ function ThemeCard({
             ))}
           </ul>
         </div>
+      )}
+
+      {/* Edit button at bottom-right, outside of the main content flow */}
+      {onEdit && (
+        <HStack justify="end" style={{ marginTop: "0.75rem" }}>
+          <Button
+            variant="tertiary"
+            size="xsmall"
+            icon={<PencilIcon aria-hidden />}
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit();
+            }}
+            title="Rediger tema"
+          >
+            Rediger
+          </Button>
+        </HStack>
       )}
     </div>
   );

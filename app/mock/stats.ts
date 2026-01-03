@@ -17,6 +17,47 @@ import { getRating, hasTextResponse } from "./helpers";
 // To avoid this, we will accept items as arguments in the functions.
 
 // ============================================
+// Norwegian Stemmer
+// ============================================
+
+/**
+ * Simple Norwegian stemmer that removes common suffixes.
+ * Handles definite articles, plurals, and verb forms.
+ * Mirrors the backend implementation in DiscoveryService.kt
+ */
+function stemNorwegian(word: string): string {
+  const stem = word.toLowerCase().trim();
+
+  // Order matters: check longer suffixes first
+  const suffixes = [
+    // Definite plural
+    "ene",
+    "ane",
+    // Definite singular
+    "en",
+    "et",
+    "a",
+    // Indefinite plural
+    "er",
+    "ar",
+    // Verb past tense
+    "te",
+    "de",
+    // Adjective endings
+    "ere",
+    "est",
+  ];
+
+  for (const suffix of suffixes) {
+    if (stem.length > suffix.length + 2 && stem.endsWith(suffix)) {
+      return stem.slice(0, -suffix.length);
+    }
+  }
+
+  return stem;
+}
+
+// ============================================
 // Stats calculation
 // ============================================
 
@@ -537,13 +578,20 @@ export function getMockDiscoveryStats(
   const sortedThemes = [...themes].sort((a, b) => b.priority - a.priority);
 
   for (const response of responses) {
-    const taskLower = response.task.toLowerCase();
+    const taskWords = response.task
+      .toLowerCase()
+      .replace(/[^\wæøå\s]/g, "")
+      .split(/\s+/)
+      .map(stemNorwegian);
     let matched = false;
 
     for (const theme of sortedThemes) {
-      if (theme.keywords.length === 0) continue; // Skip "Annet" in first pass
+      if (!theme.keywords || theme.keywords.length === 0) continue; // Skip "Annet" in first pass
 
-      if (theme.keywords.some((k) => taskLower.includes(k.toLowerCase()))) {
+      const keywordStems = theme.keywords.map((k) =>
+        stemNorwegian(k.toLowerCase()),
+      );
+      if (keywordStems.some((kStem) => taskWords.includes(kStem))) {
         theme.totalCount++;
         if (response.success === "yes") theme.successCount++;
         if (response.success === "partial") theme.partialCount++;
