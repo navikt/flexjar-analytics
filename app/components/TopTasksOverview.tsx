@@ -1,9 +1,4 @@
-import {
-  ChatIcon,
-  CheckmarkCircleIcon,
-  XMarkIcon,
-  XMarkOctagonIcon,
-} from "@navikt/aksel-icons";
+import { XMarkIcon } from "@navikt/aksel-icons";
 import {
   BodyShort,
   Box,
@@ -17,12 +12,12 @@ import {
 } from "@navikt/ds-react";
 import { useState } from "react";
 import { BlockerAnalysis } from "~/components/BlockerAnalysis";
-import { DashboardCard, DashboardGrid } from "~/components/DashboardComponents";
+import { DashboardCard } from "~/components/DashboardComponents";
 import { DeviceBreakdownSection } from "~/components/DeviceBreakdownSection";
 import { TimelineSection } from "~/components/TimelineSection";
+import { TopTasksStatsCards } from "~/components/TopTasksStatsCards";
 import { TaskQuadrantChart } from "~/components/charts/TaskQuadrantChart";
 import { useTopTasksStats } from "~/hooks/useTopTasksStats";
-import { StatCard } from "./StatsCards";
 
 export function TopTasksOverview() {
   const { data, isLoading } = useTopTasksStats();
@@ -30,13 +25,6 @@ export function TopTasksOverview() {
 
   if (isLoading) return null;
   if (!data) return null;
-
-  const total = data.totalSubmissions;
-  const totalSuccess = data.tasks.reduce(
-    (acc, task) => acc + task.successCount,
-    0,
-  );
-  const successRate = total > 0 ? Math.round((totalSuccess / total) * 100) : 0;
 
   // Sort tasks by problem degree (high volume + low success = high priority)
   const sortedTasks = [...data.tasks].sort((a, b) => {
@@ -52,31 +40,7 @@ export function TopTasksOverview() {
 
   return (
     <>
-      <DashboardGrid
-        columns={{ xs: 2, sm: 3 }}
-        gap={{ xs: "space-12", md: "space-16" }}
-      >
-        <StatCard
-          icon={<ChatIcon fontSize="1.25rem" aria-hidden />}
-          label="Antall svar"
-          value={total.toLocaleString("no-NO")}
-          subtitle="Totalt"
-        />
-
-        <StatCard
-          icon={<CheckmarkCircleIcon fontSize="1.25rem" aria-hidden />}
-          label="Suksessrate"
-          value={`${successRate}%`}
-          subtitle="Gjennomsnitt"
-        />
-
-        <StatCard
-          icon={<XMarkOctagonIcon fontSize="1.25rem" aria-hidden />}
-          label="Feilrate"
-          value={`${100 - successRate}%`}
-          subtitle="Ikke fullført"
-        />
-      </DashboardGrid>
+      <TopTasksStatsCards data={data} />
 
       <TimelineSection title="Suksessrate over tid" variant="topTasks" />
 
