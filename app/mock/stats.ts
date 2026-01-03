@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import { mockThemes } from "~/mock/themes";
 import type {
   Answer,
+  BlockerResponse,
   DiscoveryResponse,
   FeedbackDto,
   FeedbackStats,
@@ -903,5 +904,159 @@ export function getMockTopTasksStats(
     overallTpi,
     avgCompletionTimeMs,
     otherTasksPercentage,
+  };
+}
+
+/**
+ * Get blocker pattern statistics for Top Tasks.
+ * Uses the same text analysis engine as Discovery, but analyzes blocker text
+ * and uses themes with analysisContext = "BLOCKER".
+ */
+export function getMockBlockerStats(
+  items: FeedbackDto[],
+  params: URLSearchParams,
+): BlockerResponse {
+  // Filter for Top Tasks items that have blockers (failed or partial tasks)
+  const filtered = applyFiltersToItems(items, params).filter(
+    (item) => item.surveyType === "topTasks",
+  );
+
+  // Extract blocker responses
+  const blockerResponses: Array<{
+    blocker: string;
+    task: string;
+    submittedAt: string;
+  }> = [];
+
+  for (const item of filtered) {
+    const blockerAnswer = item.answers.find(
+      (a) => a.fieldId === "blocker" || a.fieldId === "hindring",
+    );
+    const taskAnswer = item.answers.find(
+      (a) => a.fieldId === "task" || a.fieldId === "category",
+    );
+
+    if (blockerAnswer?.fieldType === "TEXT" && blockerAnswer.value.text) {
+      const taskOption = taskAnswer?.question.options?.find(
+        (o) =>
+          taskAnswer.fieldType === "SINGLE_CHOICE" &&
+          o.id === taskAnswer.value.selectedOptionId,
+      );
+      const task = taskOption?.label ?? "Ukjent oppgave";
+
+      blockerResponses.push({
+        blocker: blockerAnswer.value.text,
+        task,
+        submittedAt: item.submittedAt,
+      });
+    }
+  }
+
+  // Calculate word frequency from blocker text
+  const wordCounts = new Map<string, number>();
+  for (const response of blockerResponses) {
+    const words = response.blocker
+      .toLowerCase()
+      .replace(/[^\wæøå\s]/g, "")
+      .split(/\s+/);
+    for (const word of words) {
+      if (word.length > 2 && !IGNORED_WORDS.has(word)) {
+        wordCounts.set(word, (wordCounts.get(word) || 0) + 1);
+      }
+    }
+  }
+
+  const wordFrequency = Array.from(wordCounts.entries())
+    .map(([word, count]) => ({ word, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 30);
+
+  // Get blocker themes only (analysisContext = "BLOCKER")
+  const blockerThemes = mockThemes.filter(
+    (t) => t.analysisContext === "BLOCKER",
+  );
+
+  // Theme clustering using inclusive matching (multi-tagging)
+  const themeStats = blockerThemes.map((t) => ({
+    theme: t.name,
+    themeId: t.id,
+    color: t.color,
+    examples: [] as string[],
+    count: 0,
+    usedExamples: new Set<string>(),
+  }));
+
+  // Add "Annet" for uncategorized blockers
+  themeStats.push({
+    theme: "Annet",
+    themeId: "blocker-annet",
+    color: "#9ca3af",
+    examples: [],
+    count: 0,
+    usedExamples: new Set<string>(),
+  });
+
+  for (const response of blockerResponses) {
+    const blockerWords = response.blocker
+      .toLowerCase()
+      .replace(/[^\wæøå\s]/g, "")
+      .split(/\s+/)
+      .map(stemNorwegian);
+
+    let matchedAny = false;
+
+    for (const themeStat of themeStats) {
+      if (themeStat.themeId === "blocker-annet") continue;
+
+      const theme = blockerThemes.find((t) => t.id === themeStat.themeId);
+      if (!theme) continue;
+
+      const keywordStems = theme.keywords.map((k) =>
+        stemNorwegian(k.toLowerCase()),
+      );
+
+      if (keywordStems.some((kStem) => blockerWords.includes(kStem))) {
+        themeStat.count++;
+        if (
+          themeStat.examples.length < 3 &&
+          !themeStat.usedExamples.has(response.blocker)
+        ) {
+          themeStat.examples.push(response.blocker);
+          themeStat.usedExamples.add(response.blocker);
+        }
+        matchedAny = true;
+        // NO BREAK - continue for inclusive matching
+      }
+    }
+
+    // Add to "Annet" if no theme matched
+    if (!matchedAny) {
+      const annetStat = themeStats.find((t) => t.themeId === "blocker-annet");
+      if (annetStat) {
+        annetStat.count++;
+        if (
+          annetStat.examples.length < 3 &&
+          !annetStat.usedExamples.has(response.blocker)
+        ) {
+          annetStat.examples.push(response.blocker);
+          annetStat.usedExamples.add(response.blocker);
+        }
+      }
+    }
+  }
+
+  return {
+    totalBlockers: blockerResponses.length,
+    wordFrequency,
+    themes: themeStats
+      .filter((t) => t.count > 0)
+      .map(({ usedExamples, ...rest }) => rest) // Remove internal Set
+      .sort((a, b) => b.count - a.count),
+    recentBlockers: blockerResponses
+      .sort(
+        (a, b) =>
+          new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime(),
+      )
+      .slice(0, 10),
   };
 }

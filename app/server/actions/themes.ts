@@ -17,7 +17,7 @@ import { handleApiResponse } from "../fetchUtils";
 // ============================================
 
 const ThemeIdSchema = z.object({
-  themeId: z.string().uuid(),
+  themeId: z.string(), // Allow non-UUID IDs for blocker themes
 });
 
 const CreateThemeSchema = z.object({
@@ -25,14 +25,16 @@ const CreateThemeSchema = z.object({
   keywords: z.array(z.string()).min(1),
   color: z.string().optional(),
   priority: z.number().optional(),
+  analysisContext: z.enum(["GENERAL_FEEDBACK", "BLOCKER"]).optional(),
 });
 
 const UpdateThemeSchema = z.object({
-  themeId: z.string().uuid(),
+  themeId: z.string(), // Allow non-UUID IDs for blocker themes
   name: z.string().optional(),
   keywords: z.array(z.string()).optional(),
   color: z.string().optional(),
   priority: z.number().optional(),
+  analysisContext: z.enum(["GENERAL_FEEDBACK", "BLOCKER"]).optional(),
 });
 
 import { mockThemes } from "~/mock/themes";
@@ -81,6 +83,7 @@ export const createThemeServerFn = createServerFn({ method: "POST" })
         keywords: data.keywords,
         color: data.color,
         priority: data.priority ?? 0,
+        analysisContext: data.analysisContext ?? "GENERAL_FEEDBACK",
       };
       mockThemes.push(newTheme);
       return newTheme;

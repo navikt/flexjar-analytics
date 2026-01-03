@@ -17,6 +17,9 @@ export { fetchTopTasksServerFn } from "./fetchTopTasks";
 // Discovery
 export { fetchDiscoveryServerFn } from "./fetchDiscovery";
 
+// Blocker Patterns
+export { fetchBlockerServerFn } from "./fetchBlocker";
+
 // Task Priority
 export { fetchTaskPriorityServerFn } from "./fetchTaskPriority";
 

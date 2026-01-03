@@ -386,7 +386,6 @@ export function ThemeModal({
           {isEditing && onDelete && (
             <Button
               variant="danger"
-              size="small"
               icon={<TrashIcon aria-hidden />}
               onClick={handleDelete}
               loading={isSubmitting}

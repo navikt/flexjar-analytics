@@ -53,6 +53,15 @@ export const DiscoveryParamsSchema = z.object({
 
 export type DiscoveryParams = z.infer<typeof DiscoveryParamsSchema>;
 
+export const BlockerParamsSchema = z.object({
+  surveyId: z.string().optional(),
+  from: z.string().optional(),
+  to: z.string().optional(),
+  deviceType: z.string().optional(),
+});
+
+export type BlockerParams = z.infer<typeof BlockerParamsSchema>;
+
 export const TaskPriorityParamsSchema = z.object({
   surveyId: z.string().optional(),
   from: z.string().optional(),

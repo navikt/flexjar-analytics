@@ -1,4 +1,5 @@
 import type {
+  BlockerResponse,
   DiscoveryResponse,
   FeedbackDto,
   FeedbackPage,
@@ -25,6 +26,7 @@ export {
 };
 
 import {
+  getMockBlockerStats as calculateBlockerStats,
   getMockDiscoveryStats as calculateDiscoveryStats,
   calculateStats,
   getMockTaskPriorityStats as calculateTaskPriorityStats,
@@ -335,6 +337,10 @@ export function getMockTaskPriorityStats(
   params: URLSearchParams,
 ): TaskPriorityResponse {
   return calculateTaskPriorityStats(mockFeedbackItems, params);
+}
+
+export function getMockBlockerStats(params: URLSearchParams): BlockerResponse {
+  return calculateBlockerStats(mockFeedbackItems, params);
 }
 
 export function getMockSurveyTypeDistribution(): {

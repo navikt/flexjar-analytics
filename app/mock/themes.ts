@@ -1,5 +1,6 @@
 import type { TextTheme } from "~/types/api";
 
+// Discovery/General feedback themes
 export const mockThemes: TextTheme[] = [
   {
     id: "11111111-1111-1111-1111-111111111111",
@@ -8,6 +9,7 @@ export const mockThemes: TextTheme[] = [
     keywords: ["sykemelding", "sykepenger", "syk"],
     color: "#3b82f6",
     priority: 10,
+    analysisContext: "GENERAL_FEEDBACK",
   },
   {
     id: "22222222-2222-2222-2222-222222222222",
@@ -16,6 +18,7 @@ export const mockThemes: TextTheme[] = [
     keywords: ["utbetalt", "penger", "konto", "betaling"],
     color: "#10b981",
     priority: 5,
+    analysisContext: "GENERAL_FEEDBACK",
   },
   {
     id: "33333333-3333-3333-3333-333333333333",
@@ -24,5 +27,75 @@ export const mockThemes: TextTheme[] = [
     keywords: ["søknad", "søke", "status"],
     color: "#f59e0b",
     priority: 1,
+    analysisContext: "GENERAL_FEEDBACK",
+  },
+  // Blocker themes for Top Tasks
+  {
+    id: "blocker-innlogging",
+    team: "flex",
+    name: "Innlogging",
+    keywords: [
+      "logget ut",
+      "id-porten",
+      "bankid",
+      "sesjon",
+      "innlogging",
+      "minid",
+      "logge inn",
+    ],
+    color: "#ef4444",
+    priority: 10,
+    analysisContext: "BLOCKER",
+  },
+  {
+    id: "blocker-navigasjon",
+    team: "flex",
+    name: "Navigasjon",
+    keywords: [
+      "fant ikke",
+      "hvor",
+      "leter",
+      "meny",
+      "oversikt",
+      "finne",
+      "vanskelig å finne",
+    ],
+    color: "#8b5cf6",
+    priority: 9,
+    analysisContext: "BLOCKER",
+  },
+  {
+    id: "blocker-teknisk",
+    team: "flex",
+    name: "Teknisk feil",
+    keywords: [
+      "feilmelding",
+      "krasjet",
+      "virker ikke",
+      "bug",
+      "nede",
+      "teknisk",
+      "feil",
+    ],
+    color: "#f97316",
+    priority: 8,
+    analysisContext: "BLOCKER",
+  },
+  {
+    id: "blocker-forstaelse",
+    team: "flex",
+    name: "Forståelse / Språk",
+    keywords: [
+      "skjønner ikke",
+      "vanskelig",
+      "begrep",
+      "betyr",
+      "språk",
+      "tekst",
+      "forstår ikke",
+    ],
+    color: "#06b6d4",
+    priority: 7,
+    analysisContext: "BLOCKER",
   },
 ];

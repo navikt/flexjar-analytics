@@ -268,8 +268,34 @@ export interface DiscoveryResponse {
 }
 
 // ============================================
+// Blocker Pattern Types (for Top Tasks)
+// ============================================
+
+export interface BlockerTheme {
+  theme: string;
+  themeId: string;
+  count: number;
+  examples: string[];
+  color?: string;
+}
+
+export interface BlockerResponse {
+  totalBlockers: number;
+  wordFrequency: Array<{ word: string; count: number }>;
+  themes: BlockerTheme[];
+  recentBlockers: Array<{
+    blocker: string;
+    task: string;
+    submittedAt: string;
+  }>;
+}
+
+// ============================================
 // Text Theme Types (for theme management)
 // ============================================
+
+/** Context for text analysis - determines which field to analyze */
+export type AnalysisContext = "GENERAL_FEEDBACK" | "BLOCKER";
 
 export interface TextTheme {
   id: string;
@@ -278,6 +304,8 @@ export interface TextTheme {
   keywords: string[];
   color?: string;
   priority: number;
+  /** Context for this theme - GENERAL_FEEDBACK for discovery, BLOCKER for top tasks */
+  analysisContext: AnalysisContext;
 }
 
 export interface CreateThemeInput {
@@ -285,6 +313,7 @@ export interface CreateThemeInput {
   keywords: string[];
   color?: string;
   priority?: number;
+  analysisContext?: AnalysisContext;
 }
 
 export interface UpdateThemeInput {
@@ -292,6 +321,7 @@ export interface UpdateThemeInput {
   keywords?: string[];
   color?: string;
   priority?: number;
+  analysisContext?: AnalysisContext;
 }
 
 // ============================================

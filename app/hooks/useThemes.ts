@@ -25,8 +25,9 @@ export function useThemes() {
       createThemeServerFn({ data: input }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["themes"] });
-      // Also invalidate discovery stats since themes affect grouping
+      // Also invalidate discovery and blocker stats since themes affect grouping
       queryClient.invalidateQueries({ queryKey: ["discoveryStats"] });
+      queryClient.invalidateQueries({ queryKey: ["blockerStats"] });
     },
   });
 
@@ -39,6 +40,7 @@ export function useThemes() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["themes"] });
       queryClient.invalidateQueries({ queryKey: ["discoveryStats"] });
+      queryClient.invalidateQueries({ queryKey: ["blockerStats"] });
     },
   });
 
@@ -47,6 +49,7 @@ export function useThemes() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["themes"] });
       queryClient.invalidateQueries({ queryKey: ["discoveryStats"] });
+      queryClient.invalidateQueries({ queryKey: ["blockerStats"] });
     },
   });
 

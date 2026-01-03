@@ -194,7 +194,7 @@ export function TopTasksOverview() {
         </Box>
       </DashboardCard>
 
-      <BlockerAnalysis tasks={data.tasks} />
+      <BlockerAnalysis />
 
       {/* Device breakdown */}
       <DeviceBreakdownSection />
