@@ -72,9 +72,9 @@ const SURVEY_CONFIG: Record<
   },
 };
 
-export const Route = createFileRoute("/")(
-  Object.assign({ component: DashboardPage }),
-);
+export const Route = createFileRoute("/")({
+  component: DashboardPage,
+});
 
 function DashboardPage() {
   const { params } = useSearchParams();
