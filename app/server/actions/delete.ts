@@ -46,8 +46,10 @@ export const deleteFeedbackServerFn = createServerFn({ method: "POST" })
     const { backendUrl, oboToken } = context as AuthContext;
 
     if (isMockMode()) {
+      const { deleteMockFeedback } = await import("~/mock/mockData");
       await mockDelay();
-      return { success: true };
+      const deleted = deleteMockFeedback(data.feedbackId);
+      return { success: deleted };
     }
 
     const url = `${backendUrl}/api/v1/intern/feedback/${encodeURIComponent(data.feedbackId)}`;
