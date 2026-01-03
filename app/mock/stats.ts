@@ -571,22 +571,25 @@ export function getMockDiscoveryStats(
     totalCount: 0,
   });
 
-  // Track unique examples to avoid duplicates
-  const usedExamples = new Set<string>();
+  // Track unique examples per theme to avoid duplicates within each theme
+  const usedExamplesPerTheme = new Map<string, Set<string>>();
+  for (const theme of themes) {
+    usedExamplesPerTheme.set(theme.theme, new Set());
+  }
 
-  // Match responses to themes (higher priority first)
-  const sortedThemes = [...themes].sort((a, b) => b.priority - a.priority);
-
+  // INCLUSIVE MATCHING: Each response can match multiple themes (multi-tagging)
+  // This ensures dashboard counts match feedback filter results
   for (const response of responses) {
     const taskWords = response.task
       .toLowerCase()
       .replace(/[^\wæøå\s]/g, "")
       .split(/\s+/)
       .map(stemNorwegian);
-    let matched = false;
+    let matchedAnyTheme = false;
 
-    for (const theme of sortedThemes) {
-      if (!theme.keywords || theme.keywords.length === 0) continue; // Skip "Annet" in first pass
+    // Check ALL themes (no break - response can belong to multiple themes)
+    for (const theme of themes) {
+      if (!theme.keywords || theme.keywords.length === 0) continue; // Skip "Annet"
 
       const keywordStems = theme.keywords.map((k) =>
         stemNorwegian(k.toLowerCase()),
@@ -595,29 +598,36 @@ export function getMockDiscoveryStats(
         theme.totalCount++;
         if (response.success === "yes") theme.successCount++;
         if (response.success === "partial") theme.partialCount++;
-        // Only add unique examples
-        if (theme.examples.length < 3 && !usedExamples.has(response.task)) {
+        // Add unique examples per theme
+        const themeExamples = usedExamplesPerTheme.get(theme.theme);
+        if (
+          themeExamples &&
+          theme.examples.length < 3 &&
+          !themeExamples.has(response.task)
+        ) {
           theme.examples.push(response.task);
-          usedExamples.add(response.task);
+          themeExamples.add(response.task);
         }
-        matched = true;
-        break;
+        matchedAnyTheme = true;
+        // NO BREAK - continue checking other themes (inclusive matching)
       }
     }
 
     // If no theme matched, add to "Annet"
-    if (!matched) {
+    if (!matchedAnyTheme) {
       const annetTheme = themes.find((t) => t.theme === "Annet");
       if (annetTheme) {
         annetTheme.totalCount++;
         if (response.success === "yes") annetTheme.successCount++;
         if (response.success === "partial") annetTheme.partialCount++;
+        const annetExamples = usedExamplesPerTheme.get("Annet");
         if (
+          annetExamples &&
           annetTheme.examples.length < 3 &&
-          !usedExamples.has(response.task)
+          !annetExamples.has(response.task)
         ) {
           annetTheme.examples.push(response.task);
-          usedExamples.add(response.task);
+          annetExamples.add(response.task);
         }
       }
     }
