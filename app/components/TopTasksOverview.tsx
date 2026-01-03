@@ -18,6 +18,7 @@ import {
 import { useState } from "react";
 import { BlockerAnalysis } from "~/components/BlockerAnalysis";
 import { DashboardCard, DashboardGrid } from "~/components/DashboardComponents";
+import { DeviceBreakdownSection } from "~/components/DeviceBreakdownSection";
 import { TaskQuadrantChart } from "~/components/charts/TaskQuadrantChart";
 import { TopTasksTimelineChart } from "~/components/charts/TopTasksTimelineChart";
 import { useTopTasksStats } from "~/hooks/useTopTasksStats";
@@ -237,6 +238,9 @@ export function TopTasksOverview() {
       </DashboardCard>
 
       <BlockerAnalysis tasks={data.tasks} />
+
+      {/* Device breakdown */}
+      <DeviceBreakdownSection />
     </>
   );
 }

@@ -1,11 +1,11 @@
 import { Heading, VStack } from "@navikt/ds-react";
 import { DashboardCard } from "~/components/DashboardComponents";
+import { DeviceBreakdownSection } from "~/components/DeviceBreakdownSection";
 import {
   DiscoveryAnalysis,
   DiscoveryAnalysisSkeleton,
 } from "~/components/DiscoveryAnalysis";
 import { StatsCards } from "~/components/StatsCards";
-import { DeviceBreakdownChart } from "~/components/charts/DeviceBreakdownChart";
 import { TimelineChart } from "~/components/charts/TimelineChart";
 import { useDiscoveryStats } from "~/hooks/useDiscoveryStats";
 
@@ -37,14 +37,7 @@ export function DiscoveryDashboard() {
       )}
 
       {/* Device breakdown */}
-      <DashboardCard padding={{ xs: "space-16", md: "space-24" }}>
-        <VStack gap="space-16">
-          <Heading size="small">Enheter</Heading>
-          <div style={{ height: "clamp(150px, 30vw, 200px)", width: "100%" }}>
-            <DeviceBreakdownChart />
-          </div>
-        </VStack>
-      </DashboardCard>
+      <DeviceBreakdownSection />
     </>
   );
 }

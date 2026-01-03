@@ -1,5 +1,6 @@
 import { BodyShort, Heading, VStack } from "@navikt/ds-react";
 import { DashboardCard, DashboardGrid } from "~/components/DashboardComponents";
+import { DeviceBreakdownSection } from "~/components/DeviceBreakdownSection";
 import { FieldStatsSection } from "~/components/FieldStatsSection";
 import { StatsCards } from "~/components/StatsCards";
 import { UrgentUrls } from "~/components/UrgentUrls";
@@ -99,22 +100,8 @@ export function DefaultDashboard({ hasSurveyFilter }: DefaultDashboardProps) {
         </DashboardGrid>
       )}
 
-      {/* Devices when survey is selected - standalone card */}
-      {hasSurveyFilter && (
-        <DashboardCard padding={{ xs: "space-16", md: "space-24" }}>
-          <VStack gap="space-16">
-            <Heading size="small">Enheter</Heading>
-            <div
-              style={{
-                height: "clamp(150px, 30vw, 200px)",
-                width: "100%",
-              }}
-            >
-              <DeviceBreakdownChart />
-            </div>
-          </VStack>
-        </DashboardCard>
-      )}
+      {/* Devices when survey is selected - reusable section component */}
+      {hasSurveyFilter && <DeviceBreakdownSection showRating />}
     </>
   );
 }

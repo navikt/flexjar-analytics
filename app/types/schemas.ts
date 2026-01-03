@@ -37,6 +37,7 @@ export const TopTasksParamsSchema = z.object({
   surveyId: z.string().optional(),
   from: z.string().optional(),
   to: z.string().optional(),
+  deviceType: z.string().optional(),
 });
 
 export type TopTasksParams = z.infer<typeof TopTasksParamsSchema>;
@@ -45,6 +46,7 @@ export const DiscoveryParamsSchema = z.object({
   surveyId: z.string().optional(),
   from: z.string().optional(),
   to: z.string().optional(),
+  deviceType: z.string().optional(),
 });
 
 export type DiscoveryParams = z.infer<typeof DiscoveryParamsSchema>;
@@ -53,6 +55,7 @@ export const TaskPriorityParamsSchema = z.object({
   surveyId: z.string().optional(),
   from: z.string().optional(),
   to: z.string().optional(),
+  deviceType: z.string().optional(),
 });
 
 export type TaskPriorityParams = z.infer<typeof TaskPriorityParamsSchema>;

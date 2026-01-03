@@ -27,6 +27,7 @@ export function useTaskPriorityStats() {
           surveyId: params.feedbackId,
           from: params.from,
           to: params.to,
+          deviceType: params.deviceType,
         },
       }),
     staleTime: 60000, // 1 minute

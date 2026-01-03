@@ -1,10 +1,10 @@
 import { Heading, VStack } from "@navikt/ds-react";
 import { DashboardCard } from "~/components/DashboardComponents";
+import { DeviceBreakdownSection } from "~/components/DeviceBreakdownSection";
 import {
   TaskPriorityAnalysis,
   TaskPriorityAnalysisSkeleton,
 } from "~/components/TaskPriorityAnalysis";
-import { DeviceBreakdownChart } from "~/components/charts/DeviceBreakdownChart";
 import { TimelineChart } from "~/components/charts/TimelineChart";
 import { useTaskPriorityStats } from "~/hooks/useTaskPriorityStats";
 
@@ -34,14 +34,7 @@ export function TaskPriorityDashboard() {
       </DashboardCard>
 
       {/* Device breakdown */}
-      <DashboardCard padding={{ xs: "space-16", md: "space-24" }}>
-        <VStack gap="space-16">
-          <Heading size="small">Enheter</Heading>
-          <div style={{ height: "clamp(150px, 30vw, 200px)", width: "100%" }}>
-            <DeviceBreakdownChart />
-          </div>
-        </VStack>
-      </DashboardCard>
+      <DeviceBreakdownSection />
     </>
   );
 }
