@@ -76,7 +76,6 @@ export function ThemeModal({
   );
 
   const [color, setColor] = useState(theme?.color ?? THEME_COLORS[0]);
-  const [priority, setPriority] = useState(theme?.priority ?? 0);
 
   // State for "Add to Existing"
   const [selectedExistingThemeId, setSelectedExistingThemeId] =
@@ -102,7 +101,6 @@ export function ThemeModal({
       setName(theme?.name ?? "");
       setKeywords(theme?.keywords ?? initialKeywords);
       setColor(theme?.color ?? THEME_COLORS[0]);
-      setPriority(theme?.priority ?? 0);
 
       // Default to "existing" tab only if we are creating AND have initial keywords (clicked a word)
       // Otherwise default to "new"
@@ -169,14 +167,12 @@ export function ThemeModal({
             ? keywords
             : undefined,
         color: color !== theme.color ? color : undefined,
-        priority: priority !== theme.priority ? priority : undefined,
       });
     } else {
       onSubmit({
         name,
         keywords,
         color,
-        priority,
       });
     }
   };
@@ -360,16 +356,6 @@ export function ThemeModal({
                 ))}
               </HStack>
             </div>
-
-            <TextField
-              label="Prioritet"
-              description="Høyere tall = matcher først om teksten inneholder flere temaer"
-              type="number"
-              value={priority.toString()}
-              onChange={(e) =>
-                setPriority(Number.parseInt(e.target.value) || 0)
-              }
-            />
           </VStack>
         )}
       </Modal.Body>
