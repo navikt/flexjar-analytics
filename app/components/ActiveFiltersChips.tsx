@@ -27,7 +27,7 @@ const DEVICE_LABELS: Record<string, string> = {
  */
 export function ActiveFiltersChips() {
   const { params, setParam } = useSearchParams();
-  const { themes } = useThemes();
+  const { themes, isLoading } = useThemes();
 
   const chips: FilterChip[] = [];
 
@@ -62,13 +62,28 @@ export function ActiveFiltersChips() {
   }
 
   // Theme filter - from discovery drill-down
-  if (params.theme) {
+  // Only show on feedback page where it actually filters results
+  const isFeedbackPage =
+    typeof window !== "undefined" &&
+    window.location.pathname.includes("/feedback");
+
+  if (params.theme && isFeedbackPage) {
     // Look up theme name by ID
     let themeName = "Usortert";
+
     if (params.theme !== "uncategorized") {
       const matchedTheme = themes.find((t) => t.id === params.theme);
-      themeName = matchedTheme?.name || params.theme;
+      if (matchedTheme) {
+        themeName = matchedTheme.name;
+      } else if (isLoading) {
+        // Show loading placeholder instead of UUID while fetching
+        themeName = "...";
+      } else {
+        // Fallback to ID if not found and not loading (e.g. deleted theme)
+        themeName = params.theme;
+      }
     }
+
     chips.push({
       key: "theme",
       label: "Tema",

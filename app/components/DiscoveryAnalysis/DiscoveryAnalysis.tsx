@@ -371,8 +371,6 @@ export function DiscoveryAnalysis({ data }: DiscoveryAnalysisProps) {
                             const url = new URL(window.location.href);
                             url.pathname = "/feedback";
                             url.searchParams.set("theme", themeId);
-                            // Filter to discovery survey type to match the counts shown here
-                            url.searchParams.set("surveyType", "discovery");
                             window.location.href = url.toString();
                           }
                         : undefined

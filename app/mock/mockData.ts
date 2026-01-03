@@ -174,7 +174,6 @@ function applyFilters(
   const deviceType = params.get("deviceType");
   const tags = params.get("tags");
   const theme = params.get("theme");
-  const surveyType = params.get("surveyType");
 
   if (app) {
     filtered = filtered.filter((item) => item.app === app);
@@ -221,10 +220,6 @@ function applyFilters(
   }
   if (surveyId) {
     filtered = filtered.filter((item) => item.surveyId === surveyId);
-  }
-  // Filter by survey type (discovery, rating, topTasks, taskPriority, custom)
-  if (surveyType) {
-    filtered = filtered.filter((item) => item.surveyType === surveyType);
   }
   // Filter by tags (comma-separated, matches any)
   if (tags) {
