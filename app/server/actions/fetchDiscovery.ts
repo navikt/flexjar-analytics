@@ -32,7 +32,7 @@ export const fetchDiscoveryServerFn = createServerFn({ method: "GET" })
       return getMockDiscoveryStats(searchParams);
     }
 
-    const url = buildUrl(backendUrl, "/api/v1/intern/discovery", data);
+    const url = buildUrl(backendUrl, "/api/v1/intern/stats/discovery", data);
     const response = await fetch(url, {
       headers: getHeaders(oboToken),
     });

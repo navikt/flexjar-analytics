@@ -268,6 +268,33 @@ export interface DiscoveryResponse {
 }
 
 // ============================================
+// Text Theme Types (for theme management)
+// ============================================
+
+export interface TextTheme {
+  id: string;
+  team: string;
+  name: string;
+  keywords: string[];
+  color?: string;
+  priority: number;
+}
+
+export interface CreateThemeInput {
+  name: string;
+  keywords: string[];
+  color?: string;
+  priority?: number;
+}
+
+export interface UpdateThemeInput {
+  name?: string;
+  keywords?: string[];
+  color?: string;
+  priority?: number;
+}
+
+// ============================================
 // Task Priority Survey Types
 // ============================================
 

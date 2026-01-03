@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import { mockThemes } from "~/mock/themes";
 import type {
   Answer,
   DiscoveryResponse,
@@ -448,6 +449,8 @@ export function getMockDiscoveryStats(
   items: FeedbackDto[],
   params: URLSearchParams,
 ): DiscoveryResponse {
+  // Import the dynamic mock themes from themes.ts (they can be mutated by CRUD operations)
+
   const filtered = applyFiltersToItems(items, params).filter(
     (item) => item.surveyType === "discovery",
   );
@@ -504,53 +507,70 @@ export function getMockDiscoveryStats(
     .sort((a, b) => b.count - a.count)
     .slice(0, 30);
 
-  // Simple theme clustering based on keywords
-  const themes = [
-    {
-      theme: "Søknadsstatus",
-      keywords: ["status", "søknad", "søknaden"],
-      examples: [] as string[],
-      successCount: 0,
-      totalCount: 0,
-    },
-    {
-      theme: "Sykemelding",
-      keywords: ["sykmeldt", "sykemelding", "sykefravær", "sykepenger"],
-      examples: [] as string[],
-      successCount: 0,
-      totalCount: 0,
-    },
-    {
-      theme: "Kontakt NAV",
-      keywords: ["kontakte", "telefon", "saksbehandler"],
-      examples: [] as string[],
-      successCount: 0,
-      totalCount: 0,
-    },
-    {
-      theme: "Finne informasjon",
-      keywords: ["finne", "lese", "informasjon", "skjema"],
-      examples: [] as string[],
-      successCount: 0,
-      totalCount: 0,
-    },
-  ];
+  // Dynamic theme clustering based on mockThemes from themes.ts
+  // This allows CRUD operations to affect discovery stats!
+  const themes = mockThemes.map((t) => ({
+    theme: t.name,
+    keywords: t.keywords,
+    priority: t.priority,
+    examples: [] as string[],
+    successCount: 0,
+    partialCount: 0,
+    totalCount: 0,
+  }));
+
+  // Add catch-all "Annet" theme
+  themes.push({
+    theme: "Annet",
+    keywords: [],
+    priority: -1,
+    examples: [],
+    successCount: 0,
+    partialCount: 0,
+    totalCount: 0,
+  });
 
   // Track unique examples to avoid duplicates
   const usedExamples = new Set<string>();
 
+  // Match responses to themes (higher priority first)
+  const sortedThemes = [...themes].sort((a, b) => b.priority - a.priority);
+
   for (const response of responses) {
     const taskLower = response.task.toLowerCase();
-    for (const theme of themes) {
-      if (theme.keywords.some((k) => taskLower.includes(k))) {
+    let matched = false;
+
+    for (const theme of sortedThemes) {
+      if (theme.keywords.length === 0) continue; // Skip "Annet" in first pass
+
+      if (theme.keywords.some((k) => taskLower.includes(k.toLowerCase()))) {
         theme.totalCount++;
         if (response.success === "yes") theme.successCount++;
+        if (response.success === "partial") theme.partialCount++;
         // Only add unique examples
         if (theme.examples.length < 3 && !usedExamples.has(response.task)) {
           theme.examples.push(response.task);
           usedExamples.add(response.task);
         }
+        matched = true;
         break;
+      }
+    }
+
+    // If no theme matched, add to "Annet"
+    if (!matched) {
+      const annetTheme = themes.find((t) => t.theme === "Annet");
+      if (annetTheme) {
+        annetTheme.totalCount++;
+        if (response.success === "yes") annetTheme.successCount++;
+        if (response.success === "partial") annetTheme.partialCount++;
+        if (
+          annetTheme.examples.length < 3 &&
+          !usedExamples.has(response.task)
+        ) {
+          annetTheme.examples.push(response.task);
+          usedExamples.add(response.task);
+        }
       }
     }
   }
@@ -563,9 +583,14 @@ export function getMockDiscoveryStats(
       .map((t) => ({
         theme: t.theme,
         count: t.totalCount,
-        successRate: t.totalCount > 0 ? t.successCount / t.totalCount : 0,
+        // Success rate: full success = 1, partial = 0.5
+        successRate:
+          t.totalCount > 0
+            ? (t.successCount + t.partialCount * 0.5) / t.totalCount
+            : 0,
         examples: t.examples,
-      })),
+      }))
+      .sort((a, b) => b.count - a.count),
     recentResponses: responses
       .sort(
         (a, b) =>

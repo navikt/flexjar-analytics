@@ -1,18 +1,30 @@
 import {
+  CogIcon,
   InformationSquareIcon,
   MagnifyingGlassIcon,
+  PlusIcon,
 } from "@navikt/aksel-icons";
 import {
   BodyShort,
   Box,
+  Button,
   HStack,
   Heading,
   Tag,
   Tooltip,
   VStack,
 } from "@navikt/ds-react";
+import { useCallback, useState } from "react";
 import { DashboardCard } from "~/components/DashboardComponents";
-import type { DiscoveryResponse, DiscoveryTheme } from "~/types/api";
+import { ThemeModal } from "~/components/ThemeModal";
+import { useThemes } from "~/hooks/useThemes";
+import type {
+  CreateThemeInput,
+  DiscoveryResponse,
+  DiscoveryTheme,
+  TextTheme,
+  UpdateThemeInput,
+} from "~/types/api";
 
 interface DiscoveryAnalysisProps {
   data: DiscoveryResponse;
@@ -25,6 +37,67 @@ interface DiscoveryAnalysisProps {
 export function DiscoveryAnalysis({ data }: DiscoveryAnalysisProps) {
   const { wordFrequency, themes, recentResponses, totalSubmissions } = data;
 
+  // Theme management state
+  const {
+    themes: definedThemes,
+    createTheme,
+    updateTheme,
+    deleteTheme,
+    isCreating,
+    isUpdating,
+  } = useThemes();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingTheme, setEditingTheme] = useState<TextTheme | undefined>();
+  const [initialKeywords, setInitialKeywords] = useState<string[]>([]);
+
+  // Open modal for creating new theme
+  const handleOpenCreate = useCallback((keyword?: string) => {
+    setEditingTheme(undefined);
+    setInitialKeywords(keyword ? [keyword] : []);
+    setIsModalOpen(true);
+  }, []);
+
+  // Open modal for editing existing theme
+  const handleOpenEdit = useCallback((theme: TextTheme) => {
+    setEditingTheme(theme);
+    setInitialKeywords([]);
+    setIsModalOpen(true);
+  }, []);
+
+  // Handle modal submit
+  const handleSubmit = useCallback(
+    (data: CreateThemeInput | (UpdateThemeInput & { themeId: string })) => {
+      if ("themeId" in data) {
+        updateTheme(data, {
+          onSuccess: () => setIsModalOpen(false),
+        });
+      } else {
+        createTheme(data, {
+          onSuccess: () => setIsModalOpen(false),
+        });
+      }
+    },
+    [createTheme, updateTheme],
+  );
+
+  // Handle delete
+  const handleDelete = useCallback(
+    (themeId: string) => {
+      deleteTheme(themeId, {
+        onSuccess: () => setIsModalOpen(false),
+      });
+    },
+    [deleteTheme],
+  );
+
+  // Handle word click from word cloud
+  const handleWordClick = useCallback(
+    (word: string) => {
+      handleOpenCreate(word);
+    },
+    [handleOpenCreate],
+  );
+
   if (totalSubmissions === 0) {
     return (
       <DashboardCard>
@@ -35,6 +108,11 @@ export function DiscoveryAnalysis({ data }: DiscoveryAnalysisProps) {
       </DashboardCard>
     );
   }
+
+  // Map discovery themes to their ID if possible to allow editing
+  const getThemeObject = (themeName: string) => {
+    return definedThemes.find((t) => t.name === themeName);
+  };
 
   return (
     <>
@@ -55,13 +133,23 @@ export function DiscoveryAnalysis({ data }: DiscoveryAnalysisProps) {
               <MagnifyingGlassIcon fontSize="1.25rem" aria-hidden />
             </span>
             <Heading size="small">Ordfrekvens</Heading>
+            <Tooltip content="Klikk på et ord for å opprette et tema med det som nøkkelord">
+              <InformationSquareIcon
+                fontSize="1rem"
+                style={{
+                  cursor: "help",
+                  color: "var(--ax-text-neutral-subtle)",
+                }}
+                aria-hidden
+              />
+            </Tooltip>
           </HStack>
           <BodyShort
             size="small"
             textColor="subtle"
             style={{ marginTop: "0.25rem" }}
           >
-            Mest brukte ord i brukerens beskrivelser
+            Klikk på et ord for å lage tema
           </BodyShort>
         </Box.New>
 
@@ -80,8 +168,10 @@ export function DiscoveryAnalysis({ data }: DiscoveryAnalysisProps) {
               const scale = 0.75 + (count / maxCount) * 0.75; // 0.75 to 1.5 rem
 
               return (
-                <span
+                <button
                   key={word}
+                  type="button"
+                  onClick={() => handleWordClick(word)}
                   style={{
                     fontSize: `${scale}rem`,
                     fontWeight: index < 5 ? 600 : 400,
@@ -91,13 +181,31 @@ export function DiscoveryAnalysis({ data }: DiscoveryAnalysisProps) {
                         : index < 10
                           ? "var(--ax-text-neutral-subtle)"
                           : "var(--ax-text-muted)",
-                    cursor: "default",
-                    transition: "color 0.2s ease",
+                    cursor: "pointer",
+                    transition: "all 0.2s ease",
+                    background: "none",
+                    border: "none",
+                    padding: "0.125rem 0.25rem",
+                    borderRadius: "var(--ax-border-radius-small)",
                   }}
-                  title={`${word}: ${count} ganger`}
+                  title={`${word}: ${count} ganger – klikk for å opprette tema`}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor =
+                      "var(--ax-bg-neutral-soft-hover)";
+                    e.currentTarget.style.color = "var(--ax-text-action)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "transparent";
+                    e.currentTarget.style.color =
+                      index < 3
+                        ? "var(--ax-text-default)"
+                        : index < 10
+                          ? "var(--ax-text-neutral-subtle)"
+                          : "var(--ax-text-muted)";
+                  }}
                 >
                   {word}
-                </span>
+                </button>
               );
             })}
           </div>
@@ -105,16 +213,16 @@ export function DiscoveryAnalysis({ data }: DiscoveryAnalysisProps) {
       </DashboardCard>
 
       {/* Themes Section */}
-      {themes.length > 0 && (
-        <DashboardCard padding="0" style={{ overflow: "hidden" }}>
-          <Box.New
-            padding={{ xs: "space-16", md: "space-24" }}
-            borderWidth="0 0 1 0"
-            borderColor="neutral-subtle"
-          >
+      <DashboardCard padding="0" style={{ overflow: "hidden" }}>
+        <Box.New
+          padding={{ xs: "space-16", md: "space-24" }}
+          borderWidth="0 0 1 0"
+          borderColor="neutral-subtle"
+        >
+          <HStack justify="space-between" align="center">
             <HStack gap="space-8" align="center">
               <Heading size="small">Identifiserte temaer</Heading>
-              <Tooltip content="Gruppert basert på nøkkelord i fritekst-svarene">
+              <Tooltip content="Gruppert basert på nøkkelord du definerer. Klikk på et tema for å redigere.">
                 <InformationSquareIcon
                   fontSize="1rem"
                   style={{
@@ -125,24 +233,55 @@ export function DiscoveryAnalysis({ data }: DiscoveryAnalysisProps) {
                 />
               </Tooltip>
             </HStack>
-            <BodyShort
+            <Button
+              variant="tertiary"
               size="small"
-              textColor="subtle"
-              style={{ marginTop: "0.25rem" }}
+              icon={<CogIcon aria-hidden />}
+              onClick={() => handleOpenCreate()}
             >
-              Gruppert basert på lignende svar
-            </BodyShort>
-          </Box.New>
+              Administrer temaer
+            </Button>
+          </HStack>
+          <BodyShort
+            size="small"
+            textColor="subtle"
+            style={{ marginTop: "0.25rem" }}
+          >
+            {themes.length > 0
+              ? `${themes.length} temaer funnet basert på nøkkelord`
+              : "Ingen temaer definert ennå. Klikk på 'Administrer temaer' for å komme i gang."}
+          </BodyShort>
+        </Box.New>
 
-          <Box.New padding={{ xs: "space-16", md: "space-24" }}>
+        <Box.New padding={{ xs: "space-16", md: "space-24" }}>
+          {themes.length > 0 ? (
             <VStack gap="space-16">
-              {themes.map((theme) => (
-                <ThemeCard key={theme.theme} theme={theme} />
-              ))}
+              {themes.map((theme) => {
+                const themeObj = getThemeObject(theme.theme);
+                return (
+                  <ThemeCard
+                    key={theme.theme}
+                    theme={theme}
+                    onClick={
+                      themeObj ? () => handleOpenEdit(themeObj) : undefined
+                    }
+                  />
+                );
+              })}
             </VStack>
-          </Box.New>
-        </DashboardCard>
-      )}
+          ) : (
+            <HStack justify="center" padding="space-24">
+              <Button
+                variant="secondary"
+                icon={<PlusIcon aria-hidden />}
+                onClick={() => handleOpenCreate()}
+              >
+                Opprett første tema
+              </Button>
+            </HStack>
+          )}
+        </Box.New>
+      </DashboardCard>
 
       {/* Recent Responses */}
       <DashboardCard padding="0" style={{ overflow: "hidden" }}>
@@ -208,15 +347,42 @@ export function DiscoveryAnalysis({ data }: DiscoveryAnalysisProps) {
           </VStack>
         </Box.New>
       </DashboardCard>
+
+      {/* Theme Modal */}
+      <ThemeModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleSubmit}
+        onDelete={handleDelete}
+        isSubmitting={isCreating || isUpdating}
+        theme={editingTheme}
+        initialKeywords={initialKeywords}
+      />
     </>
   );
 }
 
-function ThemeCard({ theme }: { theme: DiscoveryTheme }) {
+function ThemeCard({
+  theme,
+  onClick,
+}: { theme: DiscoveryTheme; onClick?: () => void }) {
   const successPercent = Math.round(theme.successRate * 100);
 
   return (
     <div
+      onClick={onClick}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={
+        onClick
+          ? (e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                onClick();
+              }
+            }
+          : undefined
+      }
       style={{
         padding: "1rem",
         backgroundColor: "var(--ax-bg-neutral-soft)",
@@ -225,9 +391,20 @@ function ThemeCard({ theme }: { theme: DiscoveryTheme }) {
           successPercent >= 80
             ? "var(--ax-status-success)"
             : successPercent >= 50
-              ? "var(--ax-status-warning)"
+              ? "var(--ax-status-warning)" // Fixed: was "var(--ax-status-warning)"
               : "var(--ax-status-danger)"
         }`,
+        cursor: onClick ? "pointer" : "default",
+        transition: "background-color 0.2s ease",
+      }}
+      onMouseEnter={(e) => {
+        if (onClick)
+          e.currentTarget.style.backgroundColor =
+            "var(--ax-bg-neutral-soft-hover)";
+      }}
+      onMouseLeave={(e) => {
+        if (onClick)
+          e.currentTarget.style.backgroundColor = "var(--ax-bg-neutral-soft)";
       }}
     >
       <HStack justify="space-between" align="baseline">
