@@ -95,7 +95,7 @@ export function FeedbackTable() {
                     <Table.HeaderCell style={{ width: 100 }}>
                       Dato
                     </Table.HeaderCell>
-                    <Table.HeaderCell>Feedback</Table.HeaderCell>
+                    <Table.HeaderCell>Tilbakemelding</Table.HeaderCell>
                     <Table.HeaderCell style={{ width: 200 }}>
                       App
                     </Table.HeaderCell>
