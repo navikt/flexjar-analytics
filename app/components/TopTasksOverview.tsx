@@ -9,6 +9,7 @@ import {
   Table,
   Tag,
   Tooltip,
+  VStack,
 } from "@navikt/ds-react";
 import { useState } from "react";
 import { BlockerAnalysis } from "~/components/BlockerAnalysis";
@@ -116,7 +117,22 @@ export function TopTasksOverview() {
             </Table.Header>
             <Table.Body>
               {displayTasks.map((task) => {
-                const hasBlockers = Object.keys(task.blockerCounts).length > 0;
+                const hasBlockers =
+                  task.blockersByTheme &&
+                  Object.keys(task.blockersByTheme).length > 0;
+
+                // Sort themed blockers: regular themes first by count, "Annet" last
+                const sortedThemes =
+                  hasBlockers && task.blockersByTheme
+                    ? Object.entries(task.blockersByTheme).sort(
+                        ([keyA, a], [keyB, b]) => {
+                          // "Annet" always last
+                          if (keyA === "annet") return 1;
+                          if (keyB === "annet") return -1;
+                          return b.count - a.count;
+                        },
+                      )
+                    : [];
 
                 return (
                   <Table.ExpandableRow
@@ -134,20 +150,49 @@ export function TopTasksOverview() {
                           <Heading size="xsmall" level="4" spacing>
                             Årsaker til at oppgaven stoppet
                           </Heading>
-                          <ul style={{ margin: 0, paddingLeft: "1.5rem" }}>
-                            {Object.entries(task.blockerCounts)
-                              .sort(([, a], [, b]) => b - a)
-                              .map(([reason, count]) => (
-                                <li
-                                  key={reason}
-                                  style={{ marginBottom: "0.25rem" }}
+                          <VStack gap="space-12">
+                            {sortedThemes.map(([themeId, theme]) => {
+                              const isAnnet = themeId === "annet";
+                              return (
+                                <div
+                                  key={themeId}
+                                  style={{
+                                    opacity: isAnnet ? 0.7 : 1,
+                                  }}
                                 >
-                                  <strong>{count}</strong>{" "}
-                                  {count === 1 ? "person" : "personer"}:{" "}
-                                  {reason}
-                                </li>
-                              ))}
-                          </ul>
+                                  <HStack gap="space-8" align="center">
+                                    {/* Color dot */}
+                                    <span
+                                      style={{
+                                        width: "10px",
+                                        height: "10px",
+                                        borderRadius: "50%",
+                                        backgroundColor: theme.color,
+                                        flexShrink: 0,
+                                      }}
+                                    />
+                                    <BodyShort weight="semibold">
+                                      {theme.themeName} ({theme.count})
+                                    </BodyShort>
+                                  </HStack>
+                                  {/* Example quote */}
+                                  {theme.examples.length > 0 && (
+                                    <BodyShort
+                                      size="small"
+                                      textColor="subtle"
+                                      style={{
+                                        marginLeft: "18px",
+                                        fontStyle: "italic",
+                                        marginTop: "0.25rem",
+                                      }}
+                                    >
+                                      "{theme.examples[0]}"
+                                    </BodyShort>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </VStack>
                         </div>
                       ) : null
                     }

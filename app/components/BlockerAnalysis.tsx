@@ -13,9 +13,10 @@ import {
   Skeleton,
   VStack,
 } from "@navikt/ds-react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { DashboardCard } from "~/components/DashboardComponents";
-import { ThemeModal } from "~/components/ThemeModal";
+import { type ContextExample, ThemeModal } from "~/components/ThemeModal";
+import { WordPopover } from "~/components/WordPopover";
 import { useBlockerStats } from "~/hooks/useBlockerStats";
 import { useThemes } from "~/hooks/useThemes";
 import type {
@@ -50,6 +51,11 @@ export function BlockerAnalysis({ data: providedData }: BlockerAnalysisProps) {
   const [selectedWord, setSelectedWord] = useState<string>("");
   const [editingTheme, setEditingTheme] = useState<TextTheme | undefined>();
 
+  // Popover state for categorized words (lightweight removal)
+  const [popoverAnchor, setPopoverAnchor] = useState<HTMLElement | null>(null);
+  const [popoverWord, setPopoverWord] = useState<string>("");
+  const [popoverTheme, setPopoverTheme] = useState<TextTheme | null>(null);
+
   // Filter to blocker themes only
   const blockerThemes = allThemes.filter(
     (t) => t.analysisContext === "BLOCKER",
@@ -72,6 +78,29 @@ export function BlockerAnalysis({ data: providedData }: BlockerAnalysisProps) {
       ),
     );
   };
+
+  // Handle removing word from theme (via popover - lightweight)
+  // Must be defined before early returns (React Rules of Hooks)
+  const handleRemoveWord = useCallback(
+    (themeId: string, word: string) => {
+      const theme = blockerThemes.find((t) => t.id === themeId);
+      if (!theme) return;
+
+      const updatedKeywords = theme.keywords.filter(
+        (k) => k.toLowerCase() !== word.toLowerCase(),
+      );
+      updateTheme({ themeId, keywords: updatedKeywords });
+    },
+    [blockerThemes, updateTheme],
+  );
+
+  // Handle edit theme from popover
+  const handleEditFromPopover = useCallback((theme: TextTheme) => {
+    setEditingTheme(theme);
+    setSelectedWord("");
+    setShowModal(true);
+    setPopoverAnchor(null);
+  }, []);
 
   // Loading state
   if (isLoading && !data) {
@@ -100,21 +129,39 @@ export function BlockerAnalysis({ data: providedData }: BlockerAnalysisProps) {
     return null;
   }
 
-  const { themes: statsThemes, wordFrequency, totalBlockers } = data;
+  const {
+    themes: statsThemes,
+    wordFrequency,
+    totalBlockers,
+    recentBlockers,
+  } = data;
 
-  const handleWordClick = (word: string) => {
+  // Get context examples for the selected word
+  const getContextExamples = (word: string): ContextExample[] => {
+    if (!word) return [];
+    const wordLower = word.toLowerCase();
+    return recentBlockers
+      .filter((b) => b.blocker.toLowerCase().includes(wordLower))
+      .map((b) => ({ text: b.blocker, submittedAt: b.submittedAt }));
+  };
+
+  const handleWordClick = (
+    word: string,
+    event: React.MouseEvent<HTMLButtonElement>,
+  ) => {
     // Check if word belongs to existing theme
     const existingTheme = getThemeForWord(word);
     if (existingTheme) {
-      // Open edit modal for existing theme
-      setEditingTheme(existingTheme);
-      setSelectedWord("");
+      // Show popover for categorized words (lightweight option)
+      setPopoverWord(word);
+      setPopoverTheme(existingTheme);
+      setPopoverAnchor(event.currentTarget);
     } else {
       // Open create modal with this word
       setSelectedWord(word);
       setEditingTheme(undefined);
+      setShowModal(true);
     }
-    setShowModal(true);
   };
 
   const handleThemeClick = (themeId: string) => {
@@ -235,7 +282,7 @@ export function BlockerAnalysis({ data: providedData }: BlockerAnalysisProps) {
                   <button
                     key={word}
                     type="button"
-                    onClick={() => handleWordClick(word)}
+                    onClick={(e) => handleWordClick(word, e)}
                     style={{
                       fontSize: `${scale}rem`,
                       fontWeight: index < 5 ? 600 : 400,
@@ -251,7 +298,7 @@ export function BlockerAnalysis({ data: providedData }: BlockerAnalysisProps) {
                     }}
                     title={
                       isCategorized
-                        ? `${word}: tilhører "${wordTheme.name}" – klikk for å redigere`
+                        ? `${word}: tilhører "${wordTheme.name}" – klikk for å administrere`
                         : `${word}: ${count} ganger – klikk for å kategorisere`
                     }
                   >
@@ -404,7 +451,6 @@ export function BlockerAnalysis({ data: providedData }: BlockerAnalysisProps) {
         </Box.New>
       </DashboardCard>
 
-      {/* Theme modal */}
       <ThemeModal
         isOpen={showModal}
         onClose={handleClose}
@@ -415,7 +461,21 @@ export function BlockerAnalysis({ data: providedData }: BlockerAnalysisProps) {
         initialKeywords={selectedWord ? [selectedWord] : []}
         availableWords={wordFrequency.map((w) => w.word)}
         allThemes={blockerThemes}
+        contextExamples={selectedWord ? getContextExamples(selectedWord) : []}
       />
+
+      {/* Word Popover for categorized words (lightweight removal) */}
+      {popoverTheme && (
+        <WordPopover
+          word={popoverWord}
+          theme={popoverTheme}
+          anchorEl={popoverAnchor}
+          isOpen={!!popoverAnchor}
+          onClose={() => setPopoverAnchor(null)}
+          onRemoveWord={handleRemoveWord}
+          onEditTheme={handleEditFromPopover}
+        />
+      )}
     </>
   );
 }

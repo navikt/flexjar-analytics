@@ -2,11 +2,13 @@ import { CheckmarkIcon, TrashIcon } from "@navikt/aksel-icons";
 import {
   Alert,
   BodyShort,
+  Box,
   Button,
   UNSAFE_Combobox as Combobox,
   HStack,
   Label,
   Modal,
+  Pagination,
   Select,
   Tabs,
   TextField,
@@ -18,6 +20,12 @@ import type {
   TextTheme,
   UpdateThemeInput,
 } from "~/types/api";
+
+/** Context example for peek context feature */
+export interface ContextExample {
+  text: string;
+  submittedAt: string;
+}
 
 interface ThemeModalProps {
   isOpen: boolean;
@@ -35,6 +43,8 @@ interface ThemeModalProps {
   availableWords?: string[];
   /** List of all defined themes for autocomplete */
   allThemes?: TextTheme[];
+  /** Context examples containing the clicked word */
+  contextExamples?: ContextExample[];
 }
 
 // Preset colors for themes
@@ -63,6 +73,7 @@ export function ThemeModal({
   initialKeywords = [],
   availableWords = [],
   allThemes = [],
+  contextExamples = [],
 }: ThemeModalProps) {
   const isEditing = !!theme;
 
@@ -87,6 +98,8 @@ export function ThemeModal({
     existingTheme?: string;
   }>({});
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [examplesPage, setExamplesPage] = useState(1);
+  const EXAMPLES_PER_PAGE = 3;
 
   // Track previous state to determine if we should reset
   const prevIsOpen = useRef(isOpen);
@@ -110,6 +123,7 @@ export function ThemeModal({
       setSelectedExistingThemeId("");
       setErrors({});
       setConfirmDelete(false);
+      setExamplesPage(1); // Reset pagination
     }
 
     prevIsOpen.current = isOpen;
@@ -357,6 +371,77 @@ export function ThemeModal({
               </HStack>
             </div>
           </VStack>
+        )}
+
+        {/* Context Examples Section */}
+        {contextExamples.length > 0 && initialKeywords.length > 0 && (
+          <Box.New
+            marginBlock="space-24 0"
+            paddingBlock="space-16"
+            borderWidth="1 0 0 0"
+            borderColor="neutral-subtle"
+          >
+            <Label size="small" style={{ marginBottom: "0.5rem" }}>
+              📝 Slik brukes "{initialKeywords[0]}" i svarene (
+              {contextExamples.length} treff)
+            </Label>
+            <VStack gap="space-8">
+              {contextExamples
+                .slice(
+                  (examplesPage - 1) * EXAMPLES_PER_PAGE,
+                  examplesPage * EXAMPLES_PER_PAGE,
+                )
+                .map((example, idx) => {
+                  // Highlight keyword using cumulative position as key
+                  const keyword = initialKeywords[0];
+                  const regex = new RegExp(`(${keyword})`, "gi");
+                  const parts = example.text.split(regex);
+                  let pos = 0;
+                  return (
+                    <Box.New
+                      key={`${example.submittedAt}-${idx}`}
+                      padding="space-12"
+                      background="neutral-soft"
+                      borderRadius="medium"
+                    >
+                      <BodyShort size="small">
+                        "
+                        {parts.map((part) => {
+                          const key = `${pos}`;
+                          pos += part.length;
+                          return part.toLowerCase() ===
+                            keyword.toLowerCase() ? (
+                            <strong
+                              key={key}
+                              style={{ color: "var(--ax-text-action)" }}
+                            >
+                              {part}
+                            </strong>
+                          ) : (
+                            <span key={key}>{part}</span>
+                          );
+                        })}
+                        "
+                      </BodyShort>
+                    </Box.New>
+                  );
+                })}
+            </VStack>
+
+            {/* Pagination */}
+            {contextExamples.length > EXAMPLES_PER_PAGE && (
+              <HStack justify="center" style={{ marginTop: "0.75rem" }}>
+                <Pagination
+                  page={examplesPage}
+                  onPageChange={setExamplesPage}
+                  count={Math.ceil(contextExamples.length / EXAMPLES_PER_PAGE)}
+                  size="xsmall"
+                  siblingCount={0}
+                  boundaryCount={1}
+                />
+              </HStack>
+            )}
+          </Box.New>
         )}
       </Modal.Body>
 
