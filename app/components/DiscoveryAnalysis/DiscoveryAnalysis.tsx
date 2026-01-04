@@ -16,7 +16,7 @@ import {
 } from "@navikt/ds-react";
 import { useCallback, useState } from "react";
 import { DashboardCard } from "~/components/DashboardComponents";
-import { ThemeModal } from "~/components/ThemeModal";
+import { type ContextExample, ThemeModal } from "~/components/ThemeModal";
 import { WordPopover } from "~/components/WordPopover";
 import { useThemes } from "~/hooks/useThemes";
 import type {
@@ -96,6 +96,18 @@ export function DiscoveryAnalysis({ data }: DiscoveryAnalysisProps) {
       });
     },
     [deleteTheme],
+  );
+
+  // Get context examples for the selected word (for Peek Context)
+  const getContextExamples = useCallback(
+    (word: string): ContextExample[] => {
+      if (!word) return [];
+      const wordLower = word.toLowerCase();
+      return recentResponses
+        .filter((r) => r.task.toLowerCase().includes(wordLower))
+        .map((r) => ({ text: r.task, submittedAt: r.submittedAt }));
+    },
+    [recentResponses],
   );
 
   // Combine defined themes with stats
@@ -490,6 +502,11 @@ export function DiscoveryAnalysis({ data }: DiscoveryAnalysisProps) {
         initialKeywords={initialKeywords}
         availableWords={wordFrequency.map((w) => w.word)}
         allThemes={definedThemes}
+        contextExamples={
+          initialKeywords.length > 0
+            ? getContextExamples(initialKeywords[0])
+            : []
+        }
       />
     </>
   );

@@ -294,13 +294,27 @@ export function BlockerAnalysis({ data: providedData }: BlockerAnalysisProps) {
                       border: "none",
                       padding: "0.125rem 0.25rem",
                       borderRadius: "var(--ax-border-radius-small)",
-                      transition: "background-color 0.2s ease",
+                      transition: "all 0.2s ease",
                     }}
                     title={
                       isCategorized
                         ? `${word}: tilhører "${wordTheme.name}" – klikk for å administrere`
                         : `${word}: ${count} ganger – klikk for å kategorisere`
                     }
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = isCategorized
+                        ? `${wordTheme.color || "#888"}30`
+                        : "var(--ax-bg-neutral-soft-hover)";
+                      e.currentTarget.style.color = isCategorized
+                        ? wordTheme.color || "#888"
+                        : "var(--ax-text-action)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = isCategorized
+                        ? `${wordTheme.color || "#888"}15`
+                        : "transparent";
+                      e.currentTarget.style.color = color || "";
+                    }}
                   >
                     {word}
                   </button>
@@ -347,7 +361,13 @@ export function BlockerAnalysis({ data: providedData }: BlockerAnalysisProps) {
                   <button
                     key={theme.themeId}
                     type="button"
-                    onClick={() => handleThemeClick(theme.themeId)}
+                    onClick={() => {
+                      // Navigate to feedback page filtered by this theme
+                      const url = new URL(window.location.href);
+                      url.pathname = "/feedback";
+                      url.searchParams.set("theme", theme.themeId);
+                      window.location.href = url.toString();
+                    }}
                     style={{
                       display: "block",
                       width: "100%",
@@ -359,7 +379,7 @@ export function BlockerAnalysis({ data: providedData }: BlockerAnalysisProps) {
                       cursor: "pointer",
                       transition: "background-color 0.2s ease",
                     }}
-                    title="Klikk for å redigere tema"
+                    title="Klikk for å se feedback med dette temaet"
                   >
                     <HStack
                       justify="space-between"
@@ -368,10 +388,10 @@ export function BlockerAnalysis({ data: providedData }: BlockerAnalysisProps) {
                     >
                       <HStack gap="space-8" align="center">
                         {theme.color && (
-                          <span
+                          <div
                             style={{
-                              width: "0.75rem",
-                              height: "0.75rem",
+                              width: "10px",
+                              height: "10px",
                               borderRadius: "50%",
                               backgroundColor: theme.color,
                               flexShrink: 0,
@@ -384,6 +404,11 @@ export function BlockerAnalysis({ data: providedData }: BlockerAnalysisProps) {
                         <PencilIcon
                           fontSize="0.75rem"
                           style={{ color: "var(--ax-text-muted)" }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleThemeClick(theme.themeId);
+                          }}
+                          title="Rediger tema"
                         />
                       </HStack>
                       <BodyShort
@@ -450,6 +475,50 @@ export function BlockerAnalysis({ data: providedData }: BlockerAnalysisProps) {
           )}
         </Box.New>
       </DashboardCard>
+
+      {/* Recent Blocker Responses */}
+      {recentBlockers.length > 0 && (
+        <DashboardCard padding="0" style={{ overflow: "hidden" }}>
+          <Box.New
+            padding={{ xs: "space-16", md: "space-24" }}
+            borderWidth="0 0 1 0"
+            borderColor="neutral-subtle"
+          >
+            <Heading size="small">Siste blocker-svar</Heading>
+            <BodyShort
+              size="small"
+              textColor="subtle"
+              style={{ marginTop: "0.25rem" }}
+            >
+              Nylige hindringer brukere har rapportert
+            </BodyShort>
+          </Box.New>
+
+          <Box.New padding={{ xs: "space-16", md: "space-24" }}>
+            <VStack gap="space-12">
+              {recentBlockers.slice(0, 5).map((blocker) => (
+                <div
+                  key={`${blocker.blocker}-${blocker.submittedAt}`}
+                  style={{
+                    padding: "0.75rem",
+                    backgroundColor: "var(--ax-bg-neutral-soft)",
+                    borderRadius: "var(--ax-border-radius-medium)",
+                  }}
+                >
+                  <BodyShort size="small">"{blocker.blocker}"</BodyShort>
+                  <BodyShort
+                    size="small"
+                    textColor="subtle"
+                    style={{ marginTop: "0.25rem" }}
+                  >
+                    Oppgave: {blocker.task}
+                  </BodyShort>
+                </div>
+              ))}
+            </VStack>
+          </Box.New>
+        </DashboardCard>
+      )}
 
       <ThemeModal
         isOpen={showModal}
