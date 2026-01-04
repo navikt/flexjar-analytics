@@ -550,8 +550,11 @@ export function getMockDiscoveryStats(
     .slice(0, 30);
 
   // Dynamic theme clustering based on mockThemes from themes.ts
-  // This allows CRUD operations to affect discovery stats!
-  const themes = mockThemes.map((t) => ({
+  // Only use GENERAL_FEEDBACK themes - BLOCKER themes are for Top Tasks analysis
+  const generalThemes = mockThemes.filter(
+    (t) => t.analysisContext !== "BLOCKER",
+  );
+  const themes = generalThemes.map((t) => ({
     theme: t.name,
     keywords: t.keywords,
     priority: t.priority,

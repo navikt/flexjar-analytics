@@ -113,8 +113,13 @@ export function DiscoveryAnalysis({ data }: DiscoveryAnalysisProps) {
     [recentResponses],
   );
 
+  // Filter to only GENERAL_FEEDBACK themes for Discovery (exclude BLOCKER themes)
+  const generalFeedbackThemes = definedThemes.filter(
+    (t) => t.analysisContext !== "BLOCKER",
+  );
+
   // Combine defined themes with stats
-  const allThemesDisplay = definedThemes.map((definedTheme) => {
+  const allThemesDisplay = generalFeedbackThemes.map((definedTheme) => {
     const stats = themes.find((t) => t.theme === definedTheme.name);
     return {
       theme: definedTheme.name,
@@ -130,7 +135,7 @@ export function DiscoveryAnalysis({ data }: DiscoveryAnalysisProps) {
   // Also include themes from stats that might not be in definedThemes (e.g. "Annet" or deleted timestamps)
   // mostly "Annet" which shouldn't be editable usually, but good to show
   for (const statTheme of themes) {
-    if (!definedThemes.some((dt) => dt.name === statTheme.theme)) {
+    if (!generalFeedbackThemes.some((dt) => dt.name === statTheme.theme)) {
       allThemesDisplay.push({
         theme: statTheme.theme,
         count: statTheme.count,
@@ -141,9 +146,11 @@ export function DiscoveryAnalysis({ data }: DiscoveryAnalysisProps) {
     }
   }
 
-  // Sort by count (descending), then by name
+  // Filter out themes with 0 count (they have no data) - keeps UI clean for demos
+  const themesWithData = allThemesDisplay.filter((t) => t.count > 0);
+
   // Sort by count (descending), then by name, but keep "Annet" at the bottom
-  allThemesDisplay.sort((a, b) => {
+  themesWithData.sort((a, b) => {
     // Always put "Annet" at the bottom
     if (a.theme === "Annet") return 1;
     if (b.theme === "Annet") return -1;
@@ -303,16 +310,16 @@ export function DiscoveryAnalysis({ data }: DiscoveryAnalysisProps) {
             textColor="subtle"
             style={{ marginTop: "0.25rem" }}
           >
-            {allThemesDisplay.length > 0
-              ? `${allThemesDisplay.length} temaer definert`
-              : "Ingen temaer definert ennå."}
+            {themesWithData.length > 0
+              ? `${themesWithData.length} temaer vist`
+              : "Ingen temaer med data ennå."}
           </BodyShort>
         </Box.New>
 
         <Box.New padding={{ xs: "space-16", md: "space-24" }}>
-          {allThemesDisplay.length > 0 ? (
+          {themesWithData.length > 0 ? (
             <VStack gap="space-16">
-              {allThemesDisplay.map((theme) => {
+              {themesWithData.map((theme) => {
                 const themeId =
                   theme.definedTheme?.id ??
                   (theme.theme === "Annet" ? "uncategorized" : null);
