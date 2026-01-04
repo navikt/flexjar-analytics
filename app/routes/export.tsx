@@ -1,8 +1,8 @@
 import { Alert, Heading, VStack } from "@navikt/ds-react";
 import { createFileRoute } from "@tanstack/react-router";
-import { ExportPanel } from "~/components/ExportPanel";
-import { FilterBar } from "~/components/FilterBar";
-import { Header } from "~/components/Header";
+import { ExportPanel } from "~/components/export/Panel";
+import { FilterBar } from "~/components/shared/FilterBar";
+import { Header } from "~/components/shared/Header";
 
 export const Route = createFileRoute("/export")({
   component: ExportPage,

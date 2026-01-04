@@ -2,14 +2,15 @@ import { Box, HStack, Heading, Tag, Tooltip, VStack } from "@navikt/ds-react";
 import type { TagProps } from "@navikt/ds-react";
 import { createFileRoute } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { ActiveFiltersChips } from "~/components/ActiveFiltersChips";
-import { DefaultDashboard } from "~/components/DefaultDashboard";
-import { DiscoveryDashboard } from "~/components/DiscoveryDashboard";
-import { FilterBar } from "~/components/FilterBar";
-import { Header } from "~/components/Header";
-import { PrivacyMaskedNotice } from "~/components/PrivacyMaskedNotice";
-import { TaskPriorityDashboard } from "~/components/TaskPriorityDashboard";
-import { TopTasksOverview } from "~/components/TopTasksOverview";
+import { DiscoveryDashboard } from "~/components/dashboard/views/Discovery/Dashboard";
+import { OverviewDashboard } from "~/components/dashboard/views/Overview/Dashboard";
+import { RatingDashboard } from "~/components/dashboard/views/Rating/Dashboard";
+import { TaskPriorityDashboard } from "~/components/dashboard/views/TaskPriority/Dashboard";
+import { TopTasksOverview } from "~/components/dashboard/views/TopTasks/Overview";
+import { ActiveFiltersChips } from "~/components/shared/ActiveFiltersChips";
+import { FilterBar } from "~/components/shared/FilterBar";
+import { Header } from "~/components/shared/Header";
+import { PrivacyMaskedNotice } from "~/components/shared/PrivacyMaskedNotice";
 import { useSearchParams } from "~/hooks/useSearchParams";
 import { useStats } from "~/hooks/useStats";
 import type { SurveyType } from "~/types/api";
@@ -50,7 +51,7 @@ const SURVEY_CONFIG: Record<
     label: "Vurdering",
     variant: "success",
     dashboard: (hasSurveyFilter) => (
-      <DefaultDashboard hasSurveyFilter={hasSurveyFilter} />
+      <RatingDashboard hasSurveyFilter={hasSurveyFilter} />
     ),
   },
   discovery: {
@@ -67,7 +68,7 @@ const SURVEY_CONFIG: Record<
     label: "Custom",
     variant: "neutral",
     dashboard: (hasSurveyFilter) => (
-      <DefaultDashboard hasSurveyFilter={hasSurveyFilter} />
+      <RatingDashboard hasSurveyFilter={hasSurveyFilter} />
     ),
   },
 };
@@ -102,7 +103,7 @@ function DashboardPage() {
       return config.dashboard(hasSurveyFilter);
     }
 
-    return <DefaultDashboard hasSurveyFilter={hasSurveyFilter} />;
+    return <OverviewDashboard />;
   };
 
   return (

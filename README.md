@@ -99,28 +99,25 @@ Uses Wonderwall + Azure AD for authentication:
 
 ```
 app/
-├── routes/
-│   ├── __root.tsx        # Root layout
-│   ├── index.tsx         # Dashboard page
-│   ├── feedback.tsx      # Feedback table page
-│   ├── export.tsx        # Export page
-│   └── api/
-│       ├── backend/$.ts  # Backend proxy
-│       └── internal/     # Health checks
+├── routes/             # TanStack Router page routes
+│   ├── index.tsx       # Dashboard page (main entry)
+│   └── feedback.tsx    # Feedback table page
 ├── components/
-│   ├── FilterBar.tsx     # Filter controls
-│   ├── StatsCards.tsx    # Statistics cards
-│   ├── FeedbackTable.tsx # Data table
-│   ├── ExportPanel.tsx   # Export options
-│   └── charts/
-│       ├── RatingChart.tsx
-│       ├── TimelineChart.tsx
-│       └── TopAppsChart.tsx
-├── lib/
-│   ├── api.ts            # API types and functions
-│   ├── useStats.ts       # Stats query hook
-│   ├── useFeedback.ts    # Feedback query hook
-│   └── useSearchParams.ts # URL state management
-└── styles/
-    └── global.css        # Global styles
+│   ├── dashboard/      # Dashboard components
+│   │   ├── views/      # Survey-type specific views
+│   │   │   ├── Overview/       # Default "all surveys" view
+│   │   │   ├── TopTasks/       # Top Tasks survey
+│   │   │   ├── Discovery/      # Discovery survey
+│   │   │   ├── TaskPriority/   # Task Priority survey
+│   │   │   └── Rating/         # Rating/Custom survey
+│   │   ├── DashboardComponents/
+│   │   ├── StatsCards/
+│   │   └── FieldStats/
+│   ├── feedback/       # Feedback table and related
+│   └── shared/         # Cross-cutting utilities and charts
+├── hooks/              # Custom TanStack Query hooks
+├── types/              # TypeScript interfaces and Zod schemas
+├── server/             # Server-side logic and API functions
+├── styles/             # Global CSS and tokens
+└── mock/               # MSW mock data and handlers
 ```

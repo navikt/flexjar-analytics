@@ -11,7 +11,7 @@ import type * as React from "react";
 // Import Aksel Darkside styles (supports light/dark mode)
 import akselStyles from "@navikt/ds-css/darkside?url";
 import flexjarLogo from "~/assets/flexjar.png";
-import { ErrorComponent } from "~/components/ErrorComponent";
+import { ErrorComponent } from "~/components/shared/ErrorComponent";
 import { ThemeProvider, useTheme } from "~/context/ThemeContext";
 import globalStyles from "~/styles/global.css?url";
 
