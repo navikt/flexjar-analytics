@@ -36,6 +36,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.0",
     "@biomejs/biome": "^1.9.4",
     "@playwright/test": "^1.57.0",
     "@testing-library/jest-dom": "^6.6.3",
@@ -54,7 +55,8 @@
     "typescript": "^5.7.2",
     "vite": "^7.1.7",
     "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^2.1.8"
+    "vitest": "^2.1.8",
+    "vitest-axe": "^0.1.0"
   },
   "engines": {
     "node": ">=22"

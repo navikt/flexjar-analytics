@@ -22,105 +22,140 @@ export function Header() {
   };
 
   return (
-    <Box.New
-      paddingInline={{ xs: "space-12", sm: "space-16" }}
-      background="raised"
-      borderWidth="0 0 1 0"
-      borderColor="neutral-subtle"
-      as="header"
-    >
-      <HStack
-        justify="space-between"
-        align="center"
-        gap={{ xs: "space-8", md: "space-16" }}
+    <>
+      {/* Skip link for keyboard navigation */}
+      <a
+        href="#main-content"
         style={{
-          maxWidth: "1400px",
-          margin: "0 auto",
-          height: "64px",
+          position: "absolute",
+          left: "-9999px",
+          top: "auto",
+          width: "1px",
+          height: "1px",
+          overflow: "hidden",
+        }}
+        onFocus={(e) => {
+          e.currentTarget.style.left = "1rem";
+          e.currentTarget.style.top = "1rem";
+          e.currentTarget.style.width = "auto";
+          e.currentTarget.style.height = "auto";
+          e.currentTarget.style.overflow = "visible";
+          e.currentTarget.style.zIndex = "9999";
+          e.currentTarget.style.background = "var(--ax-bg-default)";
+          e.currentTarget.style.padding = "0.5rem 1rem";
+          e.currentTarget.style.borderRadius = "var(--ax-border-radius-medium)";
+          e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.15)";
+        }}
+        onBlur={(e) => {
+          e.currentTarget.style.left = "-9999px";
+          e.currentTarget.style.width = "1px";
+          e.currentTarget.style.height = "1px";
+          e.currentTarget.style.overflow = "hidden";
         }}
       >
-        {/* Logo and title */}
-        <button
-          type="button"
-          onClick={handleResetAndNavigate}
+        Hopp til hovedinnhold
+      </a>
+      <Box.New
+        paddingInline={{ xs: "space-12", sm: "space-16" }}
+        background="raised"
+        borderWidth="0 0 1 0"
+        borderColor="neutral-subtle"
+        as="header"
+      >
+        <HStack
+          justify="space-between"
+          align="center"
+          gap={{ xs: "space-8", md: "space-16" }}
           style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "0.5rem",
-            fontWeight: 600,
-            fontSize: "1.125rem",
-            textDecoration: "none",
-            color: "inherit",
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            padding: 0,
+            maxWidth: "1400px",
+            margin: "0 auto",
+            height: "64px",
           }}
         >
-          <img
-            src={flexjarLogo}
-            alt=""
-            style={{ height: "36px", width: "auto" }}
-            width={36}
-            height={36}
-          />
-          {/* Hide title text on very small screens */}
-          <Hide below="sm" asChild>
-            <span>Flexjar Analytics</span>
-          </Hide>
-        </button>
-
-        {/* Navigation */}
-        <HStack gap={{ xs: "space-4", sm: "space-8", md: "space-16" }}>
-          <Link to="/" search={(prev) => prev}>
-            <Button
-              variant={getVariant("/")}
-              size="small"
-              icon={<BarChartIcon aria-hidden />}
-            >
-              {/* Hide button text on mobile, show on tablet+ */}
-              <Hide below="md" asChild>
-                <span>Dashboard</span>
-              </Hide>
-            </Button>
-          </Link>
-          <Link to="/feedback" search={(prev) => prev}>
-            <Button
-              variant={getVariant("/feedback")}
-              size="small"
-              icon={<TableIcon aria-hidden />}
-            >
-              <Hide below="md" asChild>
-                <span>Tilbakemeldinger</span>
-              </Hide>
-            </Button>
-          </Link>
-          <Link to="/export" search={(prev) => prev}>
-            <Button
-              variant={getVariant("/export")}
-              size="small"
-              icon={<DownloadIcon aria-hidden />}
-            >
-              <Hide below="md" asChild>
-                <span>Eksporter</span>
-              </Hide>
-            </Button>
-          </Link>
-
-          {/* Divider - hide on very small screens */}
-          <Hide below="sm">
-            <div
-              style={{
-                width: "1px",
-                height: "32px",
-                background: "var(--ax-border-neutral-subtle)",
-              }}
+          {/* Logo and title */}
+          <button
+            type="button"
+            onClick={handleResetAndNavigate}
+            aria-label="Flexjar Analytics - gå til forsiden"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              fontWeight: 600,
+              fontSize: "1.125rem",
+              textDecoration: "none",
+              color: "inherit",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              padding: 0,
+            }}
+          >
+            <img
+              src={flexjarLogo}
+              alt=""
+              style={{ height: "36px", width: "auto" }}
+              width={36}
+              height={36}
             />
-          </Hide>
+            {/* Hide title text on very small screens */}
+            <Hide below="sm" asChild>
+              <span>Flexjar Analytics</span>
+            </Hide>
+          </button>
 
-          <ThemeToggle />
+          {/* Navigation */}
+          <HStack gap={{ xs: "space-4", sm: "space-8", md: "space-16" }}>
+            <Link to="/" search={(prev) => prev}>
+              <Button
+                variant={getVariant("/")}
+                size="small"
+                icon={<BarChartIcon aria-hidden />}
+              >
+                {/* Hide button text on mobile, show on tablet+ */}
+                <Hide below="md" asChild>
+                  <span>Dashboard</span>
+                </Hide>
+              </Button>
+            </Link>
+            <Link to="/feedback" search={(prev) => prev}>
+              <Button
+                variant={getVariant("/feedback")}
+                size="small"
+                icon={<TableIcon aria-hidden />}
+              >
+                <Hide below="md" asChild>
+                  <span>Tilbakemeldinger</span>
+                </Hide>
+              </Button>
+            </Link>
+            <Link to="/export" search={(prev) => prev}>
+              <Button
+                variant={getVariant("/export")}
+                size="small"
+                icon={<DownloadIcon aria-hidden />}
+              >
+                <Hide below="md" asChild>
+                  <span>Eksporter</span>
+                </Hide>
+              </Button>
+            </Link>
+
+            {/* Divider - hide on very small screens */}
+            <Hide below="sm">
+              <div
+                style={{
+                  width: "1px",
+                  height: "32px",
+                  background: "var(--ax-border-neutral-subtle)",
+                }}
+              />
+            </Hide>
+
+            <ThemeToggle />
+          </HStack>
         </HStack>
-      </HStack>
-    </Box.New>
+      </Box.New>
+    </>
   );
 }

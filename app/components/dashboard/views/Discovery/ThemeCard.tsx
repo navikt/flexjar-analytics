@@ -24,6 +24,11 @@ export function ThemeCard({ theme, onClick, onEdit }: ThemeCardProps) {
       onClick={onClick}
       role={onClick ? "button" : undefined}
       tabIndex={onClick ? 0 : undefined}
+      aria-label={
+        onClick
+          ? `${theme.theme === "Annet" ? "Usortert" : theme.theme}, ${theme.count} svar, ${successPercent}% suksess. Klikk for å se tilbakemeldinger.`
+          : undefined
+      }
       onKeyDown={
         onClick
           ? (e) => {
@@ -49,6 +54,15 @@ export function ThemeCard({ theme, onClick, onEdit }: ThemeCardProps) {
         }`,
         cursor: onClick ? "pointer" : "default",
         transition: "background-color 0.2s ease",
+        outline: "none",
+      }}
+      onFocus={(e) => {
+        if (onClick) {
+          e.currentTarget.style.boxShadow = "0 0 0 3px var(--ax-border-focus)";
+        }
+      }}
+      onBlur={(e) => {
+        e.currentTarget.style.boxShadow = "none";
       }}
       onMouseEnter={(e) => {
         if (onClick)

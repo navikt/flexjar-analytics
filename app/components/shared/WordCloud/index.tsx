@@ -63,6 +63,11 @@ export function WordCloud({
             key={word}
             type="button"
             onClick={(e) => onWordClick(word, e)}
+            aria-label={
+              isCategorized
+                ? `${word}, nevnt ${count} ganger, tilhører tema ${wordTheme.name}`
+                : `${word}, nevnt ${count} ganger, ikke kategorisert`
+            }
             style={{
               fontSize: `${scale}rem`,
               fontWeight: index < 5 ? 600 : 400,
