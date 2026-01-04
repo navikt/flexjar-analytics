@@ -16,6 +16,7 @@ import {
 import { useCallback, useState } from "react";
 import { DashboardCard } from "~/components/DashboardComponents";
 import { type ContextExample, ThemeModal } from "~/components/ThemeModal";
+import { WordCloud } from "~/components/WordCloud";
 import { WordPopover } from "~/components/WordPopover";
 import { useBlockerStats } from "~/hooks/useBlockerStats";
 import { useThemes } from "~/hooks/useThemes";
@@ -255,72 +256,12 @@ export function BlockerAnalysis({ data: providedData }: BlockerAnalysisProps) {
                 – klikk for å opprette eller redigere tema
               </BodyShort>
             </HStack>
-            <div
-              style={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: "0.5rem",
-                alignItems: "center",
-              }}
-            >
-              {wordFrequency.slice(0, 20).map(({ word, count }, index) => {
-                const maxCount = wordFrequency[0]?.count ?? 1;
-                const scale = 0.75 + (count / maxCount) * 0.5;
-                const wordTheme = getThemeForWord(word);
-                const isCategorized = !!wordTheme;
-
-                // Use theme color if categorized, otherwise neutral
-                const color = isCategorized
-                  ? wordTheme.color
-                  : index < 3
-                    ? "var(--ax-text-default)"
-                    : index < 10
-                      ? "var(--ax-text-neutral-subtle)"
-                      : "var(--ax-text-muted)";
-
-                return (
-                  <button
-                    key={word}
-                    type="button"
-                    onClick={(e) => handleWordClick(word, e)}
-                    style={{
-                      fontSize: `${scale}rem`,
-                      fontWeight: index < 5 ? 600 : 400,
-                      color,
-                      cursor: "pointer",
-                      background: isCategorized
-                        ? `${wordTheme.color}15`
-                        : "none",
-                      border: "none",
-                      padding: "0.125rem 0.25rem",
-                      borderRadius: "var(--ax-border-radius-small)",
-                      transition: "all 0.2s ease",
-                    }}
-                    title={
-                      isCategorized
-                        ? `${word}: tilhører "${wordTheme.name}" – klikk for å administrere`
-                        : `${word}: ${count} ganger – klikk for å kategorisere`
-                    }
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = isCategorized
-                        ? `${wordTheme.color || "#888"}30`
-                        : "var(--ax-bg-neutral-soft-hover)";
-                      e.currentTarget.style.color = isCategorized
-                        ? wordTheme.color || "#888"
-                        : "var(--ax-text-action)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = isCategorized
-                        ? `${wordTheme.color || "#888"}15`
-                        : "transparent";
-                      e.currentTarget.style.color = color || "";
-                    }}
-                  >
-                    {word}
-                  </button>
-                );
-              })}
-            </div>
+            <WordCloud
+              words={wordFrequency}
+              maxWords={20}
+              getThemeForWord={getThemeForWord}
+              onWordClick={handleWordClick}
+            />
           </Box.New>
         )}
 

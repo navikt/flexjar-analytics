@@ -17,6 +17,7 @@ import {
 import { useCallback, useState } from "react";
 import { DashboardCard } from "~/components/DashboardComponents";
 import { type ContextExample, ThemeModal } from "~/components/ThemeModal";
+import { WordCloud } from "~/components/WordCloud";
 import { WordPopover } from "~/components/WordPopover";
 import { useThemes } from "~/hooks/useThemes";
 import type {
@@ -256,71 +257,12 @@ export function DiscoveryAnalysis({ data }: DiscoveryAnalysisProps) {
         </Box.New>
 
         <Box.New padding={{ xs: "space-16", md: "space-24" }}>
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "0.5rem",
-              alignItems: "center",
-            }}
-          >
-            {wordFrequency.slice(0, 30).map(({ word, count }, index) => {
-              // Scale font size based on frequency
-              const maxCount = wordFrequency[0]?.count ?? 1;
-              const scale = 0.75 + (count / maxCount) * 0.75; // 0.75 to 1.5 rem
-              const wordTheme = getThemeForWord(word);
-              const isCategorized = !!wordTheme;
-
-              // Base color: use theme color if categorized, otherwise neutral based on rank
-              const baseColor = isCategorized
-                ? wordTheme.color
-                : index < 3
-                  ? "var(--ax-text-default)"
-                  : index < 10
-                    ? "var(--ax-text-neutral-subtle)"
-                    : "var(--ax-text-muted)";
-
-              return (
-                <button
-                  key={word}
-                  type="button"
-                  onClick={(e) => handleWordClick(word, e)}
-                  style={{
-                    fontSize: `${scale}rem`,
-                    fontWeight: index < 5 ? 600 : 400,
-                    color: baseColor,
-                    cursor: "pointer",
-                    transition: "all 0.2s ease",
-                    background: isCategorized ? `${wordTheme.color}15` : "none",
-                    border: "none",
-                    padding: "0.125rem 0.25rem",
-                    borderRadius: "var(--ax-border-radius-small)",
-                  }}
-                  title={
-                    isCategorized
-                      ? `${word}: tilhører "${wordTheme.name}" – klikk for å administrere`
-                      : `${word}: ${count} ganger – klikk for å kategorisere`
-                  }
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = isCategorized
-                      ? `${wordTheme.color || "#888"}30`
-                      : "var(--ax-bg-neutral-soft-hover)";
-                    e.currentTarget.style.color = isCategorized
-                      ? wordTheme.color || "#888"
-                      : "var(--ax-text-action)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = isCategorized
-                      ? `${wordTheme.color || "#888"}15`
-                      : "transparent";
-                    e.currentTarget.style.color = baseColor || "";
-                  }}
-                >
-                  {word}
-                </button>
-              );
-            })}
-          </div>
+          <WordCloud
+            words={wordFrequency}
+            maxWords={30}
+            getThemeForWord={getThemeForWord}
+            onWordClick={handleWordClick}
+          />
         </Box.New>
       </DashboardCard>
 
