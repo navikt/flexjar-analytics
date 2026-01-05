@@ -205,10 +205,10 @@ export function TopTasksOverview() {
                         style={{
                           color:
                             task.successRate >= 0.8
-                              ? "var(--ax-status-success)"
+                              ? "var(--ax-text-success)"
                               : task.successRate >= 0.5
-                                ? "var(--ax-status-warning)"
-                                : "var(--ax-status-danger)",
+                                ? "var(--ax-text-warning)"
+                                : "var(--ax-text-danger)",
                           fontWeight: "bold",
                         }}
                       >

@@ -37,9 +37,9 @@ export function TPIDashboard({ data }: TPIDashboardProps) {
   };
 
   const getTpiColor = (score: number) => {
-    if (score >= 80) return "var(--ax-status-success)";
-    if (score >= 60) return "var(--ax-status-warning)";
-    return "var(--ax-status-danger)";
+    if (score >= 80) return "var(--ax-text-success)";
+    if (score >= 60) return "var(--ax-text-warning)";
+    return "var(--ax-text-danger)";
   };
 
   return (
