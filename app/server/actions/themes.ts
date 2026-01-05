@@ -17,7 +17,11 @@ import { handleApiResponse } from "../fetchUtils";
 // ============================================
 
 const ThemeIdSchema = z.object({
-  themeId: z.string(), // Allow non-UUID IDs for blocker themes
+  themeId: z.string(),
+});
+
+const FetchThemesParamsSchema = z.object({
+  context: z.enum(["GENERAL_FEEDBACK", "BLOCKER", "ALL"]).optional(),
 });
 
 const CreateThemeSchema = z.object({
@@ -29,7 +33,7 @@ const CreateThemeSchema = z.object({
 });
 
 const UpdateThemeSchema = z.object({
-  themeId: z.string(), // Allow non-UUID IDs for blocker themes
+  themeId: z.string(),
   name: z.string().optional(),
   keywords: z.array(z.string()).optional(),
   color: z.string().optional(),
@@ -44,25 +48,49 @@ import { mockThemes } from "~/mock/themes";
 // ============================================
 
 /**
- * Fetch all themes for the current team
+ * Fetch themes for the current team.
+ *
+ * @param context - Optional filter: "GENERAL_FEEDBACK", "BLOCKER", or "ALL" (default)
  */
 export const fetchThemesServerFn = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .handler(async ({ context }): Promise<TextTheme[]> => {
-    const { backendUrl, oboToken } = context as AuthContext;
+  .inputValidator(zodValidator(FetchThemesParamsSchema))
+  .handler(async ({ data, context: authContext }): Promise<TextTheme[]> => {
+    const { backendUrl, oboToken } = authContext as AuthContext;
+    const filterContext = data?.context;
 
     if (isMockMode()) {
       await mockDelay();
-      return [...mockThemes];
+      let themes = [...mockThemes];
+
+      // Filter by context if specified
+      if (filterContext && filterContext !== "ALL") {
+        themes = themes.filter((t) => t.analysisContext === filterContext);
+      }
+
+      return themes;
     }
 
-    const url = buildUrl(backendUrl, "/api/v1/intern/themes", {});
+    // Build URL with optional context filter
+    const params: Record<string, string> = {};
+    if (filterContext && filterContext !== "ALL") {
+      params.context = filterContext;
+    }
+
+    const url = buildUrl(backendUrl, "/api/v1/intern/themes", params);
     const response = await fetch(url, {
       headers: getHeaders(oboToken),
     });
 
     await handleApiResponse(response);
-    return response.json() as Promise<TextTheme[]>;
+    const allThemes = (await response.json()) as TextTheme[];
+
+    // Client-side filter as fallback if API doesn't support context param yet
+    if (filterContext && filterContext !== "ALL") {
+      return allThemes.filter((t) => t.analysisContext === filterContext);
+    }
+
+    return allThemes;
   });
 
 /**

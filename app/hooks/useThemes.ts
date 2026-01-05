@@ -5,18 +5,45 @@ import {
   fetchThemesServerFn,
   updateThemeServerFn,
 } from "~/server/actions/themes";
-import type { CreateThemeInput, UpdateThemeInput } from "~/types/api";
+import type {
+  AnalysisContext,
+  CreateThemeInput,
+  UpdateThemeInput,
+} from "~/types/api";
+
+export type ThemeContext = AnalysisContext | "ALL";
+
+export interface UseThemesOptions {
+  /**
+   * Filter themes by analysis context.
+   * - "GENERAL_FEEDBACK": Discovery themes only
+   * - "BLOCKER": Blocker themes only (for Top Tasks)
+   * - "ALL": All themes (default)
+   */
+  context?: ThemeContext;
+}
 
 /**
  * Hook for managing text themes (CRUD operations).
  * Provides queries and mutations with automatic cache invalidation.
+ *
+ * @example
+ * // Get only discovery themes
+ * const { themes } = useThemes({ context: "GENERAL_FEEDBACK" });
+ *
+ * // Get only blocker themes
+ * const { themes } = useThemes({ context: "BLOCKER" });
+ *
+ * // Get all themes (default)
+ * const { themes } = useThemes();
  */
-export function useThemes() {
+export function useThemes(options: UseThemesOptions = {}) {
   const queryClient = useQueryClient();
+  const context = options.context ?? "ALL";
 
   const themesQuery = useQuery({
-    queryKey: ["themes"],
-    queryFn: () => fetchThemesServerFn(),
+    queryKey: ["themes", context],
+    queryFn: () => fetchThemesServerFn({ data: { context } }),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
@@ -24,8 +51,8 @@ export function useThemes() {
     mutationFn: (input: CreateThemeInput) =>
       createThemeServerFn({ data: input }),
     onSuccess: () => {
+      // Invalidate all theme queries regardless of context
       queryClient.invalidateQueries({ queryKey: ["themes"] });
-      // Also invalidate discovery and blocker stats since themes affect grouping
       queryClient.invalidateQueries({ queryKey: ["discoveryStats"] });
       queryClient.invalidateQueries({ queryKey: ["blockerStats"] });
     },

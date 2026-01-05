@@ -41,7 +41,6 @@ interface DiscoveryAnalysisProps {
 export function DiscoveryAnalysis({ data }: DiscoveryAnalysisProps) {
   const { wordFrequency, themes, recentResponses, totalSubmissions } = data;
 
-  // Theme management state
   const {
     themes: definedThemes,
     createTheme,
@@ -49,7 +48,7 @@ export function DiscoveryAnalysis({ data }: DiscoveryAnalysisProps) {
     deleteTheme,
     isCreating,
     isUpdating,
-  } = useThemes();
+  } = useThemes({ context: "GENERAL_FEEDBACK" });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTheme, setEditingTheme] = useState<TextTheme | undefined>();
   const [initialKeywords, setInitialKeywords] = useState<string[]>([]);
@@ -113,13 +112,9 @@ export function DiscoveryAnalysis({ data }: DiscoveryAnalysisProps) {
     [recentResponses],
   );
 
-  // Filter to only GENERAL_FEEDBACK themes for Discovery (exclude BLOCKER themes)
-  const generalFeedbackThemes = definedThemes.filter(
-    (t) => t.analysisContext !== "BLOCKER",
-  );
-
   // Combine defined themes with stats
-  const allThemesDisplay = generalFeedbackThemes.map((definedTheme) => {
+  // Note: definedThemes is already filtered to GENERAL_FEEDBACK by the useThemes hook
+  const allThemesDisplay = definedThemes.map((definedTheme) => {
     const stats = themes.find((t) => t.theme === definedTheme.name);
     return {
       theme: definedTheme.name,
@@ -135,7 +130,7 @@ export function DiscoveryAnalysis({ data }: DiscoveryAnalysisProps) {
   // Also include themes from stats that might not be in definedThemes (e.g. "Annet" or deleted timestamps)
   // mostly "Annet" which shouldn't be editable usually, but good to show
   for (const statTheme of themes) {
-    if (!generalFeedbackThemes.some((dt) => dt.name === statTheme.theme)) {
+    if (!definedThemes.some((dt) => dt.name === statTheme.theme)) {
       allThemesDisplay.push({
         theme: statTheme.theme,
         count: statTheme.count,

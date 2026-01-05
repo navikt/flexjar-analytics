@@ -42,14 +42,14 @@ interface BlockerAnalysisProps {
 export function BlockerAnalysis({ data: providedData }: BlockerAnalysisProps) {
   const blockerQuery = useBlockerStats();
   const {
-    themes: allThemes,
+    themes: blockerThemes,
     createTheme,
     updateTheme,
     deleteTheme,
     isCreating,
     isUpdating,
     isDeleting,
-  } = useThemes();
+  } = useThemes({ context: "BLOCKER" });
 
   const [showModal, setShowModal] = useState(false);
   const [selectedWord, setSelectedWord] = useState<string>("");
@@ -59,11 +59,6 @@ export function BlockerAnalysis({ data: providedData }: BlockerAnalysisProps) {
   const [popoverAnchor, setPopoverAnchor] = useState<HTMLElement | null>(null);
   const [popoverWord, setPopoverWord] = useState<string>("");
   const [popoverTheme, setPopoverTheme] = useState<TextTheme | null>(null);
-
-  // Filter to blocker themes only
-  const blockerThemes = allThemes.filter(
-    (t) => t.analysisContext === "BLOCKER",
-  );
 
   // Use provided data or fetch from hook
   const data = providedData ?? blockerQuery.data;
