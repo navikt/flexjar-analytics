@@ -232,10 +232,10 @@ export function DeviceBreakdownChart({
                         cursor: "inherit",
                         color:
                           d.averageRating >= 4
-                            ? "#34D399"
+                            ? "var(--ax-text-success)"
                             : d.averageRating <= 2
-                              ? "#F87171"
-                              : colors.text,
+                              ? "var(--ax-text-danger)"
+                              : "var(--ax-text-default)",
                       }}
                     >
                       ⭐ {d.averageRating.toFixed(1)}

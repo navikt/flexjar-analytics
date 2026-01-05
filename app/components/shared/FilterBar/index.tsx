@@ -300,11 +300,13 @@ export function FilterBar({ showDetails = false }: FilterBarProps) {
                   </ToggleGroup.Item>
                   <ToggleGroup.Item
                     value="desktop"
-                    icon={<LaptopIcon title="Desktop" />}
+                    aria-label="Desktop"
+                    icon={<LaptopIcon aria-hidden />}
                   />
                   <ToggleGroup.Item
                     value="mobile"
-                    icon={<MobileIcon title="Mobil" />}
+                    aria-label="Mobil"
+                    icon={<MobileIcon aria-hidden />}
                   />
                 </ToggleGroup>
               )}

@@ -95,7 +95,7 @@ export function ExportPanel() {
           <Button
             variant="tertiary"
             size="small"
-            icon={<ArrowsCirclepathIcon />}
+            icon={<ArrowsCirclepathIcon aria-hidden />}
             onClick={handleExport}
             style={{ marginLeft: "0.5rem" }}
           >
@@ -120,7 +120,7 @@ export function ExportPanel() {
           >
             <Radio value="csv">
               <HStack gap="space-8" align="start">
-                <FilesIcon style={{ marginTop: "2px" }} />
+                <FilesIcon aria-hidden style={{ marginTop: "2px" }} />
                 <VStack gap="0">
                   <BodyShort weight="semibold">CSV</BodyShort>
                   <BodyShort size="small">
@@ -131,7 +131,7 @@ export function ExportPanel() {
             </Radio>
             <Radio value="excel">
               <HStack gap="space-8" align="start">
-                <FileExcelIcon style={{ marginTop: "2px" }} />
+                <FileExcelIcon aria-hidden style={{ marginTop: "2px" }} />
                 <VStack gap="0">
                   <BodyShort weight="semibold">Excel (XLSX)</BodyShort>
                   <BodyShort size="small">
@@ -142,7 +142,7 @@ export function ExportPanel() {
             </Radio>
             <Radio value="json">
               <HStack gap="space-8" align="start">
-                <FilesIcon style={{ marginTop: "2px" }} />
+                <FilesIcon aria-hidden style={{ marginTop: "2px" }} />
                 <VStack gap="0">
                   <BodyShort weight="semibold">JSON</BodyShort>
                   <BodyShort size="small">
@@ -156,7 +156,7 @@ export function ExportPanel() {
           <Button
             onClick={handleExport}
             loading={isExporting}
-            icon={<DownloadIcon />}
+            icon={<DownloadIcon aria-hidden />}
           >
             Last ned {format.toUpperCase()}
           </Button>

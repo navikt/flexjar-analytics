@@ -52,7 +52,14 @@ export function FeedbackRow({
         <Button
           variant="tertiary"
           size="xsmall"
-          icon={isExpanded ? <ChevronUpIcon /> : <ChevronDownIcon />}
+          aria-label={isExpanded ? "Minimer rad" : "Utvid rad"}
+          icon={
+            isExpanded ? (
+              <ChevronUpIcon aria-hidden />
+            ) : (
+              <ChevronDownIcon aria-hidden />
+            )
+          }
         />
       </Table.DataCell>
 
@@ -98,7 +105,7 @@ export function FeedbackRow({
             {feedback.sensitiveDataRedacted && (
               <Tooltip content="Sensitiv data har blitt fjernet">
                 <Tag variant="warning" size="small">
-                  <ShieldLockIcon /> Redigert
+                  <ShieldLockIcon aria-hidden /> Redigert
                 </Tag>
               </Tooltip>
             )}
@@ -119,6 +126,7 @@ export function FeedbackRow({
             <Button
               variant="tertiary-neutral"
               size="xsmall"
+              aria-label="Slett tilbakemelding"
               icon={<TrashIcon aria-hidden />}
               onClick={(e) => {
                 e.stopPropagation();

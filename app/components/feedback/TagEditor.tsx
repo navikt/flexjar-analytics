@@ -72,7 +72,7 @@ export function TagEditor({
         <Button
           variant="tertiary"
           size="xsmall"
-          icon={<PlusIcon />}
+          icon={<PlusIcon aria-hidden />}
           onClick={() => setIsAdding(true)}
         />
       </Tooltip>
@@ -117,7 +117,7 @@ export function TagEditor({
           <Button
             variant="tertiary"
             size="xsmall"
-            icon={<XMarkIcon />}
+            icon={<XMarkIcon aria-hidden />}
             onClick={() => {
               setIsAdding(false);
               setInputValue("");
@@ -129,7 +129,7 @@ export function TagEditor({
           <Button
             variant="tertiary"
             size="xsmall"
-            icon={<PlusIcon />}
+            icon={<PlusIcon aria-hidden />}
             onClick={() => setIsAdding(true)}
           >
             {!compact && "Tag"}

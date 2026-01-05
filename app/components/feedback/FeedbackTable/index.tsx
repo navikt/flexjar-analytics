@@ -200,7 +200,7 @@ function SurveyToolbar({
           <Button
             variant="danger"
             size="small"
-            icon={<TrashIcon />}
+            icon={<TrashIcon aria-hidden />}
             onClick={onDelete}
           >
             <Hide below="sm" asChild>
