@@ -13,16 +13,22 @@ import {
 } from "@navikt/ds-react";
 import { useState } from "react";
 import { DashboardCard } from "~/components/dashboard";
+import { SegmentBreakdown } from "~/components/dashboard/SegmentBreakdown";
 import { DeviceBreakdownSection } from "~/components/dashboard/sections/FieldStats/DeviceBreakdownSection";
 import { TimelineSection } from "~/components/dashboard/sections/Timeline";
 import { BlockerAnalysis } from "~/components/dashboard/views/Discovery/BlockerAnalysis";
 import { TaskQuadrantChart } from "~/components/shared/Charts/TaskQuadrantChart";
+import { useSearchParams } from "~/hooks/useSearchParams";
+import { useSegmentFilter } from "~/hooks/useSegmentFilter";
 import { useTopTasksStats } from "~/hooks/useTopTasksStats";
 import { TopTasksStatsCards } from "./StatsCards";
 
 export function TopTasksOverview() {
   const { data, isLoading } = useTopTasksStats();
   const [selectedTask, setSelectedTask] = useState<string | null>(null);
+  const { params } = useSearchParams();
+  const { addSegment } = useSegmentFilter();
+  const surveyId = params.feedbackId;
 
   if (isLoading) return null;
   if (!data) return null;
@@ -240,6 +246,11 @@ export function TopTasksOverview() {
       </DashboardCard>
 
       <BlockerAnalysis />
+
+      {/* Segment breakdown */}
+      {surveyId && (
+        <SegmentBreakdown surveyId={surveyId} onSegmentClick={addSegment} />
+      )}
 
       {/* Device breakdown */}
       <DeviceBreakdownSection />

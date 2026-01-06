@@ -194,6 +194,16 @@ export const IGNORED_WORDS = new Set([
   "dager",
   "tid",
   "siden",
+
+  // ---------------------------------------------------------
+  // Redaction artifacts (from [fjernet] markers)
+  // ---------------------------------------------------------
+  "fjernet",
+  "fjernet]",
+  "[fjernet",
+  "[fjernet]",
+  "sladdet",
+  "sensurert",
 ]);
 
 export interface KeywordCount {

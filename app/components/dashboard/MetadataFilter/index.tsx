@@ -1,18 +1,20 @@
-import { Box, Chips, Label, VStack } from "@navikt/ds-react";
+import { ChevronDownIcon } from "@navikt/aksel-icons";
+import { ActionMenu, Button, HStack } from "@navikt/ds-react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { useSearchParams } from "~/hooks/useSearchParams";
+import { useSegmentFilter } from "~/hooks/useSegmentFilter";
 import { fetchMetadataKeysServerFn } from "~/server/actions";
+import { formatMetadataLabel, formatMetadataValue } from "~/utils/segmentUtils";
 
 interface MetadataFilterProps {
   surveyId: string;
 }
 
 /**
- * Dynamic filter component that shows available metadata keys/values for a survey.
- * Filters are applied client-side by updating URL params.
+ * Compact filter component using ActionMenu dropdowns.
+ * One dropdown per metadata key for efficient single-select filtering.
  */
 export function MetadataFilter({ surveyId }: MetadataFilterProps) {
-  const { params, setParam } = useSearchParams();
+  const { activeFilters, addSegment, removeSegment } = useSegmentFilter();
   const { data } = useQuery({
     queryKey: ["metadataKeys", surveyId],
     queryFn: () => fetchMetadataKeysServerFn({ data: { surveyId } }),
@@ -20,88 +22,80 @@ export function MetadataFilter({ surveyId }: MetadataFilterProps) {
     placeholderData: keepPreviousData,
   });
 
-  // Parse current metadata filters from URL
-  const getActiveFilters = (): Record<string, string> => {
-    const filters: Record<string, string> = {};
-    for (const [key, value] of Object.entries(params)) {
-      if (key.startsWith("meta.") && value) {
-        filters[key.replace("meta.", "")] = value;
-      }
-    }
-    return filters;
-  };
-
-  const activeFilters = getActiveFilters();
   const metadataKeys = data?.metadataKeys || {};
   const hasMetadata = Object.keys(metadataKeys).length > 0;
 
-  if (!surveyId || surveyId === "alle") {
+  if (!surveyId || surveyId === "alle" || !hasMetadata) {
     return null;
   }
 
-  if (!hasMetadata) {
-    return null;
-  }
+  // Update a single filter value
+  const setFilter = (key: string, value: string | undefined) => {
+    if (value === undefined || value === "") {
+      // Remove filter by finding and removing the segment
+      if (activeFilters[key]) {
+        removeSegment(`${key}:${activeFilters[key]}`);
+      }
+    } else {
+      // Add new filter (this replaces any existing filter for this key)
+      if (activeFilters[key]) {
+        removeSegment(`${key}:${activeFilters[key]}`);
+      }
+      addSegment(key, value);
+    }
+  };
 
   return (
-    <Box.New
-      padding="space-12"
-      background="raised"
-      borderRadius="medium"
-      borderColor="neutral-subtle"
-      borderWidth="1"
-    >
-      <VStack gap="space-12">
-        {Object.entries(metadataKeys).map(([key, values]) => (
-          <VStack key={key} gap="space-4">
-            <Label size="small">{formatMetadataKey(key)}</Label>
-            <Chips>
-              <Chips.Toggle
-                selected={!activeFilters[key]}
-                onClick={() => setParam(`meta.${key}` as "page", undefined)}
+    <HStack gap="space-8" wrap>
+      {Object.entries(metadataKeys).map(([key, values]) => {
+        const label = formatMetadataLabel(key);
+        const selectedValue = activeFilters[key];
+        const displayValue = selectedValue
+          ? `${label}: ${formatMetadataValue(selectedValue)}`
+          : label;
+
+        return (
+          <ActionMenu key={key}>
+            <ActionMenu.Trigger>
+              <Button
+                variant={
+                  selectedValue ? "primary-neutral" : "secondary-neutral"
+                }
+                size="small"
+                icon={<ChevronDownIcon aria-hidden />}
+                iconPosition="right"
               >
-                Alle
-              </Chips.Toggle>
-              {values.map((value) => (
-                <Chips.Toggle
-                  key={value}
-                  selected={activeFilters[key] === value}
-                  onClick={() =>
-                    setParam(
-                      `meta.${key}` as "page",
-                      activeFilters[key] === value ? undefined : value,
-                    )
-                  }
-                >
-                  {formatMetadataValue(value)}
-                </Chips.Toggle>
-              ))}
-            </Chips>
-          </VStack>
-        ))}
-      </VStack>
-    </Box.New>
+                {displayValue}
+              </Button>
+            </ActionMenu.Trigger>
+            <ActionMenu.Content>
+              <ActionMenu.RadioGroup
+                label={label}
+                value={selectedValue || ""}
+                onValueChange={(val) => setFilter(key, val || undefined)}
+              >
+                <ActionMenu.RadioItem value="">Alle</ActionMenu.RadioItem>
+                {values.map((item) => (
+                  <ActionMenu.RadioItem key={item.value} value={item.value}>
+                    {formatMetadataValue(item.value)} ({item.count})
+                  </ActionMenu.RadioItem>
+                ))}
+              </ActionMenu.RadioGroup>
+            </ActionMenu.Content>
+          </ActionMenu>
+        );
+      })}
+    </HStack>
   );
 }
 
 /**
- * Hook to filter feedback by metadata client-side.
- * Returns a filter function that can be used with Array.filter()
+ * Hook to filter feedback by segment (metadata) client-side.
+ * @deprecated Use useSegmentFilter from ~/hooks/useSegmentFilter instead
  */
 export function useMetadataFilter() {
-  const { params } = useSearchParams();
+  const { activeFilters, hasFilters } = useSegmentFilter();
 
-  // Extract metadata filters from URL params
-  const metadataFilters: Record<string, string> = {};
-  for (const [key, value] of Object.entries(params)) {
-    if (key.startsWith("meta.") && value) {
-      metadataFilters[key.replace("meta.", "")] = value;
-    }
-  }
-
-  const hasFilters = Object.keys(metadataFilters).length > 0;
-
-  // Filter function to apply to feedback items
   const filterByMetadata = <T extends { metadata?: Record<string, string> }>(
     items: T[],
   ): T[] => {
@@ -109,31 +103,11 @@ export function useMetadataFilter() {
 
     return items.filter((item) => {
       if (!item.metadata) return false;
-
-      return Object.entries(metadataFilters).every(([key, value]) => {
-        return item.metadata?.[key] === value;
-      });
+      return Object.entries(activeFilters).every(
+        ([key, value]) => item.metadata?.[key] === value,
+      );
     });
   };
 
-  return {
-    hasFilters,
-    metadataFilters,
-    filterByMetadata,
-  };
-}
-
-// Helper to format camelCase key to readable label
-function formatMetadataKey(key: string): string {
-  return key
-    .replace(/([A-Z])/g, " $1")
-    .replace(/^./, (str) => str.toUpperCase())
-    .trim();
-}
-
-// Helper to format boolean-like values
-function formatMetadataValue(value: string): string {
-  if (value === "true") return "Ja";
-  if (value === "false") return "Nei";
-  return value.charAt(0).toUpperCase() + value.slice(1);
+  return { hasFilters, metadataFilters: activeFilters, filterByMetadata };
 }

@@ -1,34 +1,47 @@
-import { BodyShort, Heading, VStack } from "@navikt/ds-react";
+import { VStack } from "@navikt/ds-react";
+import { BodyShort, Heading } from "@navikt/ds-react";
 import { DashboardCard, DashboardGrid } from "~/components/dashboard";
-import { FieldStatsSection } from "~/components/dashboard/sections/FieldStats";
+import { ActiveSegmentFilters } from "~/components/dashboard/ActiveSegmentFilters";
+import { SegmentBreakdown } from "~/components/dashboard/SegmentBreakdown";
 import { DeviceBreakdownSection } from "~/components/dashboard/sections/FieldStats/DeviceBreakdownSection";
 import { StatsCards } from "~/components/dashboard/sections/StatsCards";
 import { TimelineSection } from "~/components/dashboard/sections/Timeline";
 import { UrgentUrls } from "~/components/dashboard/sections/UrgentUrls";
-import { DeviceBreakdownChart } from "~/components/shared/Charts/DeviceBreakdownChart";
+import { RatingChart } from "~/components/shared/Charts/RatingChart";
 import { RatingTrendChart } from "~/components/shared/Charts/RatingTrendChart";
-import { SurveyTypeDistribution } from "~/components/shared/Charts/SurveyTypeDistribution";
 import { TopAppsChart } from "~/components/shared/Charts/TopAppsChart";
+import { useSearchParams } from "~/hooks/useSearchParams";
+import { useSegmentFilter } from "~/hooks/useSegmentFilter";
 
 interface RatingDashboardProps {
-  hasSurveyFilter: boolean;
+  hasSurveyFilter?: boolean;
 }
 
 /**
- * Rating Dashboard - for rating, custom, and unfiltered views
+ * Rating Dashboard - rating chart, trend, top apps
  */
 export function RatingDashboard({ hasSurveyFilter }: RatingDashboardProps) {
+  const { params } = useSearchParams();
+  const { addSegment } = useSegmentFilter();
+  const surveyId = params.feedbackId;
+
   return (
     <>
+      <ActiveSegmentFilters />
+
       <StatsCards showRating />
 
-      {/* Timeline charts */}
-      <DashboardGrid columns={{ xs: 1, lg: 2 }}>
-        <TimelineSection title="Antall tilbakemeldinger" />
+      <DashboardGrid minColumnWidth="280px">
+        <RatingChart />
+        <TopAppsChart />
+      </DashboardGrid>
 
+      <TimelineSection title="Antall tilbakemeldinger" />
+
+      <DashboardGrid>
         {/* Rating trend chart */}
-        <DashboardCard padding={{ xs: "space-16", md: "space-24" }}>
-          <VStack gap="space-16">
+        <DashboardCard padding={{ xs: "space-12", md: "space-16" }}>
+          <VStack gap="space-12">
             <VStack gap="space-4">
               <Heading size="small">Gjennomsnittlig vurdering</Heading>
               <BodyShort size="small" textColor="subtle">
@@ -37,8 +50,9 @@ export function RatingDashboard({ hasSurveyFilter }: RatingDashboardProps) {
             </VStack>
             <div
               style={{
-                height: "clamp(200px, 40vw, 300px)",
+                height: "260px",
                 width: "100%",
+                overflow: "hidden",
               }}
             >
               <RatingTrendChart />
@@ -50,46 +64,13 @@ export function RatingDashboard({ hasSurveyFilter }: RatingDashboardProps) {
       {/* Urgent URLs - full width */}
       <UrgentUrls />
 
-      {/* Survey-specific statistics - only when a survey is selected */}
-      {hasSurveyFilter && <FieldStatsSection />}
+      {/* Device breakdown */}
+      <DeviceBreakdownSection />
 
-      {/* Apps, devices, and survey types breakdown - only when no survey filter */}
-      {!hasSurveyFilter && (
-        <DashboardGrid columns={{ xs: 1, md: 3 }}>
-          <DashboardCard padding={{ xs: "space-16", md: "space-24" }}>
-            <VStack gap="space-16">
-              <Heading size="small">Tilbakemeldinger per app</Heading>
-              <div
-                style={{
-                  height: "clamp(150px, 30vw, 180px)",
-                  width: "100%",
-                }}
-              >
-                <TopAppsChart />
-              </div>
-            </VStack>
-          </DashboardCard>
-
-          <DashboardCard padding={{ xs: "space-16", md: "space-24" }}>
-            <VStack gap="space-16">
-              <Heading size="small">Enheter</Heading>
-              <div style={{ width: "100%" }}>
-                <DeviceBreakdownChart />
-              </div>
-            </VStack>
-          </DashboardCard>
-
-          <DashboardCard padding={{ xs: "space-16", md: "space-24" }}>
-            <VStack gap="space-16">
-              <Heading size="small">Survey-typer</Heading>
-              <SurveyTypeDistribution height={150} />
-            </VStack>
-          </DashboardCard>
-        </DashboardGrid>
+      {/* Segment breakdown for survey-specific view */}
+      {hasSurveyFilter && surveyId && (
+        <SegmentBreakdown surveyId={surveyId} onSegmentClick={addSegment} />
       )}
-
-      {/* Devices when survey is selected - reusable section component */}
-      {hasSurveyFilter && <DeviceBreakdownSection showRating />}
     </>
   );
 }

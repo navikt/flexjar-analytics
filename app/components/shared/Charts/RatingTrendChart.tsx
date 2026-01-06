@@ -51,10 +51,10 @@ export function RatingTrendChart() {
 
   const colors = theme === "light" ? CHART_COLORS_LIGHT : CHART_COLORS;
 
-  // Responsive chart margins - small left/right on mobile to prevent clipping
+  // Responsive chart margins - minimal margins to maximize chart area
   const chartMargin = isMobile
-    ? { top: 10, right: 5, left: 5, bottom: 10 }
-    : { top: 20, right: 30, left: 20, bottom: 20 };
+    ? { top: 15, right: 5, left: 0, bottom: 20 }
+    : { top: 15, right: 10, left: 5, bottom: 20 };
 
   if (isPending) {
     return <Skeleton variant="rectangle" height={300} />;
@@ -129,19 +129,14 @@ export function RatingTrendChart() {
           ticks={[1, 2, 3, 4, 5]}
           axisLine={false}
           tickLine={false}
-          tick={{ fill: colors.text, fontSize: 12 }}
+          tick={{ fill: colors.text, fontSize: 11 }}
+          width={20}
           hide={isMobile}
         />
         <ReferenceLine
           y={overallAverage}
           stroke={colors.reference}
           strokeDasharray="3 3"
-          label={{
-            value: `Snitt: ${overallAverage.toFixed(1)}`,
-            fill: colors.textMuted,
-            fontSize: 11,
-            position: "right",
-          }}
         />
         <Tooltip
           content={({ active, payload }) => {
@@ -185,7 +180,7 @@ export function RatingTrendChart() {
           }}
         />
         <Line
-          type="natural"
+          type="monotone"
           dataKey="average"
           stroke={colors.primary}
           strokeWidth={2}

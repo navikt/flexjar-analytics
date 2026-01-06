@@ -244,9 +244,18 @@ export interface TopTasksResponse {
 // Metadata Keys Types
 // ============================================
 
+/** A metadata value with its occurrence count */
+export interface MetadataValueWithCount {
+  value: string;
+  count: number;
+}
+
 export interface MetadataKeysResponse {
   feedbackId: string;
-  metadataKeys: Record<string, string[]>;
+  /** Metadata keys with their values and counts */
+  metadataKeys: Record<string, MetadataValueWithCount[]>;
+  /** The maxCardinality used for filtering */
+  maxCardinality?: number;
 }
 
 // ============================================

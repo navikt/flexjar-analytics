@@ -26,10 +26,10 @@ export function TimelineSection({
   variant = "default",
 }: TimelineSectionProps) {
   return (
-    <DashboardCard padding={{ xs: "space-16", md: "space-24" }}>
-      <VStack gap="space-16">
+    <DashboardCard padding={{ xs: "space-12", md: "space-16" }}>
+      <VStack gap="space-12">
         <Heading size="small">{title}</Heading>
-        <div style={{ height: "clamp(200px, 40vw, 300px)", width: "100%" }}>
+        <div style={{ height: "280px", width: "100%" }}>
           {variant === "topTasks" ? (
             <TopTasksTimelineChart />
           ) : (

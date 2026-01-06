@@ -49,10 +49,10 @@ export function TimelineChart() {
 
   const colors = theme === "light" ? CHART_COLORS_LIGHT : CHART_COLORS;
 
-  // Responsive chart margins - small left/right on mobile to prevent clipping
+  // Responsive chart margins - minimal margins to maximize chart area
   const chartMargin = isMobile
-    ? { top: 10, right: 5, left: 5, bottom: 10 }
-    : { top: 20, right: 30, left: 20, bottom: 20 };
+    ? { top: 15, right: 5, left: 0, bottom: 20 }
+    : { top: 15, right: 10, left: 5, bottom: 20 };
 
   if (isPending) {
     return <Skeleton variant="rectangle" height={300} />;
@@ -120,7 +120,8 @@ export function TimelineChart() {
         <YAxis
           axisLine={false}
           tickLine={false}
-          tick={{ fill: colors.text, fontSize: 12 }}
+          tick={{ fill: colors.text, fontSize: 11 }}
+          width={25}
           hide={isMobile}
         />
         <Tooltip

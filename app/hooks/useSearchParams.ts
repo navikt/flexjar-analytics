@@ -23,6 +23,9 @@ export interface SearchParams {
 
   /** Filter by theme (for discovery drill-down) */
   theme?: string;
+
+  /** Filter by context.tags (format: "key:value,key:value") */
+  segment?: string;
 }
 
 // Store for managing search params reactively

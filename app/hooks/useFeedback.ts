@@ -17,6 +17,7 @@ export type { FeedbackPage } from "~/types/api";
  * - lavRating: Filter to only low ratings (1-2)
  * - tags: Filter by comma-separated tags
  * - deviceType: Filter by device type
+ * - segment: Filter by context.tags (format: key:value)
  *
  * @returns React Query result with FeedbackPage (content, pagination info)
  *
@@ -49,6 +50,7 @@ export function useFeedback() {
       params.pathname,
       params.deviceType,
       params.theme,
+      params.segment,
     ],
     queryFn: () =>
       fetchFeedbackServerFn({
@@ -67,6 +69,7 @@ export function useFeedback() {
           pathname: params.pathname,
           deviceType: params.deviceType,
           theme: params.theme,
+          segment: params.segment,
         },
       }),
     staleTime: 10000, // 10 seconds

@@ -21,23 +21,43 @@ export const fetchMetadataKeysServerFn = createServerFn({ method: "GET" })
   .handler(async ({ data, context }): Promise<MetadataKeysResponse> => {
     const { backendUrl, oboToken } = context as AuthContext;
 
+    console.log(
+      "[fetchMetadata] isMockMode:",
+      isMockMode(),
+      "surveyId:",
+      data.surveyId,
+    );
+
     if (isMockMode()) {
       await mockDelay(300);
-      // Return mock metadata keys based on survey
-      if (data.surveyId === "ny-oppfolgingsplan-sykmeldt") {
-        return {
-          feedbackId: data.surveyId,
-          metadataKeys: {
-            harDialogmote: ["true", "false"],
-            sykmeldingstype: ["avventende", "standard", "gradert"],
-          },
-        };
-      }
-      return { feedbackId: data.surveyId, metadataKeys: {} };
+      console.log("[fetchMetadata] Returning mock data for", data.surveyId);
+      // Return mock metadata keys with realistic counts
+      return {
+        feedbackId: data.surveyId,
+        metadataKeys: {
+          harAktivSykmelding: [
+            { value: "Ja", count: 67 },
+            { value: "Nei", count: 33 },
+          ],
+          ukeSykefravær: [
+            { value: "1", count: 45 },
+            { value: "2", count: 38 },
+            { value: "3", count: 32 },
+            { value: "4", count: 28 },
+            { value: "5", count: 22 },
+            { value: "6", count: 18 },
+            { value: "7", count: 12 },
+            { value: "8", count: 8 },
+          ],
+        },
+        maxCardinality: data.maxCardinality ?? 15,
+      };
     }
 
-    const url = buildUrl(backendUrl, "/api/v1/intern/metadata/keys", {
-      surveyId: data.surveyId,
+    const url = buildUrl(backendUrl, "/api/v1/intern/feedback/metadata-keys", {
+      feedbackId: data.surveyId,
+      team: "flex", // TODO: Get from auth context
+      maxCardinality: String(data.maxCardinality ?? 10),
     });
     const response = await fetch(url, {
       headers: getHeaders(oboToken),

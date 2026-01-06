@@ -1,5 +1,8 @@
+import { SegmentBreakdown } from "~/components/dashboard/SegmentBreakdown";
 import { DeviceBreakdownSection } from "~/components/dashboard/sections/FieldStats/DeviceBreakdownSection";
 import { TimelineSection } from "~/components/dashboard/sections/Timeline";
+import { useSearchParams } from "~/hooks/useSearchParams";
+import { useSegmentFilter } from "~/hooks/useSegmentFilter";
 import { useTaskPriorityStats } from "~/hooks/useTaskPriorityStats";
 import { Skeleton as TaskPriorityAnalysisSkeleton } from "./Skeleton";
 import { TaskPriorityAnalysis } from "./index";
@@ -9,6 +12,9 @@ import { TaskPriorityAnalysis } from "./index";
  */
 export function TaskPriorityDashboard() {
   const { data, isPending } = useTaskPriorityStats();
+  const { params } = useSearchParams();
+  const { addSegment } = useSegmentFilter();
+  const surveyId = params.feedbackId;
 
   return (
     <>
@@ -17,6 +23,11 @@ export function TaskPriorityDashboard() {
         <TaskPriorityAnalysisSkeleton />
       ) : (
         data && <TaskPriorityAnalysis data={data} />
+      )}
+
+      {/* Segment breakdown */}
+      {surveyId && (
+        <SegmentBreakdown surveyId={surveyId} onSegmentClick={addSegment} />
       )}
 
       {/* Timeline */}

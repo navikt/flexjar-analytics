@@ -289,6 +289,22 @@ export function calculateStats(
     );
   }
 
+  // Filter by segment (context.tags format: "key:value,key:value")
+  const segment = params.get("segment");
+  if (segment) {
+    const segmentFilters = segment.split(",").map((t) => {
+      const [key, value] = t.split(":");
+      return { key, value };
+    });
+    filtered = filtered.filter((item) => {
+      // Check if item.metadata matches all segment filters
+      if (!item.metadata) return false;
+      return segmentFilters.every(
+        (filter) => item.metadata?.[filter.key] === filter.value,
+      );
+    });
+  }
+
   // Legacy aggregations
   const byRating: Record<string, number> = {
     "1": 0,
@@ -483,6 +499,21 @@ function applyFiltersToItems(
     filtered = filtered.filter(
       (item) => item.context?.deviceType === deviceType,
     );
+
+  // Filter by segment (context.tags format: "key:value,key:value")
+  const segment = params.get("segment");
+  if (segment) {
+    const segmentFilters = segment.split(",").map((t) => {
+      const [key, value] = t.split(":");
+      return { key, value };
+    });
+    filtered = filtered.filter((item) => {
+      if (!item.metadata) return false;
+      return segmentFilters.every(
+        (filter) => item.metadata?.[filter.key] === filter.value,
+      );
+    });
+  }
 
   return filtered;
 }

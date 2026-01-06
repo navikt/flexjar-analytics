@@ -58,13 +58,10 @@ export const mockFeedbackItems: FeedbackDto[] = [
       ratingLabel: "Er oppfølgingsplanen til hjelp for deg?",
       textLabel: "Legg gjerne til en begrunnelse",
     },
-    // Showcase custom metadata fields
+    // Showcase custom metadata fields - keys match what's returned by fetchMetadata mock
     metadataGenerator: () => ({
-      behandlingsstatus: ["ny", "pågående", "avsluttet"][
-        Math.floor(Math.random() * 3)
-      ],
-      sykmeldingsuke: String(Math.floor(Math.random() * 16) + 1),
-      harDialogmote: Math.random() > 0.6 ? "ja" : "nei",
+      harAktivSykmelding: Math.random() > 0.4 ? "Ja" : "Nei",
+      ukeSykefravær: String(Math.floor(Math.random() * 8) + 1),
     }),
   }),
 
@@ -176,6 +173,7 @@ function applyFilters(
   const deviceType = params.get("deviceType");
   const tags = params.get("tags");
   const theme = params.get("theme");
+  const segment = params.get("segment");
 
   if (app) {
     filtered = filtered.filter((item) => item.app === app);
@@ -223,12 +221,25 @@ function applyFilters(
   if (surveyId) {
     filtered = filtered.filter((item) => item.surveyId === surveyId);
   }
-  // Filter by tags (comma-separated, matches any)
+  // Filter by tags (supports both item.tags array and metadata key:value format)
   if (tags) {
     const tagList = tags.split(",").map((t) => t.trim());
-    filtered = filtered.filter((item) =>
-      item.tags?.some((tag) => tagList.includes(tag)),
-    );
+    filtered = filtered.filter((item) => {
+      // Check item.tags array (simple string tags)
+      if (item.tags?.some((tag) => tagList.includes(tag))) {
+        return true;
+      }
+      // Check metadata (key:value tags like "harAktivSykmelding:Ja")
+      for (const tagFilter of tagList) {
+        if (tagFilter.includes(":")) {
+          const [key, value] = tagFilter.split(":");
+          if (item.metadata?.[key] === value) {
+            return true;
+          }
+        }
+      }
+      return false;
+    });
   }
 
   // Filter by theme
@@ -251,6 +262,20 @@ function applyFilters(
         });
       }
     }
+  }
+
+  // Filter by segment (context.tags format: "key:value,key:value")
+  if (segment) {
+    const segmentFilters = segment.split(",").map((s) => {
+      const [key, value] = s.split(":");
+      return { key, value };
+    });
+    filtered = filtered.filter((item) => {
+      if (!item.metadata) return false;
+      return segmentFilters.every(
+        (filter) => item.metadata?.[filter.key] === filter.value,
+      );
+    });
   }
 
   // Sort by date descending

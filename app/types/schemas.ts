@@ -11,6 +11,8 @@ export const StatsParamsSchema = z.object({
   feedbackId: z.string().optional(),
   deviceType: z.string().optional(),
   ubehandlet: z.string().optional(),
+  /** Filter by context.tags (format: "key:value,key:value") */
+  segment: z.string().optional(),
 });
 
 export type StatsParams = z.infer<typeof StatsParamsSchema>;
@@ -31,6 +33,8 @@ export const FeedbackParamsSchema = z.object({
   deviceType: z.string().optional(),
   /** Filter by theme (themeId or 'uncategorized') */
   theme: z.string().optional(),
+  /** Filter by context.tags (format: "key:value,key:value") */
+  segment: z.string().optional(),
 });
 
 export type FeedbackParams = z.infer<typeof FeedbackParamsSchema>;
@@ -92,6 +96,8 @@ export type DeleteFeedback = z.infer<typeof DeleteFeedbackSchema>;
 
 export const MetadataKeysParamsSchema = z.object({
   surveyId: z.string(),
+  /** Max unique values per key. Keys with more values are filtered out. */
+  maxCardinality: z.number().optional(),
 });
 
 export type MetadataKeysParams = z.infer<typeof MetadataKeysParamsSchema>;
@@ -316,6 +322,8 @@ export const TopTasksResponseSchema = z.object({
 export const MetadataKeysResponseSchema = z.object({
   feedbackId: z.string(),
   metadataKeys: z.record(z.string(), z.array(z.string())),
+  /** The maxCardinality used for filtering */
+  maxCardinality: z.number().optional(),
 });
 
 export const DeleteSurveyResultSchema = z.object({

@@ -37,6 +37,7 @@ export function useStats() {
       params.feedbackId,
       params.deviceType,
       params.ubehandlet,
+      params.segment,
     ],
     queryFn: () =>
       fetchStatsServerFn({
@@ -47,6 +48,7 @@ export function useStats() {
           feedbackId: params.feedbackId,
           deviceType: params.deviceType,
           ubehandlet: params.ubehandlet,
+          segment: params.segment,
         },
       }),
     staleTime: 30000, // 30 seconds
