@@ -3,30 +3,35 @@
 This document outlines the data contract between the **Flexjar Widget** and the **Flexjar Analytics API**.
 
 ## Core Concept
+
 The Widget collects answers and sends a transport payload to the backend. The Analytics backend expects a **structured** payload to correctly parse, aggregate, and display feedback.
 
 ## Widget Payload (Transport)
-The transport payload is a JSON object.
+
+The transport payload is a JSON object with the following structure:
 
 ### Critical Fields
-*   `surveyType`: **Required** for feature detection. Must be one of:
-    *   `"rating"` (Standard smiley/star feedback)
-    *   `"topTasks"` (Task-completion surveys)
-    *   `"custom"` (Everything else)
-*   `answers`: **Required** structured array. The backend **ignores** flat fields (like `{"questionId": "value"}`) for analytics purposes; it only looks at the `answers` array.
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `feedbackId` | ✅ | Unique survey identifier |
+| `surveyType` | ✅ | One of: `"rating"`, `"topTasks"`, `"discovery"`, `"taskPriority"`, `"custom"` |
+| `answers` | ✅ | Structured array of answers (see below) |
+| `context` | Recommended | Browser/user context for segmentation |
 
 ### The `answers` Array
-Each item in the `answers` array must map to the following schema:
+
+Each item in the `answers` array must follow this schema:
 
 ```typescript
-interface Answer {
-  fieldId: string;       // The unique ID of the question (e.g. "task", "feedback")
-  fieldType: string;     // One of: "RATING", "TEXT", "SINGLE_CHOICE", "MULTI_CHOICE", "DATE"
+interface TransportAnswer {
+  fieldId: string;       // Unique question ID (e.g. "task", "feedback")
+  fieldType: string;     // One of: "RATING", "TEXT", "SINGLE_CHOICE", "MULTI_CHOICE"
   value: AnswerValue;    // The actual answer
   question: {
-    label: string;       // The question text shown to the user
+    label: string;       // Question text shown to user
     description?: string;
-    options?: Option[];  // Options, if applicable (crucial for choice mapping)
+    options?: Option[];  // Required for choice types (for label lookup)
   };
 }
 
@@ -37,14 +42,78 @@ interface Answer {
 // { type: "multiChoice", selectedOptionIds: ["opt_1", "opt_2"] }
 ```
 
-### Why strict structure?
-1.  **Labels**: The backend aggregates by `selectedOptionId`. To show human-readable results (e.g., "Søke om sykepenger" instead of "task_123"), the backend looks up the `label` from the `question.options` provided in this payload.
-2.  **Types**: Correct aggregation depends on knowing if a field is a Rating (average) or Text (count).
+### The `context` Object
 
-## Backend Maps (Enum)
-The backend maps `surveyType` strings to Enums strictly:
-*   `"topTasks"` -> `SurveyType.TOP_TASKS`
-*   `"rating"` -> `SurveyType.RATING`
-*   Everything else -> `SurveyType.CUSTOM`
+The widget auto-collects browser context and merges with user-provided segmentation data:
 
-> **Note**: If you add a new question type to the Widget, you MUST ensure it maps to a valid `FieldType` in standard format, or the backend will ignore it.
+```typescript
+interface FlexjarContext {
+  // Auto-collected by widget
+  url?: string;              // Current page URL
+  pathname?: string;         // URL pathname
+  deviceType?: DeviceType;   // "mobile" | "tablet" | "desktop"
+  viewport?: { width: number; height: number };
+  userAgent?: string;
+
+  // User-provided
+  app?: string;              // Application identifier
+
+  // Segmentation (LOW CARDINALITY - becomes dashboard graphs)
+  tags?: Record<string, string | number | boolean>;
+  
+  // Debugging (HIGH CARDINALITY - shown in detail view only)
+  debug?: Record<string, unknown>;
+}
+```
+
+#### Tags vs Debug
+
+| Field | Cardinality | Use Case | Example |
+|-------|-------------|----------|---------|
+| `tags` | Low (< 10 values) | Graphs, segmentation | `{ harSykmelding: true, rolle: "arbeidsgiver" }` |
+| `debug` | High (OK) | Individual inspection | `{ sessionId: "abc-123", behandlingId: "..." }` |
+
+## Backend Mapping
+
+The backend maps `surveyType` strings to enums:
+
+| Widget Value | Backend Enum |
+|--------------|--------------|
+| `"rating"` | `SurveyType.RATING` |
+| `"topTasks"` | `SurveyType.TOP_TASKS` |
+| `"discovery"` | `SurveyType.DISCOVERY` |
+| `"taskPriority"` | `SurveyType.TASK_PRIORITY` |
+| Everything else | `SurveyType.CUSTOM` |
+
+## Example Payload
+
+```json
+{
+  "feedbackId": "sykepenger-rating",
+  "surveyType": "rating",
+  "context": {
+    "url": "https://nav.no/sykepenger",
+    "pathname": "/sykepenger",
+    "deviceType": "mobile",
+    "app": "sykepenger-frontend",
+    "tags": {
+      "harAktivSykmelding": true,
+      "rolle": "bruker"
+    }
+  },
+  "answers": [
+    {
+      "fieldId": "rating",
+      "fieldType": "RATING",
+      "question": { "label": "Hvordan var opplevelsen din?" },
+      "value": { "type": "rating", "rating": 4 }
+    },
+    {
+      "fieldId": "feedback",
+      "fieldType": "TEXT",
+      "question": { "label": "Har du andre tilbakemeldinger?" },
+      "value": { "type": "text", "text": "Veldig bra!" }
+    }
+  ]
+}
+```
