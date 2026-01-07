@@ -64,13 +64,13 @@ export function RatingDashboard({ hasSurveyFilter }: RatingDashboardProps) {
       {/* Urgent URLs - full width */}
       <UrgentUrls />
 
-      {/* Device breakdown */}
-      <DeviceBreakdownSection />
-
       {/* Segment breakdown for survey-specific view */}
       {hasSurveyFilter && surveyId && (
         <SegmentBreakdown surveyId={surveyId} onSegmentClick={addSegment} />
       )}
+
+      {/* Device breakdown - at the bottom for consistency across all dashboards */}
+      <DeviceBreakdownSection />
     </>
   );
 }
