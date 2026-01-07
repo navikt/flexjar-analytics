@@ -54,7 +54,6 @@ export function RatingChart() {
   // Get rating field info from fieldStats
   const ratingField = stats?.fieldStats?.find((f) => f.fieldType === "RATING");
   const ratingStats = ratingField?.stats as RatingStats | undefined;
-  const questionLabel = ratingField?.label;
 
   // Use fieldStats distribution if available, fallback to legacy byRating
   const distribution = ratingStats?.distribution || {};
@@ -87,14 +86,6 @@ export function RatingChart() {
 
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-      {questionLabel && (
-        <BodyShort
-          size="small"
-          style={{ color: CHART_STYLES.text, marginBottom: "0.5rem" }}
-        >
-          «{questionLabel}»
-        </BodyShort>
-      )}
       <div style={{ flex: 1 }}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart

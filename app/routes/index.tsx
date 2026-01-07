@@ -137,13 +137,11 @@ function DashboardPage() {
 
           <FilterBar />
 
-          <VStack gap="space-8">
-            {/* Active drill-down filters (global) */}
-            <ActiveFiltersChips />
+          {/* Active drill-down filters (global) */}
+          <ActiveFiltersChips />
 
-            {/* Type-specific dashboard view */}
-            {renderDashboardContent()}
-          </VStack>
+          {/* Type-specific dashboard view */}
+          {renderDashboardContent()}
         </VStack>
       </Box>
     </>
