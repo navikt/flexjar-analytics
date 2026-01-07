@@ -3,6 +3,7 @@ import { BodyShort, Heading } from "@navikt/ds-react";
 import { DashboardCard, DashboardGrid } from "~/components/dashboard";
 import { ActiveSegmentFilters } from "~/components/dashboard/ActiveSegmentFilters";
 import { SegmentBreakdown } from "~/components/dashboard/SegmentBreakdown";
+import { FieldStatsSection } from "~/components/dashboard/sections/FieldStats";
 import { DeviceBreakdownSection } from "~/components/dashboard/sections/FieldStats/DeviceBreakdownSection";
 import { StatsCards } from "~/components/dashboard/sections/StatsCards";
 import { TimelineSection } from "~/components/dashboard/sections/Timeline";
@@ -63,6 +64,9 @@ export function RatingDashboard({ hasSurveyFilter }: RatingDashboardProps) {
 
       {/* Urgent URLs - full width */}
       <UrgentUrls />
+
+      {/* Field statistics - only when a survey is selected */}
+      {hasSurveyFilter && <FieldStatsSection />}
 
       {/* Segment breakdown for survey-specific view */}
       {hasSurveyFilter && surveyId && (
