@@ -8,21 +8,21 @@ import {
   isMockMode,
   mockDelay,
 } from "~/server/utils";
-import type { MetadataKeysResponse } from "~/types/api";
-import { MetadataKeysParamsSchema } from "~/types/schemas";
+import type { ContextTagsResponse } from "~/types/api";
+import { ContextTagsParamsSchema } from "~/types/schemas";
 import { handleApiResponse } from "../fetchUtils";
 
 /**
- * Fetch available metadata keys and values for a specific survey.
+ * Fetch available context tags and values for a specific survey.
  */
-export const fetchMetadataKeysServerFn = createServerFn({ method: "GET" })
+export const fetchContextTagsServerFn = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .inputValidator(zodValidator(MetadataKeysParamsSchema))
-  .handler(async ({ data, context }): Promise<MetadataKeysResponse> => {
+  .inputValidator(zodValidator(ContextTagsParamsSchema))
+  .handler(async ({ data, context }): Promise<ContextTagsResponse> => {
     const { backendUrl, oboToken } = context as AuthContext;
 
     console.log(
-      "[fetchMetadata] isMockMode:",
+      "[fetchContextTags] isMockMode:",
       isMockMode(),
       "surveyId:",
       data.surveyId,
@@ -30,11 +30,11 @@ export const fetchMetadataKeysServerFn = createServerFn({ method: "GET" })
 
     if (isMockMode()) {
       await mockDelay(300);
-      console.log("[fetchMetadata] Returning mock data for", data.surveyId);
-      // Return mock metadata keys with realistic counts
+      console.log("[fetchContextTags] Returning mock data for", data.surveyId);
+      // Return mock context tags with realistic counts
       return {
         feedbackId: data.surveyId,
-        metadataKeys: {
+        contextTags: {
           harAktivSykmelding: [
             { value: "Ja", count: 67 },
             { value: "Nei", count: 33 },
@@ -54,7 +54,7 @@ export const fetchMetadataKeysServerFn = createServerFn({ method: "GET" })
       };
     }
 
-    const url = buildUrl(backendUrl, "/api/v1/intern/feedback/metadata-keys", {
+    const url = buildUrl(backendUrl, "/api/v1/intern/feedback/context-tags", {
       feedbackId: data.surveyId,
       team: "flex", // TODO: Get from auth context
       maxCardinality: String(data.maxCardinality ?? 10),
@@ -65,5 +65,5 @@ export const fetchMetadataKeysServerFn = createServerFn({ method: "GET" })
 
     await handleApiResponse(response);
 
-    return response.json() as Promise<MetadataKeysResponse>;
+    return response.json() as Promise<ContextTagsResponse>;
   });

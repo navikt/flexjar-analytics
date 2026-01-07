@@ -119,6 +119,7 @@ export interface SubmissionContext {
   deviceType?: DeviceType;
   viewportWidth?: number;
   viewportHeight?: number;
+  tags?: Record<string, string>;
 }
 
 // ============================================
@@ -133,8 +134,10 @@ export interface FeedbackDto {
   surveyVersion?: string;
   surveyType?: SurveyType;
   context?: SubmissionContext;
-  /** Custom metadata for segmentation (e.g. { harDialogmote: "true" }) */
-  metadata?: Record<string, string>;
+
+  /** Custom metadata for segmentation/filtering in analytics */
+  metadata?: Record<string, string> | null;
+
   answers: Answer[];
   tags?: string[];
   sensitiveDataRedacted: boolean;
@@ -250,10 +253,10 @@ export interface MetadataValueWithCount {
   count: number;
 }
 
-export interface MetadataKeysResponse {
+export interface ContextTagsResponse {
   feedbackId: string;
-  /** Metadata keys with their values and counts */
-  metadataKeys: Record<string, MetadataValueWithCount[]>;
+  /** Context tags with their values and counts */
+  contextTags: Record<string, MetadataValueWithCount[]>;
   /** The maxCardinality used for filtering */
   maxCardinality?: number;
 }

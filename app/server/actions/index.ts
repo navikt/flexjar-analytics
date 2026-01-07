@@ -32,8 +32,8 @@ export { fetchSurveysByAppServerFn } from "./fetchSurveys";
 // Tags
 export { addTagServerFn, fetchTagsServerFn, removeTagServerFn } from "./tags";
 
-// Metadata
-export { fetchMetadataKeysServerFn } from "./fetchMetadata";
+// Context Tags
+export { fetchContextTagsServerFn } from "./fetchContextTags";
 
 // Delete
 export { deleteFeedbackServerFn, deleteSurveyServerFn } from "./delete";

@@ -1,31 +1,25 @@
 import { ChevronDownIcon } from "@navikt/aksel-icons";
 import { ActionMenu, Button, HStack } from "@navikt/ds-react";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useContextTags } from "~/hooks/useContextTags";
 import { useSegmentFilter } from "~/hooks/useSegmentFilter";
-import { fetchMetadataKeysServerFn } from "~/server/actions";
 import { formatMetadataLabel, formatMetadataValue } from "~/utils/segmentUtils";
 
-interface MetadataFilterProps {
+interface ContextTagsFilterProps {
   surveyId: string;
 }
 
 /**
  * Compact filter component using ActionMenu dropdowns.
- * One dropdown per metadata key for efficient single-select filtering.
+ * One dropdown per context tag for efficient single-select filtering.
  */
-export function MetadataFilter({ surveyId }: MetadataFilterProps) {
+export function ContextTagsFilter({ surveyId }: ContextTagsFilterProps) {
   const { activeFilters, addSegment, removeSegment } = useSegmentFilter();
-  const { data } = useQuery({
-    queryKey: ["metadataKeys", surveyId],
-    queryFn: () => fetchMetadataKeysServerFn({ data: { surveyId } }),
-    enabled: !!surveyId && surveyId !== "alle",
-    placeholderData: keepPreviousData,
-  });
+  const { data } = useContextTags(surveyId);
 
-  const metadataKeys = data?.metadataKeys || {};
-  const hasMetadata = Object.keys(metadataKeys).length > 0;
+  const contextTags = data?.contextTags || {};
+  const hasTags = Object.keys(contextTags).length > 0;
 
-  if (!surveyId || surveyId === "alle" || !hasMetadata) {
+  if (!surveyId || surveyId === "alle" || !hasTags) {
     return null;
   }
 
@@ -47,7 +41,7 @@ export function MetadataFilter({ surveyId }: MetadataFilterProps) {
 
   return (
     <HStack gap="space-8" wrap>
-      {Object.entries(metadataKeys).map(([key, values]) => {
+      {Object.entries(contextTags).map(([key, values]) => {
         const label = formatMetadataLabel(key);
         const selectedValue = activeFilters[key];
         const displayValue = selectedValue
@@ -87,27 +81,4 @@ export function MetadataFilter({ surveyId }: MetadataFilterProps) {
       })}
     </HStack>
   );
-}
-
-/**
- * Hook to filter feedback by segment (metadata) client-side.
- * @deprecated Use useSegmentFilter from ~/hooks/useSegmentFilter instead
- */
-export function useMetadataFilter() {
-  const { activeFilters, hasFilters } = useSegmentFilter();
-
-  const filterByMetadata = <T extends { metadata?: Record<string, string> }>(
-    items: T[],
-  ): T[] => {
-    if (!hasFilters) return items;
-
-    return items.filter((item) => {
-      if (!item.metadata) return false;
-      return Object.entries(activeFilters).every(
-        ([key, value]) => item.metadata?.[key] === value,
-      );
-    });
-  };
-
-  return { hasFilters, metadataFilters: activeFilters, filterByMetadata };
 }

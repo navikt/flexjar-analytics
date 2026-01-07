@@ -20,7 +20,7 @@ import {
   VStack,
 } from "@navikt/ds-react";
 import dayjs from "dayjs";
-import { MetadataFilter } from "~/components/dashboard/MetadataFilter";
+import { ContextTagsFilter } from "~/components/dashboard/ContextTagsFilter";
 import { PeriodSelector } from "~/components/dashboard/PeriodSelector";
 import { getSurveyFeatures } from "~/config/surveyConfig";
 import { useFilterOptions } from "~/hooks/useFilterOptions";
@@ -373,9 +373,9 @@ export function FilterBar({ showDetails = false }: FilterBarProps) {
         </Box.New>
       )}
 
-      {/* Metadata Filter - shows when a specific survey is selected */}
+      {/* Context Tags Filter - shows when a specific survey is selected */}
       {showDetails && params.feedbackId && (
-        <MetadataFilter surveyId={params.feedbackId} />
+        <ContextTagsFilter surveyId={params.feedbackId} />
       )}
     </VStack>
   );

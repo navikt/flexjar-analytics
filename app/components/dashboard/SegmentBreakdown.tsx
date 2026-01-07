@@ -1,6 +1,6 @@
 import { Heading, Skeleton, VStack } from "@navikt/ds-react";
 import { DashboardCard, DashboardGrid } from "~/components/dashboard";
-import { useMetadataKeys } from "~/hooks/useMetadataKeys";
+import { useContextTags } from "~/hooks/useContextTags";
 import type { MetadataValueWithCount } from "~/types/api";
 import { formatMetadataLabel } from "~/utils/segmentUtils";
 import styles from "./SegmentBreakdown.module.css";
@@ -31,7 +31,7 @@ export function SegmentBreakdown({
   surveyId,
   onSegmentClick,
 }: SegmentBreakdownProps) {
-  const { data, isLoading, error } = useMetadataKeys(surveyId);
+  const { data, isLoading, error } = useContextTags(surveyId);
 
   if (isLoading) {
     return <SegmentBreakdownSkeleton />;
@@ -42,8 +42,8 @@ export function SegmentBreakdown({
     return null;
   }
 
-  const metadataKeys = data?.metadataKeys ?? {};
-  const entries = Object.entries(metadataKeys);
+  const contextTags = data?.contextTags ?? {};
+  const entries = Object.entries(contextTags);
 
   if (entries.length === 0) {
     return null;

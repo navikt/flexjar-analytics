@@ -94,13 +94,13 @@ export const DeleteFeedbackSchema = z.object({
 
 export type DeleteFeedback = z.infer<typeof DeleteFeedbackSchema>;
 
-export const MetadataKeysParamsSchema = z.object({
+export const ContextTagsParamsSchema = z.object({
   surveyId: z.string(),
   /** Max unique values per key. Keys with more values are filtered out. */
   maxCardinality: z.number().optional(),
 });
 
-export type MetadataKeysParams = z.infer<typeof MetadataKeysParamsSchema>;
+export type ContextTagsParams = z.infer<typeof ContextTagsParamsSchema>;
 
 export const ExportParamsSchema = z.object({
   format: z.enum(["csv", "json", "excel"]),
@@ -191,6 +191,7 @@ const SubmissionContextSchema = z.object({
   deviceType: DeviceTypeSchema.optional(),
   viewportWidth: z.number().optional(),
   viewportHeight: z.number().optional(),
+  tags: z.record(z.string(), z.string()).optional(),
 });
 
 export const FeedbackDtoSchema = z.object({
@@ -201,7 +202,9 @@ export const FeedbackDtoSchema = z.object({
   surveyVersion: z.string().optional(),
   surveyType: SurveyTypeSchema.optional(),
   context: SubmissionContextSchema.optional(),
-  metadata: z.record(z.string(), z.string()).optional(),
+
+  metadata: z.record(z.string(), z.string()).nullable().optional(),
+
   answers: z.array(AnswerSchema),
   tags: z.array(z.string()).optional(),
   sensitiveDataRedacted: z.boolean(),
@@ -319,9 +322,12 @@ export const TopTasksResponseSchema = z.object({
   questionText: z.string().optional(),
 });
 
-export const MetadataKeysResponseSchema = z.object({
+export const ContextTagsResponseSchema = z.object({
   feedbackId: z.string(),
-  metadataKeys: z.record(z.string(), z.array(z.string())),
+  contextTags: z.record(
+    z.string(),
+    z.array(z.object({ value: z.string(), count: z.number() })),
+  ),
   /** The maxCardinality used for filtering */
   maxCardinality: z.number().optional(),
 });
