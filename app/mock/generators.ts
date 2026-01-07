@@ -355,6 +355,11 @@ export function generateTopTasksMockData(): FeedbackDto[] {
             ? [createTextAnswer("blocker", "Hva hindret deg?", blocker)]
             : []),
         ],
+        // Add metadata to match segment data
+        metadata: {
+          harAktivSykmelding: Math.random() > 0.33 ? "Ja" : "Nei",
+          ukeSykefravær: String(Math.floor(Math.random() * 8) + 1),
+        },
         sensitiveDataRedacted: false,
       });
     }
@@ -541,6 +546,11 @@ export function generateDiscoveryMockData(): FeedbackDto[] {
       surveyType: "discovery",
       context: createContext("/", Math.random() > 0.6 ? "mobile" : "desktop"),
       answers,
+      // Add metadata to match the segment data returned by fetchContextTags
+      metadata: {
+        harAktivSykmelding: Math.random() > 0.33 ? "Ja" : "Nei", // ~67% Ja, ~33% Nei
+        ukeSykefravær: String(Math.floor(Math.random() * 8) + 1), // 1-8
+      },
       sensitiveDataRedacted: false,
     });
   }
@@ -630,6 +640,11 @@ export function generateTaskPriorityMockData(): FeedbackDto[] {
           tasks.map((t) => ({ id: t.id, label: t.label })),
         ),
       ],
+      // Add metadata to match segment data
+      metadata: {
+        harAktivSykmelding: Math.random() > 0.33 ? "Ja" : "Nei",
+        ukeSykefravær: String(Math.floor(Math.random() * 8) + 1),
+      },
       sensitiveDataRedacted: false,
     });
   }

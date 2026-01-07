@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { zodValidator } from "@tanstack/zod-adapter";
+import { getMockContextTags } from "~/mock/mockData";
 import { authMiddleware } from "~/server/middleware/auth";
 import {
   type AuthContext,
@@ -31,25 +32,16 @@ export const fetchContextTagsServerFn = createServerFn({ method: "GET" })
     if (isMockMode()) {
       await mockDelay(300);
       console.log("[fetchContextTags] Returning mock data for", data.surveyId);
-      // Return mock context tags with realistic counts
+
+      // Calculate actual context tags from mock data
+      const contextTags = getMockContextTags(
+        data.surveyId,
+        data.maxCardinality ?? 15,
+      );
+
       return {
         feedbackId: data.surveyId,
-        contextTags: {
-          harAktivSykmelding: [
-            { value: "Ja", count: 67 },
-            { value: "Nei", count: 33 },
-          ],
-          ukeSykefravær: [
-            { value: "1", count: 45 },
-            { value: "2", count: 38 },
-            { value: "3", count: 32 },
-            { value: "4", count: 28 },
-            { value: "5", count: 22 },
-            { value: "6", count: 18 },
-            { value: "7", count: 12 },
-            { value: "8", count: 8 },
-          ],
-        },
+        contextTags,
         maxCardinality: data.maxCardinality ?? 15,
       };
     }

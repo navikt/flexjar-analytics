@@ -457,3 +457,45 @@ export function deleteMockFeedback(feedbackId: string): boolean {
 
   return deleted;
 }
+
+/**
+ * Calculate actual context tags from mock data for a specific survey.
+ * Returns real counts that match what the segment filter will produce.
+ */
+export function getMockContextTags(
+  surveyId: string,
+  maxCardinality = 15,
+): Record<string, { value: string; count: number }[]> {
+  // Filter items by surveyId
+  const surveyItems = mockFeedbackItems.filter(
+    (item) => item.surveyId === surveyId,
+  );
+
+  // Build context tag counts from actual metadata
+  const tagCounts: Record<string, Map<string, number>> = {};
+
+  for (const item of surveyItems) {
+    if (!item.metadata) continue;
+
+    for (const [key, value] of Object.entries(item.metadata)) {
+      if (!tagCounts[key]) {
+        tagCounts[key] = new Map();
+      }
+      tagCounts[key].set(value, (tagCounts[key].get(value) || 0) + 1);
+    }
+  }
+
+  // Convert to response format and apply cardinality filter
+  const result: Record<string, { value: string; count: number }[]> = {};
+
+  for (const [key, valueMap] of Object.entries(tagCounts)) {
+    // Skip high-cardinality keys (like IDs)
+    if (valueMap.size > maxCardinality) continue;
+
+    result[key] = Array.from(valueMap.entries())
+      .map(([value, count]) => ({ value, count }))
+      .sort((a, b) => b.count - a.count); // Sort by count descending
+  }
+
+  return result;
+}
