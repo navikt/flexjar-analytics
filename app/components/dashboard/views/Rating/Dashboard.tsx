@@ -1,7 +1,5 @@
-import { VStack } from "@navikt/ds-react";
-import { BodyShort, Heading } from "@navikt/ds-react";
+import { BodyShort, Heading, VStack } from "@navikt/ds-react";
 import { DashboardCard, DashboardGrid } from "~/components/dashboard";
-import { ActiveSegmentFilters } from "~/components/dashboard/ActiveSegmentFilters";
 import { SegmentBreakdown } from "~/components/dashboard/SegmentBreakdown";
 import { FieldStatsSection } from "~/components/dashboard/sections/FieldStats";
 import { DeviceBreakdownSection } from "~/components/dashboard/sections/FieldStats/DeviceBreakdownSection";
@@ -28,8 +26,6 @@ export function RatingDashboard({ hasSurveyFilter }: RatingDashboardProps) {
 
   return (
     <>
-      <ActiveSegmentFilters />
-
       <StatsCards showRating />
 
       <DashboardGrid minColumnWidth="280px">

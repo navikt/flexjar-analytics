@@ -1,6 +1,8 @@
 import { XMarkIcon } from "@navikt/aksel-icons";
 import { HStack, Tag } from "@navikt/ds-react";
 import { useSearchParams } from "~/hooks/useSearchParams";
+import { useSegmentFilter } from "~/hooks/useSegmentFilter";
+import { formatMetadataLabel } from "~/utils/segmentUtils";
 
 interface FilterChip {
   key: string;
@@ -23,9 +25,11 @@ const DEVICE_LABELS: Record<string, string> = {
  * - DeviceType: NOT shown on dashboard → show chip
  * - Pathname: Only set via drill-down → show chip
  * - LavRating: Only on feedback page → show chip on dashboard
+ * - Segment: Metadata filters from SegmentBreakdown → global chip
  */
 export function ActiveFiltersChips() {
   const { params, setParam } = useSearchParams();
+  const { activeFilters, removeSegment } = useSegmentFilter();
 
   const chips: FilterChip[] = [];
 
@@ -56,6 +60,16 @@ export function ActiveFiltersChips() {
       label: "Rating",
       value: "Lav (1-2)",
       onRemove: () => setParam("lavRating", undefined),
+    });
+  }
+
+  // Segment filters (metadata)
+  for (const [key, value] of Object.entries(activeFilters)) {
+    chips.push({
+      key: `segment-${key}-${value}`,
+      label: formatMetadataLabel(key),
+      value: value,
+      onRemove: () => removeSegment(`${key}:${value}`),
     });
   }
 
