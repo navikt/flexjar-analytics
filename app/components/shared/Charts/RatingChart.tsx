@@ -85,77 +85,71 @@ export function RatingChart() {
   }
 
   return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-      <div style={{ flex: 1 }}>
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            data={data}
-            margin={chartMargin}
-            role="img"
-            aria-label={`Søylediagram som viser fordeling av vurderinger: ${data.map((d) => `${d.emoji} ${d.count}`).join(", ")}`}
-          >
-            <XAxis
-              dataKey="emoji"
-              tick={{ fontSize: isMobile ? 20 : 24 }}
-              axisLine={false}
-              tickLine={false}
+    <ResponsiveContainer width="100%" height="100%">
+      <BarChart
+        data={data}
+        margin={chartMargin}
+        role="img"
+        aria-label={`Søylediagram som viser fordeling av vurderinger: ${data.map((d) => `${d.emoji} ${d.count}`).join(", ")}`}
+      >
+        <XAxis
+          dataKey="emoji"
+          tick={{ fontSize: isMobile ? 20 : 24 }}
+          axisLine={false}
+          tickLine={false}
+        />
+        <YAxis
+          axisLine={false}
+          tickLine={false}
+          tick={{ fill: CHART_STYLES.text, fontSize: 12 }}
+          hide={isMobile}
+        />
+        <Tooltip
+          content={({ active, payload }) => {
+            if (active && payload && payload.length) {
+              const data = payload[0].payload;
+              const percentage =
+                total > 0 ? ((data.count / total) * 100).toFixed(1) : 0;
+              return (
+                <div
+                  style={{
+                    background: CHART_STYLES.tooltip.bg,
+                    color: "#ffffff",
+                    padding: "0.75rem",
+                    borderRadius: "4px",
+                    border: `1px solid ${CHART_STYLES.tooltip.border}`,
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
+                  }}
+                >
+                  <div style={{ fontSize: "1.5rem", marginBottom: "0.25rem" }}>
+                    {data.emoji}
+                  </div>
+                  <div style={{ fontWeight: 600 }}>
+                    {data.count.toLocaleString("no-NO")} svar
+                  </div>
+                  <div
+                    style={{
+                      color: CHART_STYLES.textMuted,
+                      fontSize: "0.875rem",
+                    }}
+                  >
+                    {percentage}%
+                  </div>
+                </div>
+              );
+            }
+            return null;
+          }}
+        />
+        <Bar dataKey="count" radius={[4, 4, 0, 0]}>
+          {data.map((entry) => (
+            <Cell
+              key={entry.rating}
+              fill={COLORS[entry.rating as keyof typeof COLORS]}
             />
-            <YAxis
-              axisLine={false}
-              tickLine={false}
-              tick={{ fill: CHART_STYLES.text, fontSize: 12 }}
-              hide={isMobile}
-            />
-            <Tooltip
-              content={({ active, payload }) => {
-                if (active && payload && payload.length) {
-                  const data = payload[0].payload;
-                  const percentage =
-                    total > 0 ? ((data.count / total) * 100).toFixed(1) : 0;
-                  return (
-                    <div
-                      style={{
-                        background: CHART_STYLES.tooltip.bg,
-                        color: "#ffffff",
-                        padding: "0.75rem",
-                        borderRadius: "4px",
-                        border: `1px solid ${CHART_STYLES.tooltip.border}`,
-                        boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
-                      }}
-                    >
-                      <div
-                        style={{ fontSize: "1.5rem", marginBottom: "0.25rem" }}
-                      >
-                        {data.emoji}
-                      </div>
-                      <div style={{ fontWeight: 600 }}>
-                        {data.count.toLocaleString("no-NO")} svar
-                      </div>
-                      <div
-                        style={{
-                          color: CHART_STYLES.textMuted,
-                          fontSize: "0.875rem",
-                        }}
-                      >
-                        {percentage}%
-                      </div>
-                    </div>
-                  );
-                }
-                return null;
-              }}
-            />
-            <Bar dataKey="count" radius={[4, 4, 0, 0]}>
-              {data.map((entry) => (
-                <Cell
-                  key={entry.rating}
-                  fill={COLORS[entry.rating as keyof typeof COLORS]}
-                />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-    </div>
+          ))}
+        </Bar>
+      </BarChart>
+    </ResponsiveContainer>
   );
 }

@@ -1,5 +1,9 @@
 import { BodyShort, Heading, VStack } from "@navikt/ds-react";
-import { DashboardCard, DashboardGrid } from "~/components/dashboard";
+import {
+  ChartCard,
+  DashboardCard,
+  DashboardGrid,
+} from "~/components/dashboard";
 import { SegmentBreakdown } from "~/components/dashboard/SegmentBreakdown";
 import { FieldStatsSection } from "~/components/dashboard/sections/FieldStats";
 import { DeviceBreakdownSection } from "~/components/dashboard/sections/FieldStats/DeviceBreakdownSection";
@@ -28,38 +32,46 @@ export function RatingDashboard({ hasSurveyFilter }: RatingDashboardProps) {
     <>
       <StatsCards showRating />
 
-      <DashboardGrid minColumnWidth="280px">
-        <RatingChart />
-        <TopAppsChart />
-      </DashboardGrid>
-
       <TimelineSection title="Antall tilbakemeldinger" />
 
-      <DashboardGrid>
-        {/* Rating trend chart */}
-        <DashboardCard padding={{ xs: "space-12", md: "space-16" }}>
-          <VStack gap="space-12">
-            <VStack gap="space-4">
-              <Heading size="small">Gjennomsnittlig vurdering</Heading>
-              <BodyShort size="small" textColor="subtle">
-                Kun rating-surveys
-              </BodyShort>
-            </VStack>
-            <div
-              style={{
-                height: "260px",
-                width: "100%",
-                overflow: "hidden",
-              }}
-            >
-              <RatingTrendChart />
-            </div>
-          </VStack>
-        </DashboardCard>
-      </DashboardGrid>
+      {/* Overview charts - only shown when no specific survey is selected */}
+      {!hasSurveyFilter && (
+        <>
+          <DashboardGrid minColumnWidth="280px">
+            <ChartCard title="Vurderingsfordeling" height="260px">
+              <RatingChart />
+            </ChartCard>
+            <ChartCard title="Topp apper" height="260px">
+              <TopAppsChart />
+            </ChartCard>
+          </DashboardGrid>
 
-      {/* Urgent URLs - full width */}
-      <UrgentUrls />
+          <DashboardGrid>
+            <DashboardCard padding={{ xs: "space-12", md: "space-16" }}>
+              <VStack gap="space-12">
+                <VStack gap="space-4">
+                  <Heading size="small">Gjennomsnittlig vurdering</Heading>
+                  <BodyShort size="small" textColor="subtle">
+                    Kun rating-surveys
+                  </BodyShort>
+                </VStack>
+                <div
+                  style={{
+                    height: "260px",
+                    width: "100%",
+                    overflow: "hidden",
+                  }}
+                >
+                  <RatingTrendChart />
+                </div>
+              </VStack>
+            </DashboardCard>
+          </DashboardGrid>
+
+          {/* Urgent URLs - full width (only on overview) */}
+          <UrgentUrls />
+        </>
+      )}
 
       {/* Field statistics - only when a survey is selected */}
       {hasSurveyFilter && <FieldStatsSection />}
