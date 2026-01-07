@@ -78,3 +78,64 @@ npm run typecheck  # TypeScript check (added to pre-commit)
 - Proxy route at `app/routes/api/` forwards to `FLEXJAR_BACKEND_URL`
 - Types in `types/api.ts` must match backend DTOs
 - Backend handles: pagination, filtering, sorting, PII redaction
+
+## Nav Principles
+
+- **Team First**: Autonomous teams with circles of autonomy, supported by Architecture Advice Process
+- **Product Development**: Continuous development and product-organized reuse over ad hoc approaches
+- **Essential Complexity**: Focus on essential complexity, avoid accidental complexity
+- **DORA Metrics**: Measure and improve team performance using DevOps Research and Assessment metrics
+
+### Aksel Requirements
+
+- **CRITICAL**: Always use Aksel spacing tokens, never Tailwind padding/margin
+- Mobile-first with responsive props: `xs`, `sm`, `md`, `lg`, `xl`
+- Norwegian number formatting with space separators
+
+### Writing Effective Agents
+
+Based on [GitHub's analysis of 2,500+ repositories](https://github.blog/ai-and-ml/github-copilot/how-to-write-a-great-agents-md-lessons-from-over-2500-repositories/), follow these patterns when creating or updating agents in `.github/agents/`:
+
+**Structure (in order):**
+
+1. **Frontmatter** - Name and description in YAML
+2. **Persona** - One sentence: who you are and what you specialize in
+3. **Commands** - Executable commands early, with flags and expected output
+4. **Related Agents** - Table of agents to delegate to
+5. **Core Content** - Code examples over explanations (show, don't tell)
+6. **Boundaries** - Three-tier system at the end
+
+**Six Core Areas to Cover:**
+
+- Commands (with flags and options)
+- Testing patterns
+- Project structure
+- Code style (✅ Good / ❌ Bad examples)
+- Git workflow
+- Boundaries
+
+**Three-Tier Boundaries:**
+
+```markdown
+## Boundaries
+
+### ✅ Always
+- Check if your code passes linting and type checks
+- Verify that your code changes work as intended
+
+### ⚠️ Ask First
+- Modifying production configs
+- Changing auth mechanisms
+
+### 🚫 Never
+- Commit secrets to git
+- Skip input validation
+```
+
+**Key Principles:**
+
+- **Commands early**: Put executable commands near the top, not buried at the bottom
+- **Code over prose**: Show real code examples, not descriptions of what code should do
+- **Actionable boundaries**: "Never commit secrets" not "I cannot access secrets"
+
+---

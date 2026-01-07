@@ -22,7 +22,7 @@ npm install
 ```bash
 npm run dev
 ```
-
+cd flexjar-analytics
 4. Open the browser to http://localhost:3000
 
 ## Mock Mode
@@ -41,9 +41,11 @@ DEMO_MODE=false npm run dev
 - `npm run lint` - Run ESLint
 - `npm run format` - Format code with Biome
 - `npm test` - Run tests
-
-## Troubleshooting
-
+- `npm run lint` - Run Biome checks
+- `npm run lint:fix` - Auto-fix Biome issues
+- `npm run typecheck` - TypeScript check
+- `npm run test` - Run unit/integration tests (Vitest)
+- `npm run e2e` - Run E2E tests (Playwright)
 ### Port already in use
 ```bash
 # Find and kill process on port 3000

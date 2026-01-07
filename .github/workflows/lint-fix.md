@@ -11,33 +11,27 @@ Use this workflow to fix code quality issues before committing.
 ## Step 1: Run Linter
 
 ```bash
-cd /Users/kreps1/IdeaProjects/flexjar-analytics
+cd flexjar-analytics
 npm run lint
 ```
 
 ## Step 2: Auto-fix Linting Issues
 
 ```bash
-npm run lint -- --fix
+npm run lint:fix
 ```
 
-## Step 3: Format with Biome
+## Step 3: Check for Type Errors
 
 ```bash
-npm run format
-```
-
-## Step 4: Check for Type Errors
-
-```bash
-npx tsc --noEmit
+npm run typecheck
 ```
 
 ## All-in-One Command
 
 Run all checks:
 ```bash
-npm run lint && npm run format && npx tsc --noEmit
+npm run lint && npm run typecheck
 ```
 
 ## Common Issues
@@ -49,7 +43,7 @@ npx biome check --write .
 ```
 
 ### Import order
-Biome enforces import sorting. Run `npm run format` to auto-fix.
+Biome enforces import sorting. Run `npm run lint:fix` to auto-fix.
 
 ### TypeScript any warnings
 Avoid using `any`. Use proper types or `unknown` with type guards.
