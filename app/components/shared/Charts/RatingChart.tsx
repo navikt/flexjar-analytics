@@ -30,19 +30,11 @@ const THUMBS_CONFIG = {
   scale: [1, 2],
 };
 
-// Star (dynamic scale): ⭐...
-const STAR_CONFIG = {
-  getLabels: (scale: number) => Array.from({ length: scale }, () => "⭐"),
-  getColors: (scale: number) => {
-    // Gradient from red to green
-    const colors = [];
-    for (let i = 0; i < scale; i++) {
-      const ratio = i / (scale - 1);
-      colors.push(`hsl(${ratio * 120}, 70%, 50%)`); // 0 = red, 120 = green
-    }
-    return colors;
-  },
-  getScale: (scale: number) => Array.from({ length: scale }, (_, i) => i + 1),
+// Stars (5-point fixed): Star labels with gradient colors
+const STARS_CONFIG = {
+  labels: ["⭐", "⭐⭐", "⭐⭐⭐", "⭐⭐⭐⭐", "⭐⭐⭐⭐⭐"],
+  colors: ["#EF4444", "#F97316", "#FBBF24", "#84CC16", "#22C55E"],
+  scale: [1, 2, 3, 4, 5],
 };
 
 // NPS (0-10): Number labels with color zones
@@ -76,11 +68,12 @@ const CHART_STYLES = {
 };
 
 /**
- * Detects rating display type by analyzing the distribution data.
- * Returns: 'thumbs' (2), 'emoji' (5), 'star' (3/7/10), or 'nps' (0-10/11 values)
+ * Detects rating variant by analyzing the distribution data.
+ * Returns: 'thumbs' (2), 'emoji' (5), 'stars' (5), or 'nps' (0-10/11 values)
+ * Note: emoji and stars both have scale 5 - we default to emoji for historical data
  */
 function detectRatingType(distribution: Record<number | string, number>): {
-  type: "emoji" | "thumbs" | "star" | "nps";
+  type: "emoji" | "thumbs" | "stars" | "nps";
   scale: number;
 } {
   const keys = Object.keys(distribution)
@@ -101,14 +94,9 @@ function detectRatingType(distribution: Record<number | string, number>): {
     return { type: "thumbs", scale: 2 };
   }
 
-  // Emoji: exactly 5 (1-5)
+  // 5-point scale (emoji or stars) - default to emoji for backward compat
   if (maxKey === 5 && minKey >= 1) {
     return { type: "emoji", scale: 5 };
-  }
-
-  // Star: 3, 7, or 10 point
-  if ([3, 7, 10].includes(maxKey) && minKey >= 1) {
-    return { type: "star", scale: maxKey };
   }
 
   // Default to emoji 5-point
@@ -140,7 +128,7 @@ export function RatingChart() {
   };
 
   // Detect rating type from distribution data
-  const { type: ratingType, scale } = detectRatingType(mergedDistribution);
+  const { type: ratingType } = detectRatingType(mergedDistribution);
 
   // Build data array based on detected type
   let data: { label: string; value: number; count: number; color: string }[];
@@ -162,15 +150,12 @@ export function RatingChart() {
         color: NPS_CONFIG.colors[i],
       }));
       break;
-    case "star": {
-      const starLabels = STAR_CONFIG.getLabels(scale);
-      const starColors = STAR_CONFIG.getColors(scale);
-      const starScale = STAR_CONFIG.getScale(scale);
-      data = starScale.map((rating, i) => ({
-        label: starLabels[i],
+    case "stars": {
+      data = STARS_CONFIG.scale.map((rating, i) => ({
+        label: STARS_CONFIG.labels[i],
         value: rating,
         count: mergedDistribution[rating] || 0,
-        color: starColors[i],
+        color: STARS_CONFIG.colors[i],
       }));
       break;
     }
