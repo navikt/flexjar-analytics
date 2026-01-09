@@ -101,6 +101,38 @@ export function BlockerAnalysis({ data: providedData }: BlockerAnalysisProps) {
     setPopoverAnchor(null);
   }, []);
 
+  // Build O(1) lookup map for word frequency data
+  // Must be called before early returns (React Rules of Hooks)
+  const wordFrequency = data?.wordFrequency ?? [];
+  const recentBlockers = data?.recentBlockers ?? [];
+
+  const wordLookup = useMemo(() => {
+    const map = new Map<string, (typeof wordFrequency)[0]>();
+    for (const w of wordFrequency) {
+      map.set(w.word.toLowerCase(), w);
+    }
+    return map;
+  }, [wordFrequency]);
+
+  // Get context examples for the selected word
+  // Prefer sourceResponses from wordFrequency (reliable), fallback to substring search
+  const getContextExamples = useCallback(
+    (word: string): ContextExample[] => {
+      if (!word) return [];
+      // O(1) lookup from pre-built map
+      const wordData = wordLookup.get(word.toLowerCase());
+      if (wordData?.sourceResponses && wordData.sourceResponses.length > 0) {
+        return wordData.sourceResponses;
+      }
+      // Fallback to substring search in recentBlockers for backwards compatibility
+      const wordLower = word.toLowerCase();
+      return recentBlockers
+        .filter((b) => b.blocker.toLowerCase().includes(wordLower))
+        .map((b) => ({ text: b.blocker, submittedAt: b.submittedAt }));
+    },
+    [wordLookup, recentBlockers],
+  );
+
   // Loading state
   if (isLoading && !data) {
     return (
@@ -128,40 +160,7 @@ export function BlockerAnalysis({ data: providedData }: BlockerAnalysisProps) {
     return null;
   }
 
-  const {
-    themes: statsThemes,
-    wordFrequency,
-    totalBlockers,
-    recentBlockers,
-  } = data;
-
-  // Build O(1) lookup map for word frequency data
-  const wordLookup = useMemo(() => {
-    const map = new Map<string, (typeof wordFrequency)[0]>();
-    for (const w of wordFrequency) {
-      map.set(w.word.toLowerCase(), w);
-    }
-    return map;
-  }, [wordFrequency]);
-
-  // Get context examples for the selected word
-  // Prefer sourceResponses from wordFrequency (reliable), fallback to substring search
-  const getContextExamples = useCallback(
-    (word: string): ContextExample[] => {
-      if (!word) return [];
-      // O(1) lookup from pre-built map
-      const wordData = wordLookup.get(word.toLowerCase());
-      if (wordData?.sourceResponses && wordData.sourceResponses.length > 0) {
-        return wordData.sourceResponses;
-      }
-      // Fallback to substring search in recentBlockers for backwards compatibility
-      const wordLower = word.toLowerCase();
-      return recentBlockers
-        .filter((b) => b.blocker.toLowerCase().includes(wordLower))
-        .map((b) => ({ text: b.blocker, submittedAt: b.submittedAt }));
-    },
-    [wordLookup, recentBlockers],
-  );
+  const { themes: statsThemes, totalBlockers } = data;
 
   const handleWordClick = (
     word: string,
