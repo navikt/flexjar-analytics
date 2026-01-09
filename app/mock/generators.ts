@@ -163,66 +163,72 @@ export function generateSurveyData(
 export function generateTopTasksMockData(): FeedbackDto[] {
   const items: FeedbackDto[] = [];
 
-  // Expanded task list with realistic weights and success rates (10 tasks)
+  // Oppgaver orientert mot "Dine sykmeldte" - arbeidsgiver-perspektiv
   const tasks = [
-    // High-volume tasks
+    // Høyt volum - oppfølgingsplan
     {
-      id: "lese-om-dialogmote",
-      label: "Lese om dialogmøte",
-      weight: 0.2,
-      successRate: 0.88,
+      id: "lage-oppfolgingsplan",
+      label: "Lage oppfølgingsplan",
+      weight: 0.22,
+      successRate: 0.65,
     },
     {
-      id: "melde-motebehov",
-      label: "Melde behov for møte",
-      weight: 0.18,
-      successRate: 0.55, // Hard path
+      id: "oppdatere-oppfolgingsplan",
+      label: "Oppdatere eksisterende oppfølgingsplan",
+      weight: 0.15,
+      successRate: 0.72,
+    },
+    // Dialogmøte
+    {
+      id: "forberede-dialogmote",
+      label: "Forberede dialogmøte",
+      weight: 0.14,
+      successRate: 0.58,
+    },
+    {
+      id: "se-innkalling-dialogmote",
+      label: "Se innkalling til dialogmøte",
+      weight: 0.12,
+      successRate: 0.85,
     },
     {
       id: "svare-pa-innkalling",
-      label: "Svare på innkalling",
-      weight: 0.15,
-      successRate: 0.8,
-    },
-    {
-      id: "sjekke-status",
-      label: "Sjekke status på sak",
-      weight: 0.12,
+      label: "Svare på innkalling til dialogmøte",
+      weight: 0.1,
       successRate: 0.75,
     },
-    // Medium-volume tasks
+    // Sykmelding og oversikt
     {
-      id: "laste-opp-dokument",
-      label: "Laste opp dokumentasjon",
-      weight: 0.1,
-      successRate: 0.6, // File upload issues
-    },
-    {
-      id: "se-tidligere-mote",
-      label: "Se tidligere møtereferater",
+      id: "se-sykmeldinger",
+      label: "Se oversikt over sykmeldinger",
       weight: 0.08,
-      successRate: 0.7,
+      successRate: 0.9,
     },
     {
-      id: "endre-tidspunkt",
-      label: "Endre møtetidspunkt",
-      weight: 0.06,
-      successRate: 0.45, // Problematic
+      id: "sjekke-frister",
+      label: "Sjekke frister for oppfølging",
+      weight: 0.07,
+      successRate: 0.55,
     },
-    // Lower-volume tasks
+    // Tilrettelegging og tiltak
+    {
+      id: "dokumentere-tiltak",
+      label: "Dokumentere tilretteleggingstiltak",
+      weight: 0.05,
+      successRate: 0.48,
+    },
     {
       id: "kontakte-nav",
-      label: "Kontakte NAV om møtet",
-      weight: 0.05,
-      successRate: 0.35, // Hard to find
+      label: "Ta kontakt med NAV om saken",
+      weight: 0.04,
+      successRate: 0.35,
     },
     {
-      id: "avlyse-mote",
-      label: "Avlyse eller utsette møte",
-      weight: 0.04,
-      successRate: 0.5,
+      id: "annet",
+      label: "Annet",
+      weight: 0.03,
+      successRate: 0.4,
     },
-    { id: "annet", label: "Noe annet", weight: 0.02, successRate: 0.4 },
   ];
 
   const now = new Date();
@@ -250,40 +256,82 @@ export function generateTopTasksMockData(): FeedbackDto[] {
       let successValue = "Ja";
       let blocker: string | undefined = undefined;
 
-      // Task-specific blocker reasons for better pattern analysis
+      // Oppgavespesifikke blocker-meldinger for bedre mønsteranalyse
+      // Alle meldinger er unike og realistiske for sykefraværsoppfølging
       const taskBlockers: Record<string, string[]> = {
-        "melde-motebehov": [
-          "Skjønte ikke forskjellen på alternativene",
-          "Fant ikke knappen for å melde behov",
-          "Fikk feilmelding: 'Ugyldig dato'",
-          "Systemet godtok ikke begrunnelsen min",
+        "lage-oppfolgingsplan": [
+          "Forstår ikke hva jeg skal fylle inn under 'arbeidsoppgaver'",
+          "Usikker på hvilke tiltak som er relevante å foreslå",
+          "Vet ikke hvordan jeg skal beskrive tilrettelegging",
+          "Arbeidstaker har ikke godkjent sin del ennå",
+          "Får ikke lagret planen, teknisk feil",
+          "Skjemaet virker veldig komplisert for meg",
+          "Lurer på om jeg fyller ut riktig felt for gradert sykmelding",
+          "Mangler informasjon fra legen for å fylle ut planen",
         ],
-        "laste-opp-dokument": [
-          "Filen var for stor",
-          "Systemet aksepterte ikke PDF-formatet",
-          "Opplastingen stoppet halvveis",
-          "Fikk ikke til å velge fil på mobilen",
+        "oppdatere-oppfolgingsplan": [
+          "Finner ikke den eksisterende planen",
+          "Vet ikke hvordan jeg åpner planen for redigering",
+          "Arbeidstaker må godkjenne på nytt, men får det ikke til",
+          "Usikker på om endringene mine ble lagret",
+          "Planen er låst og kan ikke endres",
+          "Ser ikke historikken av tidligere versjoner",
         ],
-        "endre-tidspunkt": [
-          "Fant ikke alternativ for å endre",
-          "Alle tider var opptatt",
-          "Kalenderen viste feil måned",
-          "Knappen var grået ut",
+        "forberede-dialogmote": [
+          "Vet ikke hva slags dokumentasjon jeg bør ha klar",
+          "Usikker på hva NAV forventer av meg i møtet",
+          "Finner ikke informasjon om hva møtet skal handle om",
+          "Lurer på om jeg kan ha med meg noen fra HR",
+          "Skjønner ikke forskjellen på dialogmøte 1 og 2",
+          "Trenger veiledning om tilretteleggingsplikt",
+        ],
+        "se-innkalling-dialogmote": [
+          "Innkallingen kom ikke på e-post som forventet",
+          "Finner ikke vedlegget med møtedetaljer",
+          "Datoen i innkallingen passer ikke, vet ikke hvordan jeg endrer",
+        ],
+        "svare-pa-innkalling": [
+          "Ser ikke knappen for å bekrefte deltakelse",
+          "Vil endre tidspunkt, men finner ikke alternativ for det",
+          "Fikk feilmelding da jeg prøvde å svare",
+          "Usikker på om svaret mitt ble registrert",
+        ],
+        "se-sykmeldinger": [
+          "Ser bare noen av sykmeldingene, ikke alle",
+          "Vet ikke hva 'gradert sykmelding' betyr i praksis",
+          "Savner oversikt over hvor lenge sykmeldingen varer",
+        ],
+        "sjekke-frister": [
+          "Fristene vises ikke tydelig nok",
+          "Forstår ikke hvilken frist som gjelder for min situasjon",
+          "Vet ikke konsekvensene av å overskride fristen",
+          "Kalenderen er forvirrende å lese",
+          "Mangler varsling før fristene går ut",
+        ],
+        "dokumentere-tiltak": [
+          "Vet ikke hvor jeg skal registrere tiltakene",
+          "Usikker på hva som regnes som gode tiltak",
+          "Skjemaet for tiltak er vanskelig å forstå",
+          "Finner ikke feltet for å beskrive tilrettelegging",
         ],
         "kontakte-nav": [
-          "Fant ikke telefonnummer",
-          "Chat-boten forstod ikke spørsmålet",
-          "Ventet i kø i over 30 min",
+          "Finner ikke kontaktinformasjon til riktig avdeling",
+          "Ble satt i telefonkø i over 45 minutter",
+          "Chat-funksjonen forstod ikke spørsmålet mitt",
+          "Fikk ikke svar på henvendelsen min",
+          "Ble henvist frem og tilbake mellom ulike kontorer",
         ],
       };
 
       const defaultBlockers = [
-        "Siden lastet tregt",
-        "Ble logget ut underveis",
-        "Teknisk feil uten forklaring",
-        "Fant ikke det jeg lette etter",
-        "Navigasjonen var forvirrende",
-        "Mobilvennlig visning fungerte dårlig",
+        "Siden lastet veldig tregt",
+        "Ble logget ut midt i prosessen",
+        "Teknisk feil uten forklaring på hva som gikk galt",
+        "Navigasjonen var forvirrende, fant ikke riktig meny",
+        "Mobilvisningen fungerte dårlig på min telefon",
+        "Fikk en feilmelding jeg ikke forstod",
+        "Informasjonen på siden var utdatert",
+        "Søkefunksjonen ga ingen relevante treff",
       ];
 
       const blockerPool = taskBlockers[selectedTask.id] || defaultBlockers;
@@ -371,92 +419,164 @@ export function generateDiscoveryMockData(): FeedbackDto[] {
   const items: FeedbackDto[] = [];
   const now = new Date();
 
-  // Rich open-text responses that will create meaningful word clouds and themes
-  // Each entry: { text, successRate, theme }
+  // Oppgavetekster orientert mot "Dine sykmeldte" - arbeidsgiver-perspektiv
+  // Hver respons er unik og realistisk for sykefraværsoppfølging
   const discoveryResponses = [
-    // Theme: Søknadsstatus (high volume, mixed success)
+    // Theme: Oppfølgingsplan (høyt volum, varierende suksess)
     {
-      text: "Sjekke status på søknaden min om dagpenger",
-      success: 0.6,
-      theme: "status",
+      text: "Lage oppfølgingsplan for sykmeldt ansatt",
+      success: 0.65,
+      theme: "oppfolgingsplan",
     },
     {
-      text: "Finne ut hvor langt søknaden min har kommet",
-      success: 0.5,
-      theme: "status",
+      text: "Finne ut hvordan jeg fyller ut oppfølgingsplanen riktig",
+      success: 0.55,
+      theme: "oppfolgingsplan",
     },
     {
-      text: "Se om søknaden er behandlet ferdig",
+      text: "Oppdatere oppfølgingsplanen med nye tiltak",
       success: 0.7,
-      theme: "status",
+      theme: "oppfolgingsplan",
     },
     {
-      text: "Lure på om dere har mottatt dokumentene mine til søknaden",
-      success: 0.4,
-      theme: "status",
+      text: "Se hva arbeidstaker har svart i oppfølgingsplanen",
+      success: 0.8,
+      theme: "oppfolgingsplan",
     },
     {
-      text: "Sjekke saksbehandlingstid på søknaden",
+      text: "Sende oppfølgingsplanen til NAV",
+      success: 0.75,
+      theme: "oppfolgingsplan",
+    },
+    {
+      text: "Forstå hva som skal stå under tilrettelegging i planen",
       success: 0.5,
-      theme: "status",
+      theme: "oppfolgingsplan",
     },
 
-    // Theme: Sykemelding/Sykepenger (high volume, good success)
+    // Theme: Dialogmøte (høyt volum, god suksess)
     {
-      text: "Sende inn sykemelding fra legen",
+      text: "Forberede meg til dialogmøte med NAV",
+      success: 0.6,
+      theme: "dialogmote",
+    },
+    {
+      text: "Finne ut når neste dialogmøte skal være",
+      success: 0.85,
+      theme: "dialogmote",
+    },
+    {
+      text: "Se innkalling til dialogmøte",
+      success: 0.9,
+      theme: "dialogmote",
+    },
+    {
+      text: "Svare på innkalling til dialogmøte",
+      success: 0.75,
+      theme: "dialogmote",
+    },
+    {
+      text: "Lese om hva dialogmøte 1 innebærer",
+      success: 0.88,
+      theme: "dialogmote",
+    },
+    {
+      text: "Forstå forskjellen på dialogmøte 1 og 2",
+      success: 0.55,
+      theme: "dialogmote",
+    },
+
+    // Theme: Sykmelding (høyt volum, høy suksess)
+    {
+      text: "Se oversikt over sykmeldinger for mine ansatte",
+      success: 0.9,
+      theme: "sykmelding",
+    },
+    {
+      text: "Sjekke hvor lenge sykmeldingen varer",
       success: 0.85,
       theme: "sykmelding",
     },
     {
-      text: "Finne ut når jeg får sykepenger",
-      success: 0.7,
-      theme: "sykmelding",
-    },
-    {
-      text: "Sjekke hvor mye sykepenger jeg får utbetalt",
+      text: "Finne ut om det er gradert eller full sykmelding",
       success: 0.8,
       theme: "sykmelding",
     },
-    { text: "Forlenge sykemelding", success: 0.75, theme: "sykmelding" },
     {
-      text: "Lese om regler for sykmelding",
-      success: 0.9,
+      text: "Se historikk over tidligere sykmeldinger",
+      success: 0.75,
+      theme: "sykmelding",
+    },
+    {
+      text: "Forstå hva gradert sykmelding betyr for arbeidsoppgaver",
+      success: 0.6,
       theme: "sykmelding",
     },
 
-    // Theme: Kontakte NAV (low success - friction point!)
-    { text: "Snakke med noen om saken min", success: 0.3, theme: "kontakt" },
-    { text: "Finne telefonnummer til NAV", success: 0.4, theme: "kontakt" },
-    { text: "Bestille time hos NAV-kontoret", success: 0.35, theme: "kontakt" },
+    // Theme: Frister og varsler (medium suksess - friksjonspunkt)
     {
-      text: "Sende melding til saksbehandler",
-      success: 0.25,
+      text: "Sjekke frister for sykefraværsoppfølging",
+      success: 0.55,
+      theme: "frister",
+    },
+    {
+      text: "Finne ut når jeg må lage oppfølgingsplan",
+      success: 0.5,
+      theme: "frister",
+    },
+    {
+      text: "Se hva som er neste frist jeg må forholde meg til",
+      success: 0.6,
+      theme: "frister",
+    },
+    {
+      text: "Forstå konsekvensene av å ikke følge fristene",
+      success: 0.45,
+      theme: "frister",
+    },
+
+    // Theme: Tilrettelegging (lav-medium suksess)
+    {
+      text: "Dokumentere tilretteleggingstiltak jeg har iverksatt",
+      success: 0.5,
+      theme: "tilrettelegging",
+    },
+    {
+      text: "Finne ut hva slags tilrettelegging som forventes av meg",
+      success: 0.45,
+      theme: "tilrettelegging",
+    },
+    {
+      text: "Lese om min tilretteleggingsplikt som arbeidsgiver",
+      success: 0.7,
+      theme: "tilrettelegging",
+    },
+    {
+      text: "Se eksempler på tiltak andre arbeidsgivere bruker",
+      success: 0.35,
+      theme: "tilrettelegging",
+    },
+
+    // Theme: Kontakt NAV (lav suksess - friksjonspunkt!)
+    {
+      text: "Ta kontakt med NAV om sykefraværssaken",
+      success: 0.35,
       theme: "kontakt",
     },
-    { text: "Få svar på henvendelsen min", success: 0.2, theme: "kontakt" },
-
-    // Theme: Skjema/Dokumenter (medium success)
-    { text: "Finne riktig skjema for å søke", success: 0.6, theme: "skjema" },
     {
-      text: "Laste opp dokumentasjon til saken",
-      success: 0.7,
-      theme: "skjema",
-    },
-    { text: "Fylle ut meldekort", success: 0.85, theme: "skjema" },
-    { text: "Sende inn vedlegg som manglet", success: 0.65, theme: "skjema" },
-
-    // Theme: Utbetaling (high volume)
-    { text: "Se når pengene kommer", success: 0.9, theme: "utbetaling" },
-    { text: "Sjekke utbetalingsdato", success: 0.85, theme: "utbetaling" },
-    {
-      text: "Forstå hva som er trukket i skatt",
-      success: 0.5,
-      theme: "utbetaling",
+      text: "Finne riktig kontaktperson hos NAV",
+      success: 0.3,
+      theme: "kontakt",
     },
     {
-      text: "Finne kvittering på utbetaling",
-      success: 0.7,
-      theme: "utbetaling",
+      text: "Stille spørsmål om oppfølgingsprosessen",
+      success: 0.4,
+      theme: "kontakt",
+    },
+    {
+      text: "Få veiledning om hva jeg skal gjøre videre",
+      success: 0.25,
+      theme: "kontakt",
     },
   ];
 
@@ -472,17 +592,18 @@ export function generateDiscoveryMockData(): FeedbackDto[] {
       .toString()
       .padStart(2, "0")}:00Z`;
 
-    // Pick a response (weighted towards status and sykmelding themes)
-    const weights = {
-      status: 0.25,
-      sykmelding: 0.25,
-      kontakt: 0.15,
-      skjema: 0.15,
-      utbetaling: 0.2,
+    // Pick a response (weighted towards oppfølgingsplan and dialogmøte themes)
+    const weights: Record<string, number> = {
+      oppfolgingsplan: 0.25,
+      dialogmote: 0.22,
+      sykmelding: 0.18,
+      frister: 0.15,
+      tilrettelegging: 0.12,
+      kontakt: 0.08,
     };
     const rand = Math.random();
     let cumulative = 0;
-    let selectedTheme = "status";
+    let selectedTheme = "oppfolgingsplan";
     for (const [theme, weight] of Object.entries(weights)) {
       cumulative += weight;
       if (rand <= cumulative) {
@@ -504,13 +625,22 @@ export function generateDiscoveryMockData(): FeedbackDto[] {
       successValue = successRand > response.success + 0.15 ? "no" : "partial";
     }
 
-    // Add optional blocker text for failures
+    // Unike blocker-meldinger for bedre mønsteranalyse
     const blockerTexts = [
-      "Fant ikke riktig side",
-      "Ble sendt i ring på nettsiden",
-      "Informasjonen var utdatert",
-      "Skjønte ikke hva jeg skulle gjøre",
-      "Innlogging feilet",
+      "Fant ikke riktig side for det jeg skulle gjøre",
+      "Ble sendt i ring mellom ulike sider",
+      "Informasjonen var vanskelig å forstå",
+      "Skjemaet var komplisert å fylle ut",
+      "Innlogging med BankID tok lang tid",
+      "Fikk teknisk feil uten forklaring",
+      "Mobilvisningen fungerte dårlig",
+      "Søkefunksjonen ga ingen treff",
+      "Veiledningsteksten hjalp meg ikke",
+      "Fikk ikke kontakt med noen som kunne hjelpe",
+      "Fristen hadde allerede gått ut",
+      "Visste ikke hvilken knapp jeg skulle trykke på",
+      "Arbeidstaker hadde ikke svart på sin del ennå",
+      "Systemet var tregt og hang flere ganger",
     ];
 
     const answers = [
