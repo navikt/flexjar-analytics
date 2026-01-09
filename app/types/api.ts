@@ -265,6 +265,14 @@ export interface ContextTagsResponse {
 // Discovery Survey Types
 // ============================================
 
+/** Word frequency with optional source responses for context examples */
+export interface WordFrequency {
+  word: string;
+  count: number;
+  /** Source responses containing this word for displaying context examples */
+  sourceResponses?: Array<{ text: string; submittedAt: string }>;
+}
+
 export interface DiscoveryTheme {
   theme: string;
   count: number;
@@ -274,7 +282,7 @@ export interface DiscoveryTheme {
 
 export interface DiscoveryResponse {
   totalSubmissions: number;
-  wordFrequency: Array<{ word: string; count: number }>;
+  wordFrequency: WordFrequency[];
   themes: DiscoveryTheme[];
   recentResponses: Array<{
     task: string;
@@ -298,7 +306,7 @@ export interface BlockerTheme {
 
 export interface BlockerResponse {
   totalBlockers: number;
-  wordFrequency: Array<{ word: string; count: number }>;
+  wordFrequency: WordFrequency[];
   themes: BlockerTheme[];
   recentBlockers: Array<{
     blocker: string;

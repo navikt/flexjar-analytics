@@ -561,22 +561,48 @@ export function getMockDiscoveryStats(
   });
 
   // Calculate word frequency using shared IGNORED_WORDS list
-  const wordCounts = new Map<string, number>();
+  // Track source responses for each word so we can display context examples
+  const wordData = new Map<
+    string,
+    {
+      count: number;
+      sourceResponses: Array<{ text: string; submittedAt: string }>;
+    }
+  >();
 
   for (const response of responses) {
     const words = response.task
       .toLowerCase()
       .replace(/[^\wæøå\s]/g, "")
       .split(/\s+/);
+    const seenWordsInResponse = new Set<string>();
     for (const word of words) {
       if (word.length > 2 && !IGNORED_WORDS.has(word)) {
-        wordCounts.set(word, (wordCounts.get(word) || 0) + 1);
+        if (!wordData.has(word)) {
+          wordData.set(word, { count: 0, sourceResponses: [] });
+        }
+        const data = wordData.get(word);
+        if (!data) continue;
+        data.count++;
+        // Only add source response once per word per response (avoid duplicates)
+        // Limit to 5 source responses per word to keep response size reasonable
+        if (!seenWordsInResponse.has(word) && data.sourceResponses.length < 5) {
+          data.sourceResponses.push({
+            text: response.task,
+            submittedAt: response.submittedAt,
+          });
+          seenWordsInResponse.add(word);
+        }
       }
     }
   }
 
-  const wordFrequency = Array.from(wordCounts.entries())
-    .map(([word, count]) => ({ word, count }))
+  const wordFrequency = Array.from(wordData.entries())
+    .map(([word, data]) => ({
+      word,
+      count: data.count,
+      sourceResponses: data.sourceResponses,
+    }))
     .sort((a, b) => b.count - a.count)
     .slice(0, 30);
 
@@ -1079,21 +1105,47 @@ export function getMockBlockerStats(
   }
 
   // Calculate word frequency from blocker text
-  const wordCounts = new Map<string, number>();
+  // Track source responses for each word so we can display context examples
+  const wordData = new Map<
+    string,
+    {
+      count: number;
+      sourceResponses: Array<{ text: string; submittedAt: string }>;
+    }
+  >();
   for (const response of blockerResponses) {
     const words = response.blocker
       .toLowerCase()
       .replace(/[^\wæøå\s]/g, "")
       .split(/\s+/);
+    const seenWordsInResponse = new Set<string>();
     for (const word of words) {
       if (word.length > 2 && !IGNORED_WORDS.has(word)) {
-        wordCounts.set(word, (wordCounts.get(word) || 0) + 1);
+        if (!wordData.has(word)) {
+          wordData.set(word, { count: 0, sourceResponses: [] });
+        }
+        const data = wordData.get(word);
+        if (!data) continue;
+        data.count++;
+        // Only add source response once per word per response (avoid duplicates)
+        // Limit to 5 source responses per word to keep response size reasonable
+        if (!seenWordsInResponse.has(word) && data.sourceResponses.length < 5) {
+          data.sourceResponses.push({
+            text: response.blocker,
+            submittedAt: response.submittedAt,
+          });
+          seenWordsInResponse.add(word);
+        }
       }
     }
   }
 
-  const wordFrequency = Array.from(wordCounts.entries())
-    .map(([word, count]) => ({ word, count }))
+  const wordFrequency = Array.from(wordData.entries())
+    .map(([word, data]) => ({
+      word,
+      count: data.count,
+      sourceResponses: data.sourceResponses,
+    }))
     .sort((a, b) => b.count - a.count)
     .slice(0, 30);
 

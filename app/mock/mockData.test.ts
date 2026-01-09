@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   generateSurveyData,
+  getMockBlockerStats,
   getMockDiscoveryStats,
   getMockTaskPriorityStats,
   getMockTopTasksStats,
@@ -38,6 +39,78 @@ describe("Mock Data Generation", () => {
     expect(firstResponse).toHaveProperty("task");
     expect(firstResponse).toHaveProperty("success");
     expect(["yes", "partial", "no"]).toContain(firstResponse.success);
+  });
+
+  it("should include sourceResponses in discovery wordFrequency for context examples", () => {
+    const params = new URLSearchParams();
+    const stats = getMockDiscoveryStats(params);
+
+    expect(stats.wordFrequency.length).toBeGreaterThan(0);
+
+    // Every word in the frequency list should have sourceResponses
+    for (const wordData of stats.wordFrequency) {
+      expect(wordData.word).toBeDefined();
+      expect(wordData.count).toBeGreaterThan(0);
+      expect(wordData.sourceResponses).toBeDefined();
+      expect(Array.isArray(wordData.sourceResponses)).toBe(true);
+      // At least one source response should be present
+      expect(wordData.sourceResponses?.length).toBeGreaterThan(0);
+
+      // Each source response should have text and submittedAt
+      if (wordData.sourceResponses) {
+        for (const response of wordData.sourceResponses) {
+          expect(response.text).toBeDefined();
+          expect(response.submittedAt).toBeDefined();
+          // The word should appear in the response text (case insensitive)
+          expect(response.text.toLowerCase()).toContain(
+            wordData.word.toLowerCase(),
+          );
+        }
+      }
+    }
+  });
+
+  it("should include sourceResponses in blocker wordFrequency for context examples", () => {
+    const params = new URLSearchParams();
+    const stats = getMockBlockerStats(params);
+
+    // Only test if there are blocker responses
+    if (stats.totalBlockers > 0 && stats.wordFrequency.length > 0) {
+      for (const wordData of stats.wordFrequency) {
+        expect(wordData.word).toBeDefined();
+        expect(wordData.count).toBeGreaterThan(0);
+        expect(wordData.sourceResponses).toBeDefined();
+        expect(Array.isArray(wordData.sourceResponses)).toBe(true);
+
+        // At least one source response should be present
+        expect(wordData.sourceResponses?.length).toBeGreaterThan(0);
+
+        // Each source response should have text and submittedAt
+        if (wordData.sourceResponses) {
+          for (const response of wordData.sourceResponses) {
+            expect(response.text).toBeDefined();
+            expect(response.submittedAt).toBeDefined();
+            // Note: We don't check if word appears exactly in response text
+            // because punctuation is stripped when extracting words
+            // (e.g., "chat-boten" becomes "chatboten")
+          }
+        }
+      }
+    }
+  });
+
+  it("should limit sourceResponses to 5 per word to keep response size reasonable", () => {
+    const params = new URLSearchParams();
+    const discoveryStats = getMockDiscoveryStats(params);
+    const blockerStats = getMockBlockerStats(params);
+
+    for (const wordData of discoveryStats.wordFrequency) {
+      expect(wordData.sourceResponses?.length ?? 0).toBeLessThanOrEqual(5);
+    }
+
+    for (const wordData of blockerStats.wordFrequency) {
+      expect(wordData.sourceResponses?.length ?? 0).toBeLessThanOrEqual(5);
+    }
   });
 
   it("should generate task priority stats correctly", () => {

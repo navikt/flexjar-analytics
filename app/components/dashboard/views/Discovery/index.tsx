@@ -13,7 +13,7 @@ import {
   Tooltip,
   VStack,
 } from "@navikt/ds-react";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { DashboardCard } from "~/components/dashboard";
 import {
   type ContextExample,
@@ -100,16 +100,32 @@ export function DiscoveryAnalysis({ data }: DiscoveryAnalysisProps) {
     [deleteTheme],
   );
 
+  // Build O(1) lookup map for word frequency data
+  const wordLookup = useMemo(() => {
+    const map = new Map<string, (typeof wordFrequency)[0]>();
+    for (const w of wordFrequency) {
+      map.set(w.word.toLowerCase(), w);
+    }
+    return map;
+  }, [wordFrequency]);
+
   // Get context examples for the selected word (for Peek Context)
+  // Prefer sourceResponses from wordFrequency (reliable), fallback to substring search
   const getContextExamples = useCallback(
     (word: string): ContextExample[] => {
       if (!word) return [];
+      // O(1) lookup from pre-built map
+      const wordData = wordLookup.get(word.toLowerCase());
+      if (wordData?.sourceResponses && wordData.sourceResponses.length > 0) {
+        return wordData.sourceResponses;
+      }
+      // Fallback to substring search in recentResponses for backwards compatibility
       const wordLower = word.toLowerCase();
       return recentResponses
         .filter((r) => r.task.toLowerCase().includes(wordLower))
         .map((r) => ({ text: r.task, submittedAt: r.submittedAt }));
     },
-    [recentResponses],
+    [wordLookup, recentResponses],
   );
 
   // Combine defined themes with stats

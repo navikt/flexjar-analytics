@@ -13,7 +13,7 @@ import {
   Skeleton,
   VStack,
 } from "@navikt/ds-react";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { DashboardCard } from "~/components/dashboard";
 import {
   type ContextExample,
@@ -135,14 +135,33 @@ export function BlockerAnalysis({ data: providedData }: BlockerAnalysisProps) {
     recentBlockers,
   } = data;
 
+  // Build O(1) lookup map for word frequency data
+  const wordLookup = useMemo(() => {
+    const map = new Map<string, (typeof wordFrequency)[0]>();
+    for (const w of wordFrequency) {
+      map.set(w.word.toLowerCase(), w);
+    }
+    return map;
+  }, [wordFrequency]);
+
   // Get context examples for the selected word
-  const getContextExamples = (word: string): ContextExample[] => {
-    if (!word) return [];
-    const wordLower = word.toLowerCase();
-    return recentBlockers
-      .filter((b) => b.blocker.toLowerCase().includes(wordLower))
-      .map((b) => ({ text: b.blocker, submittedAt: b.submittedAt }));
-  };
+  // Prefer sourceResponses from wordFrequency (reliable), fallback to substring search
+  const getContextExamples = useCallback(
+    (word: string): ContextExample[] => {
+      if (!word) return [];
+      // O(1) lookup from pre-built map
+      const wordData = wordLookup.get(word.toLowerCase());
+      if (wordData?.sourceResponses && wordData.sourceResponses.length > 0) {
+        return wordData.sourceResponses;
+      }
+      // Fallback to substring search in recentBlockers for backwards compatibility
+      const wordLower = word.toLowerCase();
+      return recentBlockers
+        .filter((b) => b.blocker.toLowerCase().includes(wordLower))
+        .map((b) => ({ text: b.blocker, submittedAt: b.submittedAt }));
+    },
+    [wordLookup, recentBlockers],
+  );
 
   const handleWordClick = (
     word: string,
