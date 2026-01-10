@@ -34,10 +34,7 @@ export function FeedbackExpandedView({ feedback }: FeedbackExpandedViewProps) {
               label="Tags"
               icon={<TagIcon fontSize="1rem" aria-hidden />}
             >
-              <TagEditor
-                feedbackId={feedback.id}
-                currentTags={feedback.tags || []}
-              />
+              <TagEditor id={feedback.id} currentTags={feedback.tags || []} />
             </ExpandedSection>
 
             {/* Context Info */}

@@ -32,7 +32,19 @@ export const fetchBlockerServerFn = createServerFn({ method: "GET" })
       return getMockBlockerStats(searchParams);
     }
 
-    const url = buildUrl(backendUrl, "/api/v1/intern/stats/blockers", data);
+    const backendParams = {
+      app: data.app,
+      surveyId: data.surveyId,
+      fromDate: data.from,
+      toDate: data.to,
+      deviceType: data.deviceType,
+    };
+
+    const url = buildUrl(
+      backendUrl,
+      "/api/v1/intern/stats/blockers",
+      backendParams,
+    );
     const response = await fetch(url, {
       headers: getHeaders(oboToken),
     });

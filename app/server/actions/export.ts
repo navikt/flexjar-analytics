@@ -18,6 +18,31 @@ interface ExportResult {
 }
 
 /**
+ * Transform frontend URL params to backend API params.
+ * Keeps ExportPanel and URL params stable while backend uses the new contract.
+ */
+function transformToBackendParams(data: Record<string, string | undefined>) {
+  const tag = data.tags
+    ?.split(",")
+    .map((t) => t.trim())
+    .filter(Boolean);
+
+  return {
+    format: data.format,
+    app: data.app,
+    surveyId: data.surveyId,
+    fromDate: data.from, // from -> fromDate
+    toDate: data.to, // to -> toDate
+    hasText: data.medTekst === "true" ? "true" : undefined, // medTekst -> hasText
+    lowRating: data.lavRating === "true" ? "true" : undefined, // lavRating -> lowRating
+    query: data.fritekst, // fritekst -> query
+    tag: tag && tag.length > 0 ? tag : undefined, // tags -> repeated tag params
+    deviceType: data.deviceType,
+    segment: data.segment?.split(",").filter(Boolean),
+  };
+}
+
+/**
  * Export feedback data in various formats (CSV, JSON, Excel).
  * Returns base64-encoded blob data for client to download.
  */
@@ -42,7 +67,8 @@ export const exportServerFn = createServerFn({ method: "GET" })
       };
     }
 
-    const url = buildUrl(backendUrl, "/api/v1/intern/export", data);
+    const backendParams = transformToBackendParams(data);
+    const url = buildUrl(backendUrl, "/api/v1/intern/export", backendParams);
     const response = await fetch(url, {
       headers: getHeaders(oboToken),
     });

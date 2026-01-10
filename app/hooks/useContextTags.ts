@@ -4,7 +4,7 @@ import { fetchContextTagsServerFn } from "~/server/actions";
 /**
  * Hook to fetch context tags with cardinality filtering for auto-segmentation.
  *
- * @param surveyId - The survey/feedbackId to fetch tags for
+ * @param surveyId - The survey to fetch tags for
  * @param maxCardinality - (Optional) Only return keys with <= this many unique values.
  *                         Useful for filtering out high-cardinality IDs.
  * @returns React Query result with context tags and their unique values

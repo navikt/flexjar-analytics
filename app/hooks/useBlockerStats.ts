@@ -18,13 +18,14 @@ export function useBlockerStats() {
       params.app,
       params.from,
       params.to,
-      params.feedbackId,
+      params.surveyId,
       params.deviceType,
     ],
     queryFn: () =>
       fetchBlockerServerFn({
         data: {
-          surveyId: params.feedbackId,
+          app: params.app,
+          surveyId: params.surveyId,
           from: params.from,
           to: params.to,
           deviceType: params.deviceType,

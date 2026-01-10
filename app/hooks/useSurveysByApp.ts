@@ -3,7 +3,7 @@ import { fetchSurveysByAppServerFn } from "~/server/actions";
 
 /**
  * Hook to fetch surveys grouped by app.
- * Returns a mapping of app name -> array of survey feedbackIds
+ * Returns a mapping of app name -> array of surveyIds
  */
 export function useSurveysByApp() {
   return useQuery({

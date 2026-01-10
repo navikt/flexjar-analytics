@@ -49,7 +49,7 @@ export const addTagServerFn = createServerFn({ method: "POST" })
       return { success: true };
     }
 
-    const url = `${backendUrl}/api/v1/intern/feedback/${encodeURIComponent(data.feedbackId)}/tags/${encodeURIComponent(data.tag)}`;
+    const url = `${backendUrl}/api/v1/intern/feedback/${encodeURIComponent(data.id)}/tags/${encodeURIComponent(data.tag)}`;
     const response = await fetch(url, {
       method: "POST",
       headers: getHeaders(oboToken),
@@ -74,7 +74,7 @@ export const removeTagServerFn = createServerFn({ method: "POST" })
       return { success: true };
     }
 
-    const url = `${backendUrl}/api/v1/intern/feedback/${encodeURIComponent(data.feedbackId)}/tags/${encodeURIComponent(data.tag)}`;
+    const url = `${backendUrl}/api/v1/intern/feedback/${encodeURIComponent(data.id)}/tags/${encodeURIComponent(data.tag)}`;
     const response = await fetch(url, {
       method: "DELETE",
       headers: getHeaders(oboToken),

@@ -44,7 +44,7 @@ export function ExportPanel() {
           format,
           team: params.team,
           app: params.app,
-          feedbackId: params.feedbackId,
+          surveyId: params.surveyId,
           from: params.from,
           to: params.to,
           medTekst: params.medTekst,
@@ -52,6 +52,7 @@ export function ExportPanel() {
           lavRating: params.lavRating,
           deviceType: params.deviceType,
           tags: params.tags,
+          segment: params.segment,
         },
       });
 
@@ -190,9 +191,9 @@ function ActiveFilters({
           <strong>App:</strong> {params.app}
         </BodyShort>
       )}
-      {params.feedbackId && (
+      {params.surveyId && (
         <BodyShort size="small" spacing>
-          <strong>Survey:</strong> {params.feedbackId}
+          <strong>Survey:</strong> {params.surveyId}
         </BodyShort>
       )}
       {params.from && (

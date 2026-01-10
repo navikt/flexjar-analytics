@@ -48,11 +48,11 @@ export const deleteFeedbackServerFn = createServerFn({ method: "POST" })
     if (isMockMode()) {
       const { deleteMockFeedback } = await import("~/mock/mockData");
       await mockDelay();
-      const deleted = deleteMockFeedback(data.feedbackId);
+      const deleted = deleteMockFeedback(data.id);
       return { success: deleted };
     }
 
-    const url = `${backendUrl}/api/v1/intern/feedback/${encodeURIComponent(data.feedbackId)}`;
+    const url = `${backendUrl}/api/v1/intern/feedback/${encodeURIComponent(data.id)}`;
     const response = await fetch(url, {
       method: "DELETE",
       headers: getHeaders(oboToken),

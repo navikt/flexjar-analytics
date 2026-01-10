@@ -40,3 +40,6 @@ export { deleteFeedbackServerFn, deleteSurveyServerFn } from "./delete";
 
 // Export
 export { exportServerFn } from "./export";
+
+// Filter Bootstrap
+export { fetchFilterBootstrapServerFn } from "./fetchFilterBootstrap";

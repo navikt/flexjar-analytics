@@ -31,7 +31,19 @@ export const fetchTopTasksServerFn = createServerFn({ method: "GET" })
       return getMockTopTasksStats(searchParams);
     }
 
-    const url = buildUrl(backendUrl, "/api/v1/intern/toptasks", data);
+    const backendParams = {
+      app: data.app,
+      surveyId: data.surveyId,
+      fromDate: data.from,
+      toDate: data.to,
+      deviceType: data.deviceType,
+    };
+
+    const url = buildUrl(
+      backendUrl,
+      "/api/v1/intern/stats/top-tasks",
+      backendParams,
+    );
     const response = await fetch(url, {
       headers: getHeaders(oboToken),
     });

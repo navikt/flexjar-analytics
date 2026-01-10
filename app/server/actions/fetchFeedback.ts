@@ -14,6 +14,36 @@ import { FeedbackParamsSchema } from "~/types/schemas";
 import { handleApiResponse } from "../fetchUtils";
 
 /**
+ * Transform frontend URL params to backend API params.
+ * This maps legacy Norwegian param names to new English names.
+ */
+function transformToBackendParams(data: Record<string, string | undefined>) {
+  // Backend uses 0-indexed pages
+  const page = data.page ? String(Number.parseInt(data.page, 10) - 1) : "0";
+
+  const tag = data.tags
+    ?.split(",")
+    .map((t) => t.trim())
+    .filter(Boolean);
+
+  return {
+    app: data.app,
+    surveyId: data.surveyId,
+    page,
+    size: data.size,
+    fromDate: data.from, // from -> fromDate
+    toDate: data.to, // to -> toDate
+    hasText: data.medTekst === "true" ? "true" : undefined, // medTekst -> hasText
+    lowRating: data.lavRating === "true" ? "true" : undefined, // lavRating -> lowRating
+    query: data.fritekst, // fritekst -> query
+    tag: tag && tag.length > 0 ? tag : undefined, // tags -> repeated tag params
+    deviceType: data.deviceType,
+    // Transform segment format: "key:value,key:value" -> repeated params handled by buildUrl
+    segment: data.segment?.split(",").filter(Boolean),
+  };
+}
+
+/**
  * Fetch paginated feedback items with filtering support.
  */
 export const fetchFeedbackServerFn = createServerFn({ method: "GET" })
@@ -34,11 +64,8 @@ export const fetchFeedbackServerFn = createServerFn({ method: "GET" })
       return getMockFeedback(searchParams);
     }
 
-    // Backend uses 0-indexed pages
-    const backendParams = {
-      ...data,
-      page: data.page ? String(Number.parseInt(data.page, 10) - 1) : "0",
-    };
+    // Transform to backend param names
+    const backendParams = transformToBackendParams(data);
 
     const url = buildUrl(backendUrl, "/api/v1/intern/feedback", backendParams);
     const response = await fetch(url, {

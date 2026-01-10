@@ -14,6 +14,19 @@ import { StatsParamsSchema } from "~/types/schemas";
 import { handleApiResponse } from "../fetchUtils";
 
 /**
+ * Transform frontend URL params to backend API params.
+ */
+function transformToBackendParams(data: Record<string, string | undefined>) {
+  return {
+    app: data.app,
+    surveyId: data.surveyId,
+    fromDate: data.from, // from -> fromDate
+    toDate: data.to, // to -> toDate
+    deviceType: data.deviceType,
+  };
+}
+
+/**
  * Fetch aggregated feedback statistics.
  * Supports filtering by app, date range, survey, and device type.
  */
@@ -32,7 +45,10 @@ export const fetchStatsServerFn = createServerFn({ method: "GET" })
       return getMockStats(searchParams);
     }
 
-    const url = buildUrl(backendUrl, "/api/v1/intern/stats", data);
+    // Transform to backend param names
+    const backendParams = transformToBackendParams(data);
+
+    const url = buildUrl(backendUrl, "/api/v1/intern/stats", backendParams);
     const response = await fetch(url, {
       headers: getHeaders(oboToken),
     });

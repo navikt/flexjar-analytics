@@ -8,7 +8,7 @@ export const StatsParamsSchema = z.object({
   app: z.string().optional(),
   from: z.string().optional(),
   to: z.string().optional(),
-  feedbackId: z.string().optional(),
+  surveyId: z.string().optional(),
   deviceType: z.string().optional(),
   ubehandlet: z.string().optional(),
   /** Filter by context.tags (format: "key:value,key:value") */
@@ -17,29 +17,37 @@ export const StatsParamsSchema = z.object({
 
 export type StatsParams = z.infer<typeof StatsParamsSchema>;
 
+/**
+ * Frontend URL params schema.
+ * Note: These are transformed to backend params in the server function:
+ * - from/to -> fromDate/toDate
+ * - medTekst -> hasText
+ * - lavRating -> lowRating
+ * - fritekst -> query
+ * - tags -> tag
+ */
 export const FeedbackParamsSchema = z.object({
   app: z.string().optional(),
-  feedbackId: z.string().optional(),
+  surveyId: z.string().optional(),
   page: z.string().optional(),
   size: z.string().optional(),
   from: z.string().optional(),
   to: z.string().optional(),
   medTekst: z.string().optional(),
-  stjerne: z.string().optional(),
+  lavRating: z.string().optional(),
   fritekst: z.string().optional(),
   tags: z.string().optional(),
-  lavRating: z.string().optional(),
-  pathname: z.string().optional(),
   deviceType: z.string().optional(),
-  /** Filter by theme (themeId or 'uncategorized') */
+  /** Filter by theme (themeId or 'uncategorized') - client-side only */
   theme: z.string().optional(),
-  /** Filter by context.tags (format: "key:value,key:value") */
+  /** Segment filters (format: "key:value,key:value") */
   segment: z.string().optional(),
 });
 
 export type FeedbackParams = z.infer<typeof FeedbackParamsSchema>;
 
 export const TopTasksParamsSchema = z.object({
+  app: z.string().optional(),
   surveyId: z.string().optional(),
   from: z.string().optional(),
   to: z.string().optional(),
@@ -49,6 +57,7 @@ export const TopTasksParamsSchema = z.object({
 export type TopTasksParams = z.infer<typeof TopTasksParamsSchema>;
 
 export const DiscoveryParamsSchema = z.object({
+  app: z.string().optional(),
   surveyId: z.string().optional(),
   from: z.string().optional(),
   to: z.string().optional(),
@@ -58,6 +67,7 @@ export const DiscoveryParamsSchema = z.object({
 export type DiscoveryParams = z.infer<typeof DiscoveryParamsSchema>;
 
 export const BlockerParamsSchema = z.object({
+  app: z.string().optional(),
   surveyId: z.string().optional(),
   from: z.string().optional(),
   to: z.string().optional(),
@@ -67,6 +77,7 @@ export const BlockerParamsSchema = z.object({
 export type BlockerParams = z.infer<typeof BlockerParamsSchema>;
 
 export const TaskPriorityParamsSchema = z.object({
+  app: z.string().optional(),
   surveyId: z.string().optional(),
   from: z.string().optional(),
   to: z.string().optional(),
@@ -76,7 +87,7 @@ export const TaskPriorityParamsSchema = z.object({
 export type TaskPriorityParams = z.infer<typeof TaskPriorityParamsSchema>;
 
 export const TagActionSchema = z.object({
-  feedbackId: z.string(),
+  id: z.string(),
   tag: z.string(),
 });
 
@@ -88,8 +99,26 @@ export const DeleteSurveySchema = z.object({
 
 export type DeleteSurvey = z.infer<typeof DeleteSurveySchema>;
 
+// ============================================
+// Filter Bootstrap Response Schema
+// ============================================
+
+export const FilterBootstrapResponseSchema = z.object({
+  generatedAt: z.string(),
+  selectedTeam: z.string(),
+  availableTeams: z.array(z.string()),
+  deviceTypes: z.array(z.string()),
+  apps: z.array(z.string()),
+  surveysByApp: z.record(z.string(), z.array(z.string())),
+  tags: z.array(z.string()),
+});
+
+export type FilterBootstrapResponse = z.infer<
+  typeof FilterBootstrapResponseSchema
+>;
+
 export const DeleteFeedbackSchema = z.object({
-  feedbackId: z.string(),
+  id: z.string(),
 });
 
 export type DeleteFeedback = z.infer<typeof DeleteFeedbackSchema>;
@@ -106,7 +135,7 @@ export const ExportParamsSchema = z.object({
   format: z.enum(["csv", "json", "excel"]),
   team: z.string().optional(),
   app: z.string().optional(),
-  feedbackId: z.string().optional(),
+  surveyId: z.string().optional(),
   from: z.string().optional(),
   to: z.string().optional(),
   medTekst: z.string().optional(),
@@ -114,6 +143,8 @@ export const ExportParamsSchema = z.object({
   lavRating: z.string().optional(),
   deviceType: z.string().optional(),
   tags: z.string().optional(),
+  /** Segment filters (format: "key:value,key:value") */
+  segment: z.string().optional(),
 });
 
 export type ExportParams = z.infer<typeof ExportParamsSchema>;
@@ -269,7 +300,7 @@ export const FeedbackStatsSchema = z.object({
   byRating: z.record(z.string(), z.number()),
   byApp: z.record(z.string(), z.number()),
   byDate: z.record(z.string(), z.number()),
-  byFeedbackId: z.record(z.string(), z.number()),
+  bySurveyId: z.record(z.string(), z.number()),
   averageRating: z.number().nullable(),
   ratingByDate: z.record(
     z.string(),
@@ -323,7 +354,7 @@ export const TopTasksResponseSchema = z.object({
 });
 
 export const ContextTagsResponseSchema = z.object({
-  feedbackId: z.string(),
+  surveyId: z.string(),
   contextTags: z.record(
     z.string(),
     z.array(z.object({ value: z.string(), count: z.number() })),

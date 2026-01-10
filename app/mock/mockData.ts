@@ -167,7 +167,7 @@ function applyFilters(
   const to = params.get("to");
   const medTekst = params.get("medTekst");
   const fritekst = params.get("fritekst");
-  const surveyId = params.get("feedbackId");
+  const surveyId = params.get("surveyId");
   const lavRating = params.get("lavRating");
   const pathname = params.get("pathname");
   const deviceType = params.get("deviceType");
@@ -415,6 +415,34 @@ export function getMockSurveysByApp(): Record<string, string[]> {
   return surveysByApp;
 }
 
+/**
+ * Get filter bootstrap data for mock mode.
+ * Provides all data needed for FilterBar dropdowns.
+ */
+export function getMockFilterBootstrap(): {
+  generatedAt: string;
+  selectedTeam: string;
+  availableTeams: string[];
+  deviceTypes: string[];
+  apps: string[];
+  surveysByApp: Record<string, string[]>;
+  tags: string[];
+} {
+  const surveysByApp = getMockSurveysByApp();
+  const apps = Object.keys(surveysByApp).sort();
+  const tags = getMockTags();
+
+  return {
+    generatedAt: new Date().toISOString(),
+    selectedTeam: "flex",
+    availableTeams: ["flex"],
+    deviceTypes: ["mobile", "tablet", "desktop"],
+    apps,
+    surveysByApp,
+    tags,
+  };
+}
+
 // Delete all feedback for a survey (mock implementation)
 export function deleteMockSurvey(surveyId: string): {
   deletedCount: number;
@@ -438,22 +466,18 @@ export function deleteMockSurvey(surveyId: string): {
 }
 
 // Delete single feedback item (mock implementation)
-export function deleteMockFeedback(feedbackId: string): boolean {
+export function deleteMockFeedback(id: string): boolean {
   const initialLength = mockFeedbackItems.length;
 
   // Filter out item with matching id
-  const itemsToKeep = mockFeedbackItems.filter(
-    (item) => item.id !== feedbackId,
-  );
+  const itemsToKeep = mockFeedbackItems.filter((item) => item.id !== id);
   const deleted = initialLength !== itemsToKeep.length;
 
   // Replace the array contents
   mockFeedbackItems.length = 0;
   mockFeedbackItems.push(...itemsToKeep);
 
-  console.log(
-    `[Mock] ${deleted ? "Deleted" : "Not found"} feedback "${feedbackId}"`,
-  );
+  console.log(`[Mock] ${deleted ? "Deleted" : "Not found"} feedback "${id}"`);
 
   return deleted;
 }

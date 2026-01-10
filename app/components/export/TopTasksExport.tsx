@@ -12,14 +12,14 @@ import type { TopTasksResponse } from "~/types/api";
 
 interface TopTasksExportProps {
   data: TopTasksResponse;
-  feedbackId?: string;
+  surveyId?: string;
 }
 
 /**
  * Export panel for Top Tasks data.
  * Provides CSV and JSON export options for task performance data.
  */
-export function TopTasksExport({ data, feedbackId }: TopTasksExportProps) {
+export function TopTasksExport({ data, surveyId }: TopTasksExportProps) {
   const exportCsv = () => {
     const headers = [
       "Oppgave",
@@ -52,7 +52,7 @@ export function TopTasksExport({ data, feedbackId }: TopTasksExportProps) {
 
     downloadFile(
       csvContent,
-      `top-tasks-${feedbackId || "export"}.csv`,
+      `top-tasks-${surveyId || "export"}.csv`,
       "text/csv",
     );
   };
@@ -60,7 +60,7 @@ export function TopTasksExport({ data, feedbackId }: TopTasksExportProps) {
   const exportJson = () => {
     const exportData = {
       exportedAt: new Date().toISOString(),
-      feedbackId,
+      surveyId,
       summary: {
         totalSubmissions: data.totalSubmissions,
         overallTpi: data.overallTpi,
@@ -83,7 +83,7 @@ export function TopTasksExport({ data, feedbackId }: TopTasksExportProps) {
 
     downloadFile(
       JSON.stringify(exportData, null, 2),
-      `top-tasks-${feedbackId || "export"}.json`,
+      `top-tasks-${surveyId || "export"}.json`,
       "application/json",
     );
   };

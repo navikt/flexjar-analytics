@@ -268,7 +268,7 @@ export function calculateStats(
   const app = params.get("app");
   const from = params.get("from");
   const to = params.get("to");
-  const surveyId = params.get("feedbackId"); // Keep old param name for backwards compat
+  const surveyId = params.get("surveyId");
   const deviceType = params.get("deviceType");
 
   if (app) {
@@ -315,7 +315,7 @@ export function calculateStats(
   };
   const byApp: Record<string, number> = {};
   const byDate: Record<string, number> = {};
-  const byFeedbackId: Record<string, number> = {};
+  const bySurveyId: Record<string, number> = {};
   const ratingByDateAccum: Record<string, { total: number; count: number }> =
     {};
   const byDeviceAccum: Record<string, { total: number; count: number }> = {};
@@ -370,9 +370,9 @@ export function calculateStats(
     const date = item.submittedAt.split("T")[0];
     byDate[date] = (byDate[date] || 0) + 1;
 
-    // Survey (feedbackId for backwards compat)
-    const fbId = item.surveyId || "unknown";
-    byFeedbackId[fbId] = (byFeedbackId[fbId] || 0) + 1;
+    // Survey
+    const currentSurveyId = item.surveyId || "unknown";
+    bySurveyId[currentSurveyId] = (bySurveyId[currentSurveyId] || 0) + 1;
 
     // Text
     if (hasTextResponse(item)) {
@@ -461,7 +461,7 @@ export function calculateStats(
     byRating: shouldMask ? {} : byRating,
     byApp: shouldMask ? {} : byApp,
     byDate: shouldMask ? {} : byDate,
-    byFeedbackId: shouldMask ? {} : byFeedbackId,
+    bySurveyId: shouldMask ? {} : bySurveyId,
     averageRating: shouldMask
       ? null
       : ratingCount > 0
@@ -486,7 +486,7 @@ function applyFiltersToItems(
   const app = params.get("app");
   const from = params.get("from");
   const to = params.get("to");
-  const surveyId = params.get("feedbackId");
+  const surveyId = params.get("surveyId");
   const deviceType = params.get("deviceType");
 
   if (app) filtered = filtered.filter((item) => item.app === app);

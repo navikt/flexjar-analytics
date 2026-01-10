@@ -14,7 +14,7 @@ export function TaskPriorityDashboard() {
   const { data, isPending } = useTaskPriorityStats();
   const { params } = useSearchParams();
   const { addSegment } = useSegmentFilter();
-  const surveyId = params.feedbackId;
+  const surveyId = params.surveyId;
 
   return (
     <>

@@ -57,7 +57,7 @@ interface StatsCardsProps {
 export function StatsCards({ showRating = false }: StatsCardsProps) {
   const { data: stats, isPending } = useStats();
   const { params } = useSearchParams();
-  const hasSurveyFilter = !!params.feedbackId;
+  const hasSurveyFilter = !!params.surveyId;
 
   // isPending: no cached data AND fetching (TanStack Query v5 best practice)
   // With placeholderData: keepPreviousData, isPending stays false during refetches

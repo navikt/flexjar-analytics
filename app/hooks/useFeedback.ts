@@ -10,7 +10,7 @@ export type { FeedbackPage } from "~/types/api";
  *
  * Automatically reacts to URL search params for filtering and pagination:
  * - app: Filter by application name
- * - feedbackId: Filter by specific survey ID
+ * - surveyId: Filter by specific survey ID
  * - page/size: Pagination controls (1-indexed)
  * - from/to: Date range filter
  * - medTekst: Filter to only items with text responses
@@ -37,7 +37,7 @@ export function useFeedback() {
     queryKey: [
       "feedback",
       params.app,
-      params.feedbackId,
+      params.surveyId,
       params.page,
       params.size,
       params.from,
@@ -56,17 +56,15 @@ export function useFeedback() {
       fetchFeedbackServerFn({
         data: {
           app: params.app,
-          feedbackId: params.feedbackId,
+          surveyId: params.surveyId,
           page: params.page,
           size: params.size || "20",
           from: params.from,
           to: params.to,
           medTekst: params.medTekst,
-          stjerne: params.stjerne,
           fritekst: params.fritekst,
           tags: params.tags,
           lavRating: params.lavRating,
-          pathname: params.pathname,
           deviceType: params.deviceType,
           theme: params.theme,
           segment: params.segment,

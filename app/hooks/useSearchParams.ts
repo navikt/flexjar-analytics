@@ -10,7 +10,7 @@ export interface SearchParams {
   medTekst?: string;
   fritekst?: string;
   tags?: string;
-  feedbackId?: string;
+  surveyId?: string;
   /** Filter by pathname (from context) */
   pathname?: string;
   /** Filter by low ratings (1-2) */

@@ -11,7 +11,7 @@ export type { FeedbackStats } from "~/types/api";
  * Automatically reacts to URL search params for filtering by:
  * - app: Filter by application name
  * - from/to: Date range filter
- * - feedbackId: Filter by specific survey ID
+ * - surveyId: Filter by specific survey ID
  * - deviceType: Filter by device type (mobile/tablet/desktop)
  *
  * @returns React Query result with FeedbackStats data
@@ -34,7 +34,7 @@ export function useStats() {
       params.app,
       params.from,
       params.to,
-      params.feedbackId,
+      params.surveyId,
       params.deviceType,
       params.ubehandlet,
       params.segment,
@@ -45,7 +45,7 @@ export function useStats() {
           app: params.app,
           from: params.from,
           to: params.to,
-          feedbackId: params.feedbackId,
+          surveyId: params.surveyId,
           deviceType: params.deviceType,
           ubehandlet: params.ubehandlet,
           segment: params.segment,

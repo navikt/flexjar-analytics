@@ -28,7 +28,7 @@ export function TopTasksOverview() {
   const [selectedTask, setSelectedTask] = useState<string | null>(null);
   const { params } = useSearchParams();
   const { addSegment } = useSegmentFilter();
-  const surveyId = params.feedbackId;
+  const surveyId = params.surveyId;
 
   if (isLoading) return null;
   if (!data) return null;

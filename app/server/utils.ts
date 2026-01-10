@@ -27,16 +27,25 @@ export function isMockMode(): boolean {
 
 /**
  * Build a URL with query parameters.
+ * Supports string values and string arrays (arrays get appended as repeated params).
  */
 export function buildUrl(
   baseUrl: string,
   path: string,
-  params?: Record<string, string | undefined>,
+  params?: Record<string, string | string[] | undefined>,
 ): string {
   const url = new URL(path, baseUrl);
   if (params) {
     for (const [key, value] of Object.entries(params)) {
-      if (value !== undefined && value !== null && value !== "") {
+      if (value === undefined || value === null || value === "") {
+        continue;
+      }
+      if (Array.isArray(value)) {
+        // Append each array value as a separate query param (repeated params)
+        for (const v of value) {
+          if (v) url.searchParams.append(key, v);
+        }
+      } else {
         url.searchParams.set(key, value);
       }
     }

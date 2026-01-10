@@ -11,7 +11,7 @@ vi.mock("~/server/actions", () => ({
 // Mock useSearchParams
 vi.mock("~/hooks/useSearchParams", () => ({
   useSearchParams: vi.fn(() => ({
-    params: { app: "test-app", feedbackId: "test-survey" },
+    params: { app: "test-app", surveyId: "test-survey" },
     setParam: vi.fn(),
     setParams: vi.fn(),
     resetParams: vi.fn(),
@@ -51,7 +51,7 @@ describe("useStats", () => {
       byRating: { "1": 10, "2": 15, "3": 25, "4": 30, "5": 20 },
       byApp: { "test-app": 100 },
       byDate: {},
-      byFeedbackId: {},
+      bySurveyId: {},
       averageRating: 3.5,
       period: { from: "2024-01-01", to: "2024-12-31", days: 365 },
       surveyType: "rating",
@@ -80,7 +80,7 @@ describe("useStats", () => {
       byRating: { "1": 5, "2": 10, "3": 15, "4": 10, "5": 10 },
       byApp: {},
       byDate: {},
-      byFeedbackId: {},
+      bySurveyId: {},
       averageRating: 3.2,
       period: null,
       surveyType: null,
@@ -107,7 +107,7 @@ describe("useStats", () => {
       byRating: {},
       byApp: {},
       byDate: {},
-      byFeedbackId: {},
+      bySurveyId: {},
       averageRating: null,
       period: null,
       surveyType: null,

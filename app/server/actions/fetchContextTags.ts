@@ -22,16 +22,8 @@ export const fetchContextTagsServerFn = createServerFn({ method: "GET" })
   .handler(async ({ data, context }): Promise<ContextTagsResponse> => {
     const { backendUrl, oboToken } = context as AuthContext;
 
-    console.log(
-      "[fetchContextTags] isMockMode:",
-      isMockMode(),
-      "surveyId:",
-      data.surveyId,
-    );
-
     if (isMockMode()) {
       await mockDelay(300);
-      console.log("[fetchContextTags] Returning mock data for", data.surveyId);
 
       // Calculate actual context tags from mock data
       const contextTags = getMockContextTags(
@@ -40,17 +32,20 @@ export const fetchContextTagsServerFn = createServerFn({ method: "GET" })
       );
 
       return {
-        feedbackId: data.surveyId,
+        surveyId: data.surveyId,
         contextTags,
         maxCardinality: data.maxCardinality ?? 15,
       };
     }
 
-    const url = buildUrl(backendUrl, "/api/v1/intern/feedback/context-tags", {
-      feedbackId: data.surveyId,
-      team: "flex", // TODO: Get from auth context
-      maxCardinality: String(data.maxCardinality ?? 10),
-    });
+    const url = buildUrl(
+      backendUrl,
+      `/api/v1/intern/surveys/${encodeURIComponent(data.surveyId)}/context-tags`,
+      {
+        team: "flex", // TODO: Get from auth context
+        maxCardinality: String(data.maxCardinality ?? 10),
+      },
+    );
     const response = await fetch(url, {
       headers: getHeaders(oboToken),
     });

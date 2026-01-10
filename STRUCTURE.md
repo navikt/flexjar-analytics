@@ -14,7 +14,7 @@ The transport payload is a JSON object with the following structure:
 
 | Field | Required | Description |
 |-------|----------|-------------|
-| `feedbackId` | ✅ | Unique survey identifier |
+| `surveyId` | ✅ | Unique survey identifier |
 | `surveyType` | ✅ | One of: `"rating"`, `"topTasks"`, `"discovery"`, `"taskPriority"`, `"custom"` |
 | `answers` | ✅ | Structured array of answers (see below) |
 | `context` | Recommended | Browser/user context for segmentation |
@@ -89,7 +89,7 @@ The backend maps `surveyType` strings to enums:
 
 ```json
 {
-  "feedbackId": "sykepenger-rating",
+  "surveyId": "sykepenger-rating",
   "surveyType": "rating",
   "context": {
     "url": "https://nav.no/sykepenger",
