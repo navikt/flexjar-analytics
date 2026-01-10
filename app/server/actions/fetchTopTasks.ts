@@ -34,8 +34,8 @@ export const fetchTopTasksServerFn = createServerFn({ method: "GET" })
     const backendParams = {
       app: data.app,
       surveyId: data.surveyId,
-      fromDate: data.from,
-      toDate: data.to,
+      fromDate: data.fromDate,
+      toDate: data.toDate,
       deviceType: data.deviceType,
     };
 

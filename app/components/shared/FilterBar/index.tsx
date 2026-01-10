@@ -44,7 +44,7 @@ export function FilterBar({ showDetails = false }: FilterBarProps) {
   const features = getSurveyFeatures(stats?.surveyType);
 
   // Parse current tag filter (comma-separated)
-  const selectedTags = params.tags ? params.tags.split(",") : [];
+  const selectedTags = params.tag ? params.tag.split(",") : [];
 
   // Get available apps from bootstrap data
   const availableApps = bootstrap?.apps ?? [];
@@ -99,21 +99,21 @@ export function FilterBar({ showDetails = false }: FilterBarProps) {
     const start = dayjs().subtract(29, "day");
 
     setTimeout(() => {
-      setParam("from", start.format("YYYY-MM-DD"));
-      setParam("to", end.format("YYYY-MM-DD"));
+      setParam("fromDate", start.format("YYYY-MM-DD"));
+      setParam("toDate", end.format("YYYY-MM-DD"));
     }, 0);
   };
 
   const hasActiveFilters =
-    params.from ||
-    params.to ||
-    params.fritekst ||
+    params.fromDate ||
+    params.toDate ||
+    params.query ||
     params.surveyId ||
     params.app ||
-    params.lavRating ||
-    params.medTekst ||
+    params.lowRating ||
+    params.hasText ||
     params.deviceType ||
-    params.tags;
+    params.tag;
 
   // isPending: no cached data AND fetching (TanStack Query v5 best practice)
   // With placeholderData: keepPreviousData, isPending stays false during refetches
@@ -249,9 +249,9 @@ export function FilterBar({ showDetails = false }: FilterBarProps) {
                   label="Søk"
                   hideLabel
                   size="small"
-                  value={params.fritekst || ""}
+                  value={params.query || ""}
                   onChange={(e) =>
-                    setParam("fritekst", e.target.value || undefined)
+                    setParam("query", e.target.value || undefined)
                   }
                   placeholder="Søk i tekst..."
                   style={{ width: "100%", minWidth: 150, maxWidth: 200 }}
@@ -271,7 +271,7 @@ export function FilterBar({ showDetails = false }: FilterBarProps) {
                       ? [...selectedTags, option]
                       : selectedTags.filter((t) => t !== option);
                     setParam(
-                      "tags",
+                      "tag",
                       newTags.length > 0 ? newTags.join(",") : undefined,
                     );
                   }}
@@ -324,14 +324,14 @@ export function FilterBar({ showDetails = false }: FilterBarProps) {
                 <Tooltip content="Vis kun tilbakemeldinger med tekstsvar">
                   <Button
                     variant={
-                      params.medTekst === "true" ? "primary" : "secondary"
+                      params.hasText === "true" ? "primary" : "secondary"
                     }
                     size="small"
                     icon={<ChatIcon aria-hidden />}
                     onClick={() =>
                       setParam(
-                        "medTekst",
-                        params.medTekst === "true" ? undefined : "true",
+                        "hasText",
+                        params.hasText === "true" ? undefined : "true",
                       )
                     }
                     type="button"
@@ -347,14 +347,14 @@ export function FilterBar({ showDetails = false }: FilterBarProps) {
                 <Tooltip content="Vis kun tilbakemeldinger med lav score (1-2)">
                   <Button
                     variant={
-                      params.lavRating === "true" ? "danger" : "secondary"
+                      params.lowRating === "true" ? "danger" : "secondary"
                     }
                     size="small"
                     icon={<ExclamationmarkTriangleIcon aria-hidden />}
                     onClick={() =>
                       setParam(
-                        "lavRating",
-                        params.lavRating === "true" ? undefined : "true",
+                        "lowRating",
+                        params.lowRating === "true" ? undefined : "true",
                       )
                     }
                     type="button"

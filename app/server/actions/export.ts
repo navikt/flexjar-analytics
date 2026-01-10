@@ -19,10 +19,9 @@ interface ExportResult {
 
 /**
  * Transform frontend URL params to backend API params.
- * Keeps ExportPanel and URL params stable while backend uses the new contract.
  */
 function transformToBackendParams(data: Record<string, string | undefined>) {
-  const tag = data.tags
+  const tag = data.tag
     ?.split(",")
     .map((t) => t.trim())
     .filter(Boolean);
@@ -31,12 +30,12 @@ function transformToBackendParams(data: Record<string, string | undefined>) {
     format: data.format,
     app: data.app,
     surveyId: data.surveyId,
-    fromDate: data.from, // from -> fromDate
-    toDate: data.to, // to -> toDate
-    hasText: data.medTekst === "true" ? "true" : undefined, // medTekst -> hasText
-    lowRating: data.lavRating === "true" ? "true" : undefined, // lavRating -> lowRating
-    query: data.fritekst, // fritekst -> query
-    tag: tag && tag.length > 0 ? tag : undefined, // tags -> repeated tag params
+    fromDate: data.fromDate,
+    toDate: data.toDate,
+    hasText: data.hasText === "true" ? "true" : undefined,
+    lowRating: data.lowRating === "true" ? "true" : undefined,
+    query: data.query,
+    tag: tag && tag.length > 0 ? tag : undefined,
     deviceType: data.deviceType,
     segment: data.segment?.split(",").filter(Boolean),
   };

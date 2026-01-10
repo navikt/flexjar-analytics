@@ -16,8 +16,8 @@ export function useBlockerStats() {
     queryKey: [
       "blockerStats",
       params.app,
-      params.from,
-      params.to,
+      params.fromDate,
+      params.toDate,
       params.surveyId,
       params.deviceType,
     ],
@@ -26,8 +26,8 @@ export function useBlockerStats() {
         data: {
           app: params.app,
           surveyId: params.surveyId,
-          from: params.from,
-          to: params.to,
+          fromDate: params.fromDate,
+          toDate: params.toDate,
           deviceType: params.deviceType,
         },
       }),

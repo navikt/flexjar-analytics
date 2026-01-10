@@ -53,7 +53,7 @@ describe("useStats", () => {
       byDate: {},
       bySurveyId: {},
       averageRating: 3.5,
-      period: { from: "2024-01-01", to: "2024-12-31", days: 365 },
+      period: { fromDate: "2024-01-01", toDate: "2024-12-31", days: 365 },
       surveyType: "rating",
     };
 

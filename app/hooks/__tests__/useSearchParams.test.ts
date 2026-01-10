@@ -63,20 +63,20 @@ describe("useSearchParams", () => {
       result.current.setParams({
         team: "flex",
         app: "spinnsyn",
-        from: "2024-01-01",
+        fromDate: "2024-01-01",
       });
     });
 
     expect(result.current.params.team).toBe("flex");
     expect(result.current.params.app).toBe("spinnsyn");
-    expect(result.current.params.from).toBe("2024-01-01");
+    expect(result.current.params.fromDate).toBe("2024-01-01");
   });
 
   it("resetParams clears all parameters", () => {
     window.history.pushState(
       {},
       "",
-      "/?team=flex&app=spinnsyn&from=2024-01-01",
+      "/?team=flex&app=spinnsyn&fromDate=2024-01-01",
     );
     const { result } = renderHook(() => useSearchParams());
 
@@ -92,9 +92,9 @@ describe("useSearchParams", () => {
     const { result } = renderHook(() => useSearchParams());
 
     act(() => {
-      result.current.setParam("fritekst", "søk med æøå");
+      result.current.setParam("query", "søk med æøå");
     });
 
-    expect(result.current.params.fritekst).toBe("søk med æøå");
+    expect(result.current.params.query).toBe("søk med æøå");
   });
 });

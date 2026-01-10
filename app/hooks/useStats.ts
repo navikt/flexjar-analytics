@@ -10,7 +10,7 @@ export type { FeedbackStats } from "~/types/api";
  *
  * Automatically reacts to URL search params for filtering by:
  * - app: Filter by application name
- * - from/to: Date range filter
+ * - fromDate/toDate: Date range filter
  * - surveyId: Filter by specific survey ID
  * - deviceType: Filter by device type (mobile/tablet/desktop)
  *
@@ -32,22 +32,20 @@ export function useStats() {
     queryKey: [
       "stats",
       params.app,
-      params.from,
-      params.to,
+      params.fromDate,
+      params.toDate,
       params.surveyId,
       params.deviceType,
-      params.ubehandlet,
       params.segment,
     ],
     queryFn: () =>
       fetchStatsServerFn({
         data: {
           app: params.app,
-          from: params.from,
-          to: params.to,
+          fromDate: params.fromDate,
+          toDate: params.toDate,
           surveyId: params.surveyId,
           deviceType: params.deviceType,
-          ubehandlet: params.ubehandlet,
           segment: params.segment,
         },
       }),

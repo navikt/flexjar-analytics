@@ -163,32 +163,34 @@ function applyFilters(
   let filtered = [...items];
 
   const app = params.get("app");
-  const from = params.get("from");
-  const to = params.get("to");
-  const medTekst = params.get("medTekst");
-  const fritekst = params.get("fritekst");
+  const fromDate = params.get("fromDate");
+  const toDate = params.get("toDate");
+  const hasText = params.get("hasText");
+  const query = params.get("query");
   const surveyId = params.get("surveyId");
-  const lavRating = params.get("lavRating");
+  const lowRating = params.get("lowRating");
   const pathname = params.get("pathname");
   const deviceType = params.get("deviceType");
-  const tags = params.get("tags");
+  const tag = params.get("tag");
   const theme = params.get("theme");
   const segment = params.get("segment");
 
   if (app) {
     filtered = filtered.filter((item) => item.app === app);
   }
-  if (from) {
-    filtered = filtered.filter((item) => item.submittedAt >= from);
+  if (fromDate) {
+    filtered = filtered.filter((item) => item.submittedAt >= fromDate);
   }
-  if (to) {
-    filtered = filtered.filter((item) => item.submittedAt <= `${to}T23:59:59Z`);
+  if (toDate) {
+    filtered = filtered.filter(
+      (item) => item.submittedAt <= `${toDate}T23:59:59Z`,
+    );
   }
-  if (medTekst === "true") {
+  if (hasText === "true") {
     filtered = filtered.filter((item) => hasTextResponse(item));
   }
   // "Wall of Shame" - filter for low ratings (1-2)
-  if (lavRating === "true") {
+  if (lowRating === "true") {
     filtered = filtered.filter((item) => {
       const ratingAnswer = item.answers.find((a) => a.fieldType === "RATING");
       if (ratingAnswer && ratingAnswer.value.type === "rating") {
@@ -207,8 +209,8 @@ function applyFilters(
       (item) => item.context?.deviceType === deviceType,
     );
   }
-  if (fritekst) {
-    const search = fritekst.toLowerCase();
+  if (query) {
+    const search = query.toLowerCase();
     filtered = filtered.filter((item) =>
       item.answers.some((a) => {
         if (a.value.type === "text") {
@@ -222,8 +224,8 @@ function applyFilters(
     filtered = filtered.filter((item) => item.surveyId === surveyId);
   }
   // Filter by tags (supports both item.tags array and metadata key:value format)
-  if (tags) {
-    const tagList = tags.split(",").map((t) => t.trim());
+  if (tag) {
+    const tagList = tag.split(",").map((t) => t.trim());
     filtered = filtered.filter((item) => {
       // Check item.tags array (simple string tags)
       if (item.tags?.some((tag) => tagList.includes(tag))) {

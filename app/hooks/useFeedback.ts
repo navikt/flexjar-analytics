@@ -12,10 +12,10 @@ export type { FeedbackPage } from "~/types/api";
  * - app: Filter by application name
  * - surveyId: Filter by specific survey ID
  * - page/size: Pagination controls (1-indexed)
- * - from/to: Date range filter
- * - medTekst: Filter to only items with text responses
- * - lavRating: Filter to only low ratings (1-2)
- * - tags: Filter by comma-separated tags
+ * - fromDate/toDate: Date range filter
+ * - hasText: Filter to only items with text responses
+ * - lowRating: Filter to only low ratings (1-2)
+ * - tag: Filter by comma-separated tags
  * - deviceType: Filter by device type
  * - segment: Filter by context.tags (format: key:value)
  *
@@ -40,13 +40,12 @@ export function useFeedback() {
       params.surveyId,
       params.page,
       params.size,
-      params.from,
-      params.to,
-      params.medTekst,
-      params.stjerne,
-      params.fritekst,
-      params.tags,
-      params.lavRating,
+      params.fromDate,
+      params.toDate,
+      params.hasText,
+      params.query,
+      params.tag,
+      params.lowRating,
       params.pathname,
       params.deviceType,
       params.theme,
@@ -59,12 +58,12 @@ export function useFeedback() {
           surveyId: params.surveyId,
           page: params.page,
           size: params.size || "20",
-          from: params.from,
-          to: params.to,
-          medTekst: params.medTekst,
-          fritekst: params.fritekst,
-          tags: params.tags,
-          lavRating: params.lavRating,
+          fromDate: params.fromDate,
+          toDate: params.toDate,
+          hasText: params.hasText,
+          query: params.query,
+          tag: params.tag,
+          lowRating: params.lowRating,
           deviceType: params.deviceType,
           theme: params.theme,
           segment: params.segment,

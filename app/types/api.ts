@@ -182,8 +182,8 @@ export interface FeedbackStats {
   surveyType?: SurveyType;
 
   period: {
-    from: string | null;
-    to: string | null;
+    fromDate: string | null;
+    toDate: string | null;
     days: number;
   };
 

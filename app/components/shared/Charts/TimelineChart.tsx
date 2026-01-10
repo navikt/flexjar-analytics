@@ -101,8 +101,8 @@ export function TimelineChart() {
               to: "/feedback",
               search: {
                 ...params,
-                from: date,
-                to: date,
+                fromDate: date,
+                toDate: date,
               },
             });
           }

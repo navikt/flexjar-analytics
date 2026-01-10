@@ -15,13 +15,12 @@ import { handleApiResponse } from "../fetchUtils";
 
 /**
  * Transform frontend URL params to backend API params.
- * This maps legacy Norwegian param names to new English names.
  */
 function transformToBackendParams(data: Record<string, string | undefined>) {
   // Backend uses 0-indexed pages
   const page = data.page ? String(Number.parseInt(data.page, 10) - 1) : "0";
 
-  const tag = data.tags
+  const tag = data.tag
     ?.split(",")
     .map((t) => t.trim())
     .filter(Boolean);
@@ -31,12 +30,12 @@ function transformToBackendParams(data: Record<string, string | undefined>) {
     surveyId: data.surveyId,
     page,
     size: data.size,
-    fromDate: data.from, // from -> fromDate
-    toDate: data.to, // to -> toDate
-    hasText: data.medTekst === "true" ? "true" : undefined, // medTekst -> hasText
-    lowRating: data.lavRating === "true" ? "true" : undefined, // lavRating -> lowRating
-    query: data.fritekst, // fritekst -> query
-    tag: tag && tag.length > 0 ? tag : undefined, // tags -> repeated tag params
+    fromDate: data.fromDate,
+    toDate: data.toDate,
+    hasText: data.hasText === "true" ? "true" : undefined,
+    lowRating: data.lowRating === "true" ? "true" : undefined,
+    query: data.query,
+    tag: tag && tag.length > 0 ? tag : undefined,
     deviceType: data.deviceType,
     // Transform segment format: "key:value,key:value" -> repeated params handled by buildUrl
     segment: data.segment?.split(",").filter(Boolean),
