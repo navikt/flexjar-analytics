@@ -23,9 +23,6 @@ export { fetchBlockerServerFn } from "./fetchBlocker";
 // Task Priority
 export { fetchTaskPriorityServerFn } from "./fetchTaskPriority";
 
-// Teams
-export { fetchTeamsServerFn } from "./fetchTeams";
-
 // Surveys
 export { fetchSurveysByAppServerFn } from "./fetchSurveys";
 

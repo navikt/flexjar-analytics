@@ -64,14 +64,14 @@ export function DeleteSurveyDialog({
           </Alert>
 
           <BodyLong>
-            Alle tilbakemeldinger, tags og metadata knyttet til denne surveyen
-            vil bli permanent slettet fra databasen.
+            Dette fjerner tekstsvarene fra tilbakemeldingene (soft delete).
+            Ratings, tags og annen metadata kan fortsatt være igjen.
           </BodyLong>
 
           <ConfirmationPanel
             checked={confirmed}
             onChange={() => setConfirmed(!confirmed)}
-            label="Ja, jeg forstår at dette sletter alle svar permanent"
+            label="Ja, jeg forstår at dette fjerner tekstsvarene"
           />
 
           {deleteMutation.isError && (
