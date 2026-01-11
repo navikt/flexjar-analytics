@@ -29,9 +29,10 @@ import {
   getMockBlockerStats as calculateBlockerStats,
   getMockDiscoveryStats as calculateDiscoveryStats,
   calculateStats,
-  getMockTaskPriorityStats as calculateTaskPriorityStats,
   getMockTopTasksStats as calculateTopTasksStats,
 } from "./stats";
+
+import { getMockTaskPriorityStats as calculateTaskPriorityStats } from "./stats/taskPriority";
 
 import { sykmeldtTopics } from "./topics";
 export {

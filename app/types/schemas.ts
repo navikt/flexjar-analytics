@@ -83,6 +83,7 @@ export const TaskPriorityParamsSchema = z.object({
   fromDate: z.string().optional(),
   toDate: z.string().optional(),
   deviceType: z.string().optional(),
+  segment: z.string().optional(),
 });
 
 export type TaskPriorityParams = z.infer<typeof TaskPriorityParamsSchema>;

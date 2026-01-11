@@ -38,11 +38,13 @@ export const fetchTaskPriorityServerFn = createServerFn({ method: "GET" })
       fromDate: data.fromDate,
       toDate: data.toDate,
       deviceType: data.deviceType,
+      // Backend expects repeated params: segment=key:value&segment=key:value
+      segment: data.segment?.split(",").filter(Boolean),
     };
 
     const url = buildUrl(
       backendUrl,
-      "/api/v1/intern/taskpriority",
+      "/api/v1/intern/stats/task-priority",
       backendParams,
     );
     const response = await fetch(url, {
