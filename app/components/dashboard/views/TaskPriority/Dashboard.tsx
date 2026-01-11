@@ -25,13 +25,13 @@ export function TaskPriorityDashboard() {
         data && <TaskPriorityAnalysis data={data} />
       )}
 
+      {/* Timeline */}
+      <TimelineSection title="Stemmer over tid" />
+
       {/* Segment breakdown */}
       {surveyId && (
         <SegmentBreakdown surveyId={surveyId} onSegmentClick={addSegment} />
       )}
-
-      {/* Timeline */}
-      <TimelineSection title="Stemmer over tid" />
 
       {/* Device breakdown */}
       <DeviceBreakdownSection />
