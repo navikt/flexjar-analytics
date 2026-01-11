@@ -40,7 +40,12 @@ export interface BaseAnswer {
 
 export interface RatingAnswer extends BaseAnswer {
   fieldType: "RATING";
-  value: { type: "rating"; rating: number };
+  value: {
+    type: "rating";
+    rating: number;
+    ratingVariant?: "emoji" | "thumbs" | "stars" | "nps";
+    ratingScale?: number;
+  };
 }
 
 export interface TextAnswer extends BaseAnswer {
@@ -77,7 +82,8 @@ export type Answer =
 export interface RatingStats {
   type: "rating";
   average: number;
-  distribution: Record<number, number>;
+  /** JSON object keys are strings (e.g. "1", "2", ...). */
+  distribution: Record<string, number>;
 }
 
 export interface TextStats {
