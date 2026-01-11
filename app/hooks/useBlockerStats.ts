@@ -16,18 +16,21 @@ export function useBlockerStats() {
     queryKey: [
       "blockerStats",
       params.app,
-      params.from,
-      params.to,
-      params.feedbackId,
+      params.fromDate,
+      params.toDate,
+      params.surveyId,
       params.deviceType,
+      params.task, // Task filter for drill-down
     ],
     queryFn: () =>
       fetchBlockerServerFn({
         data: {
-          surveyId: params.feedbackId,
-          from: params.from,
-          to: params.to,
+          app: params.app,
+          surveyId: params.surveyId,
+          fromDate: params.fromDate,
+          toDate: params.toDate,
           deviceType: params.deviceType,
+          task: params.task, // Pass task filter to backend
         },
       }),
     staleTime: 60000, // 1 minute

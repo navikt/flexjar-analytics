@@ -63,26 +63,26 @@ function stemNorwegian(word: string): string {
 // ============================================
 
 export function calculatePeriod(
-  from: string | null,
-  to: string | null,
-): { from: string | null; to: string | null; days: number } {
+  fromDate: string | null,
+  toDate: string | null,
+): { fromDate: string | null; toDate: string | null; days: number } {
   const today = dayjs();
   // Default to 30 days (start = today - 29 days)
   const defaultFrom = today.subtract(29, "day").format("YYYY-MM-DD");
   const defaultTo = today.format("YYYY-MM-DD");
 
-  const actualFrom = from || defaultFrom;
-  const actualTo = to || defaultTo;
+  const actualFrom = fromDate || defaultFrom;
+  const actualTo = toDate || defaultTo;
 
-  const fromDate = dayjs(actualFrom);
-  const toDate = dayjs(actualTo);
+  const fromDayjs = dayjs(actualFrom);
+  const toDayjs = dayjs(actualTo);
 
   // Diff in days + 1 for inclusive range
-  const diffDays = toDate.diff(fromDate, "day") + 1;
+  const diffDays = toDayjs.diff(fromDayjs, "day") + 1;
 
   return {
-    from: actualFrom,
-    to: actualTo,
+    fromDate: actualFrom,
+    toDate: actualTo,
     days: diffDays,
   };
 }
@@ -266,19 +266,21 @@ export function calculateStats(
   let filtered = [...items];
 
   const app = params.get("app");
-  const from = params.get("from");
-  const to = params.get("to");
-  const surveyId = params.get("feedbackId"); // Keep old param name for backwards compat
+  const fromDate = params.get("fromDate");
+  const toDate = params.get("toDate");
+  const surveyId = params.get("surveyId");
   const deviceType = params.get("deviceType");
 
   if (app) {
     filtered = filtered.filter((item) => item.app === app);
   }
-  if (from) {
-    filtered = filtered.filter((item) => item.submittedAt >= from);
+  if (fromDate) {
+    filtered = filtered.filter((item) => item.submittedAt >= fromDate);
   }
-  if (to) {
-    filtered = filtered.filter((item) => item.submittedAt <= `${to}T23:59:59Z`);
+  if (toDate) {
+    filtered = filtered.filter(
+      (item) => item.submittedAt <= `${toDate}T23:59:59Z`,
+    );
   }
   if (surveyId) {
     filtered = filtered.filter((item) => item.surveyId === surveyId);
@@ -305,6 +307,29 @@ export function calculateStats(
     });
   }
 
+  // Task filter: filter by specific task name (for Top Tasks drill-down)
+  const taskFilter = params.get("task");
+  if (taskFilter) {
+    filtered = filtered.filter((item) => {
+      // Only applies to topTasks survey type
+      if (item.surveyType !== "topTasks") return false;
+
+      const taskAnswer = item.answers.find(
+        (a) => a.fieldId === "task" || a.fieldId === "category",
+      );
+      if (!taskAnswer || taskAnswer.fieldType !== "SINGLE_CHOICE") return false;
+
+      const taskOption = taskAnswer.question.options?.find(
+        (o) => o.id === taskAnswer.value.selectedOptionId,
+      );
+      const taskName = taskOption
+        ? taskOption.label
+        : taskAnswer.value.selectedOptionId;
+
+      return taskName === taskFilter;
+    });
+  }
+
   // Legacy aggregations
   const byRating: Record<string, number> = {
     "1": 0,
@@ -315,7 +340,7 @@ export function calculateStats(
   };
   const byApp: Record<string, number> = {};
   const byDate: Record<string, number> = {};
-  const byFeedbackId: Record<string, number> = {};
+  const bySurveyId: Record<string, number> = {};
   const ratingByDateAccum: Record<string, { total: number; count: number }> =
     {};
   const byDeviceAccum: Record<string, { total: number; count: number }> = {};
@@ -370,9 +395,9 @@ export function calculateStats(
     const date = item.submittedAt.split("T")[0];
     byDate[date] = (byDate[date] || 0) + 1;
 
-    // Survey (feedbackId for backwards compat)
-    const fbId = item.surveyId || "unknown";
-    byFeedbackId[fbId] = (byFeedbackId[fbId] || 0) + 1;
+    // Survey
+    const currentSurveyId = item.surveyId || "unknown";
+    bySurveyId[currentSurveyId] = (bySurveyId[currentSurveyId] || 0) + 1;
 
     // Text
     if (hasTextResponse(item)) {
@@ -461,7 +486,7 @@ export function calculateStats(
     byRating: shouldMask ? {} : byRating,
     byApp: shouldMask ? {} : byApp,
     byDate: shouldMask ? {} : byDate,
-    byFeedbackId: shouldMask ? {} : byFeedbackId,
+    bySurveyId: shouldMask ? {} : bySurveyId,
     averageRating: shouldMask
       ? null
       : ratingCount > 0
@@ -472,7 +497,7 @@ export function calculateStats(
     byPathname: shouldMask ? {} : byPathname,
     lowestRatingPaths: shouldMask ? {} : lowestRatingPaths,
     fieldStats: shouldMask ? [] : fieldStats,
-    period: calculatePeriod(from, to),
+    period: calculatePeriod(fromDate, toDate),
     surveyType: totalCount > 0 ? filtered[0].surveyType || "rating" : undefined,
     privacy,
   };
@@ -484,15 +509,18 @@ function applyFiltersToItems(
 ): FeedbackDto[] {
   let filtered = [...items];
   const app = params.get("app");
-  const from = params.get("from");
-  const to = params.get("to");
-  const surveyId = params.get("feedbackId");
+  const fromDate = params.get("fromDate");
+  const toDate = params.get("toDate");
+  const surveyId = params.get("surveyId");
   const deviceType = params.get("deviceType");
 
   if (app) filtered = filtered.filter((item) => item.app === app);
-  if (from) filtered = filtered.filter((item) => item.submittedAt >= from);
-  if (to)
-    filtered = filtered.filter((item) => item.submittedAt <= `${to}T23:59:59Z`);
+  if (fromDate)
+    filtered = filtered.filter((item) => item.submittedAt >= fromDate);
+  if (toDate)
+    filtered = filtered.filter(
+      (item) => item.submittedAt <= `${toDate}T23:59:59Z`,
+    );
   if (surveyId)
     filtered = filtered.filter((item) => item.surveyId === surveyId);
   if (deviceType)
@@ -809,6 +837,7 @@ export function getMockTopTasksStats(
   params: URLSearchParams,
 ): TopTasksResponse {
   const filtered = applyFiltersToItems(items, params);
+  const taskFilter = params.get("task");
   const taskMap = new Map<string, InternalTaskStats>();
   const dailyStats: Record<string, { total: number; success: number }> = {};
 
@@ -826,6 +855,9 @@ export function getMockTopTasksStats(
     const task = taskOption
       ? taskOption.label
       : taskAnswer.value.selectedOptionId;
+
+    // Task filter: skip if task doesn't match the filter
+    if (taskFilter && task !== taskFilter) continue;
 
     const successAnswer = item.answers.find(
       (a) => a.fieldId === "taskSuccess" || a.fieldId === "success",
@@ -1036,7 +1068,8 @@ export function getMockTopTasksStats(
       : undefined;
 
   // Calculate "Other" percentage
-  const totalCount = filtered.filter((i) => i.surveyType === "topTasks").length;
+  // Use sum of filtered tasks for accurate count after task filter
+  const totalCount = tasks.reduce((acc, t) => acc + t.totalCount, 0);
   const otherTask = tasks.find(
     (t) =>
       t.task.toLowerCase().includes("annet") ||
@@ -1072,6 +1105,7 @@ export function getMockBlockerStats(
   const filtered = applyFiltersToItems(items, params).filter(
     (item) => item.surveyType === "topTasks",
   );
+  const taskFilter = params.get("task");
 
   // Extract blocker responses
   const blockerResponses: Array<{
@@ -1081,12 +1115,8 @@ export function getMockBlockerStats(
   }> = [];
 
   for (const item of filtered) {
-    const blockerAnswer = item.answers.find(
-      (a) => a.fieldId === "blocker" || a.fieldId === "hindring",
-    );
-    const taskAnswer = item.answers.find(
-      (a) => a.fieldId === "task" || a.fieldId === "category",
-    );
+    const blockerAnswer = item.answers.find((a) => a.fieldId === "blocker");
+    const taskAnswer = item.answers.find((a) => a.fieldId === "task");
 
     if (blockerAnswer?.fieldType === "TEXT" && blockerAnswer.value.text) {
       const taskOption = taskAnswer?.question.options?.find(
@@ -1095,6 +1125,9 @@ export function getMockBlockerStats(
           o.id === taskAnswer.value.selectedOptionId,
       );
       const task = taskOption?.label ?? "Ukjent oppgave";
+
+      // Task filter: skip if task doesn't match the filter
+      if (taskFilter && task !== taskFilter) continue;
 
       blockerResponses.push({
         blocker: blockerAnswer.value.text,

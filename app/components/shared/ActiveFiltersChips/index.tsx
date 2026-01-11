@@ -24,7 +24,7 @@ const DEVICE_LABELS: Record<string, string> = {
  * - App/Survey/Period: Already shown in FilterBar → no chip
  * - DeviceType: NOT shown on dashboard → show chip
  * - Pathname: Only set via drill-down → show chip
- * - LavRating: Only on feedback page → show chip on dashboard
+ * - LowRating: Only on feedback page → show chip on dashboard
  * - Segment: Metadata filters from SegmentBreakdown → global chip
  */
 export function ActiveFiltersChips() {
@@ -54,12 +54,22 @@ export function ActiveFiltersChips() {
   }
 
   // Low rating filter - not shown in dashboard FilterBar
-  if (params.lavRating === "true") {
+  if (params.lowRating === "true") {
     chips.push({
-      key: "lavRating",
+      key: "lowRating",
       label: "Rating",
       value: "Lav (1-2)",
-      onRemove: () => setParam("lavRating", undefined),
+      onRemove: () => setParam("lowRating", undefined),
+    });
+  }
+
+  // Task filter (Top Tasks drill-down)
+  if (params.task) {
+    chips.push({
+      key: "task",
+      label: "Oppgave",
+      value: params.task,
+      onRemove: () => setParam("task", undefined),
     });
   }
 

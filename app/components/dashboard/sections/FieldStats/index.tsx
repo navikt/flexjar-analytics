@@ -8,7 +8,7 @@ import { Skeleton } from "./Skeleton";
 export function FieldStatsSection() {
   const { data: stats, isPending } = useStats();
   const { params } = useSearchParams();
-  const hasSurveyFilter = !!params.feedbackId;
+  const hasSurveyFilter = !!params.surveyId;
 
   if (isPending && hasSurveyFilter) {
     return <Skeleton />;

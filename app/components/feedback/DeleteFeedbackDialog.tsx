@@ -2,21 +2,21 @@ import { TrashIcon } from "@navikt/aksel-icons";
 import { BodyLong, Button, HStack, Modal } from "@navikt/ds-react";
 
 interface DeleteFeedbackDialogProps {
-  feedbackId: string | null;
+  id: string | null;
   onClose: () => void;
   onConfirm: () => void;
   isPending: boolean;
 }
 
 export function DeleteFeedbackDialog({
-  feedbackId,
+  id,
   onClose,
   onConfirm,
   isPending,
 }: DeleteFeedbackDialogProps) {
   return (
     <Modal
-      open={feedbackId !== null}
+      open={id !== null}
       onClose={onClose}
       header={{
         heading: "Slett tilbakemelding",

@@ -163,32 +163,34 @@ function applyFilters(
   let filtered = [...items];
 
   const app = params.get("app");
-  const from = params.get("from");
-  const to = params.get("to");
-  const medTekst = params.get("medTekst");
-  const fritekst = params.get("fritekst");
-  const surveyId = params.get("feedbackId");
-  const lavRating = params.get("lavRating");
+  const fromDate = params.get("fromDate");
+  const toDate = params.get("toDate");
+  const hasText = params.get("hasText");
+  const query = params.get("query");
+  const surveyId = params.get("surveyId");
+  const lowRating = params.get("lowRating");
   const pathname = params.get("pathname");
   const deviceType = params.get("deviceType");
-  const tags = params.get("tags");
+  const tag = params.get("tag");
   const theme = params.get("theme");
   const segment = params.get("segment");
 
   if (app) {
     filtered = filtered.filter((item) => item.app === app);
   }
-  if (from) {
-    filtered = filtered.filter((item) => item.submittedAt >= from);
+  if (fromDate) {
+    filtered = filtered.filter((item) => item.submittedAt >= fromDate);
   }
-  if (to) {
-    filtered = filtered.filter((item) => item.submittedAt <= `${to}T23:59:59Z`);
+  if (toDate) {
+    filtered = filtered.filter(
+      (item) => item.submittedAt <= `${toDate}T23:59:59Z`,
+    );
   }
-  if (medTekst === "true") {
+  if (hasText === "true") {
     filtered = filtered.filter((item) => hasTextResponse(item));
   }
   // "Wall of Shame" - filter for low ratings (1-2)
-  if (lavRating === "true") {
+  if (lowRating === "true") {
     filtered = filtered.filter((item) => {
       const ratingAnswer = item.answers.find((a) => a.fieldType === "RATING");
       if (ratingAnswer && ratingAnswer.value.type === "rating") {
@@ -207,8 +209,8 @@ function applyFilters(
       (item) => item.context?.deviceType === deviceType,
     );
   }
-  if (fritekst) {
-    const search = fritekst.toLowerCase();
+  if (query) {
+    const search = query.toLowerCase();
     filtered = filtered.filter((item) =>
       item.answers.some((a) => {
         if (a.value.type === "text") {
@@ -222,8 +224,8 @@ function applyFilters(
     filtered = filtered.filter((item) => item.surveyId === surveyId);
   }
   // Filter by tags (supports both item.tags array and metadata key:value format)
-  if (tags) {
-    const tagList = tags.split(",").map((t) => t.trim());
+  if (tag) {
+    const tagList = tag.split(",").map((t) => t.trim());
     filtered = filtered.filter((item) => {
       // Check item.tags array (simple string tags)
       if (item.tags?.some((tag) => tagList.includes(tag))) {
@@ -415,6 +417,34 @@ export function getMockSurveysByApp(): Record<string, string[]> {
   return surveysByApp;
 }
 
+/**
+ * Get filter bootstrap data for mock mode.
+ * Provides all data needed for FilterBar dropdowns.
+ */
+export function getMockFilterBootstrap(): {
+  generatedAt: string;
+  selectedTeam: string;
+  availableTeams: string[];
+  deviceTypes: string[];
+  apps: string[];
+  surveysByApp: Record<string, string[]>;
+  tags: string[];
+} {
+  const surveysByApp = getMockSurveysByApp();
+  const apps = Object.keys(surveysByApp).sort();
+  const tags = getMockTags();
+
+  return {
+    generatedAt: new Date().toISOString(),
+    selectedTeam: "flex",
+    availableTeams: ["flex"],
+    deviceTypes: ["mobile", "tablet", "desktop"],
+    apps,
+    surveysByApp,
+    tags,
+  };
+}
+
 // Delete all feedback for a survey (mock implementation)
 export function deleteMockSurvey(surveyId: string): {
   deletedCount: number;
@@ -438,22 +468,18 @@ export function deleteMockSurvey(surveyId: string): {
 }
 
 // Delete single feedback item (mock implementation)
-export function deleteMockFeedback(feedbackId: string): boolean {
+export function deleteMockFeedback(id: string): boolean {
   const initialLength = mockFeedbackItems.length;
 
   // Filter out item with matching id
-  const itemsToKeep = mockFeedbackItems.filter(
-    (item) => item.id !== feedbackId,
-  );
+  const itemsToKeep = mockFeedbackItems.filter((item) => item.id !== id);
   const deleted = initialLength !== itemsToKeep.length;
 
   // Replace the array contents
   mockFeedbackItems.length = 0;
   mockFeedbackItems.push(...itemsToKeep);
 
-  console.log(
-    `[Mock] ${deleted ? "Deleted" : "Not found"} feedback "${feedbackId}"`,
-  );
+  console.log(`[Mock] ${deleted ? "Deleted" : "Not found"} feedback "${id}"`);
 
   return deleted;
 }
@@ -465,11 +491,31 @@ export function deleteMockFeedback(feedbackId: string): boolean {
 export function getMockContextTags(
   surveyId: string,
   maxCardinality = 15,
+  task?: string,
 ): Record<string, { value: string; count: number }[]> {
   // Filter items by surveyId
-  const surveyItems = mockFeedbackItems.filter(
+  let surveyItems = mockFeedbackItems.filter(
     (item) => item.surveyId === surveyId,
   );
+
+  // Task filter: filter by specific task name (for Top Tasks drill-down)
+  if (task) {
+    surveyItems = surveyItems.filter((item) => {
+      if (item.surveyType !== "topTasks") return false;
+
+      const taskAnswer = item.answers.find((a) => a.fieldId === "task");
+      if (!taskAnswer || taskAnswer.fieldType !== "SINGLE_CHOICE") return false;
+
+      const taskOption = taskAnswer.question.options?.find(
+        (o) => o.id === taskAnswer.value.selectedOptionId,
+      );
+      const taskName = taskOption
+        ? taskOption.label
+        : taskAnswer.value.selectedOptionId;
+
+      return taskName === task;
+    });
+  }
 
   // Build context tag counts from actual metadata
   const tagCounts: Record<string, Map<string, number>> = {};

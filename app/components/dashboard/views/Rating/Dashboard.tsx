@@ -26,7 +26,7 @@ interface RatingDashboardProps {
 export function RatingDashboard({ hasSurveyFilter }: RatingDashboardProps) {
   const { params } = useSearchParams();
   const { addSegment } = useSegmentFilter();
-  const surveyId = params.feedbackId;
+  const surveyId = params.surveyId;
 
   return (
     <>

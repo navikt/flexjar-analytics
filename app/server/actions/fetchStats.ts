@@ -32,7 +32,17 @@ export const fetchStatsServerFn = createServerFn({ method: "GET" })
       return getMockStats(searchParams);
     }
 
-    const url = buildUrl(backendUrl, "/api/v1/intern/stats", data);
+    const backendParams = {
+      app: data.app,
+      surveyId: data.surveyId,
+      fromDate: data.fromDate,
+      toDate: data.toDate,
+      deviceType: data.deviceType,
+      segment: data.segment?.split(",").filter(Boolean),
+      task: data.task,
+    };
+
+    const url = buildUrl(backendUrl, "/api/v1/intern/stats", backendParams);
     const response = await fetch(url, {
       headers: getHeaders(oboToken),
     });

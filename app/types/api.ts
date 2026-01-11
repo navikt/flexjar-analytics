@@ -162,11 +162,10 @@ export interface FeedbackStats {
   countWithText: number;
   countWithoutText: number;
 
-  // Legacy aggregations (backwards compat)
   byRating: Record<string, number>;
   byApp: Record<string, number>;
   byDate: Record<string, number>;
-  byFeedbackId: Record<string, number>;
+  bySurveyId: Record<string, number>;
   averageRating: number | null;
 
   // Rating trend over time
@@ -183,8 +182,8 @@ export interface FeedbackStats {
   surveyType?: SurveyType;
 
   period: {
-    from: string | null;
-    to: string | null;
+    fromDate: string | null;
+    toDate: string | null;
     days: number;
   };
 
@@ -254,7 +253,7 @@ export interface MetadataValueWithCount {
 }
 
 export interface ContextTagsResponse {
-  feedbackId: string;
+  surveyId: string;
   /** Context tags with their values and counts */
   contextTags: Record<string, MetadataValueWithCount[]>;
   /** The maxCardinality used for filtering */

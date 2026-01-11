@@ -32,7 +32,19 @@ export const fetchTaskPriorityServerFn = createServerFn({ method: "GET" })
       return getMockTaskPriorityStats(searchParams);
     }
 
-    const url = buildUrl(backendUrl, "/api/v1/intern/taskpriority", data);
+    const backendParams = {
+      app: data.app,
+      surveyId: data.surveyId,
+      fromDate: data.fromDate,
+      toDate: data.toDate,
+      deviceType: data.deviceType,
+    };
+
+    const url = buildUrl(
+      backendUrl,
+      "/api/v1/intern/taskpriority",
+      backendParams,
+    );
     const response = await fetch(url, {
       headers: getHeaders(oboToken),
     });

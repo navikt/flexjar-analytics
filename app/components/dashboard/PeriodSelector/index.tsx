@@ -72,12 +72,12 @@ export function PeriodSelector() {
   const { isMobile } = useBreakpoint();
 
   // Parse current params
-  const currentFrom = params.from ? dayjs(params.from) : undefined;
-  const currentTo = params.to ? dayjs(params.to) : undefined;
+  const currentFrom = params.fromDate ? dayjs(params.fromDate) : undefined;
+  const currentTo = params.toDate ? dayjs(params.toDate) : undefined;
 
   const handleApply = (from: Date, to: Date) => {
-    setParam("from", dayjs(from).format("YYYY-MM-DD"));
-    setParam("to", dayjs(to).format("YYYY-MM-DD"));
+    setParam("fromDate", dayjs(from).format("YYYY-MM-DD"));
+    setParam("toDate", dayjs(to).format("YYYY-MM-DD"));
     setOpen(false);
   };
 
@@ -93,8 +93,8 @@ export function PeriodSelector() {
       start = start.subtract(days - 1, "day");
     }
 
-    setParam("from", start.format("YYYY-MM-DD"));
-    setParam("to", end.format("YYYY-MM-DD"));
+    setParam("fromDate", start.format("YYYY-MM-DD"));
+    setParam("toDate", end.format("YYYY-MM-DD"));
     setOpen(false);
   };
 

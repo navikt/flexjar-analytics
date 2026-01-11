@@ -80,7 +80,7 @@ export const Route = createFileRoute("/")({
 function DashboardPage() {
   const { params } = useSearchParams();
   const { data: stats, isPending } = useStats();
-  const hasSurveyFilter = !!params.feedbackId;
+  const hasSurveyFilter = !!params.surveyId;
   const surveyType = stats?.surveyType;
   const isPrivacyMasked = stats?.privacy?.masked;
 

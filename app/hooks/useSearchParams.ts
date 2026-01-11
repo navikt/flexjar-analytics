@@ -5,27 +5,27 @@ export interface SearchParams {
   app?: string;
   page?: string;
   size?: string;
-  from?: string;
-  to?: string;
-  medTekst?: string;
-  fritekst?: string;
-  tags?: string;
-  feedbackId?: string;
+  fromDate?: string;
+  toDate?: string;
+  hasText?: string;
+  query?: string;
+  tag?: string;
+  surveyId?: string;
   /** Filter by pathname (from context) */
   pathname?: string;
   /** Filter by low ratings (1-2) */
-  lavRating?: string;
+  lowRating?: string;
   /** Filter by device type */
   deviceType?: string;
-
-  stjerne?: string;
-  ubehandlet?: string;
 
   /** Filter by theme (for discovery drill-down) */
   theme?: string;
 
   /** Filter by context.tags (format: "key:value,key:value") */
   segment?: string;
+
+  /** Filter by specific task (for Top Tasks drill-down) */
+  task?: string;
 }
 
 // Store for managing search params reactively

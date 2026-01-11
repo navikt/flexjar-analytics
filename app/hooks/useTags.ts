@@ -30,13 +30,13 @@ export function useTags() {
  * Hook to add a tag to a feedback item.
  * Automatically invalidates feedback and tags queries on success.
  *
- * @returns Mutation function that takes { feedbackId, tag }
+ * @returns Mutation function that takes { id, tag }
  *
  * @example
  * ```tsx
- * function TagButton({ feedbackId }) {
+ * function TagButton({ id }) {
  *   const addTag = useAddTag();
- *   return <Button onClick={() => addTag.mutate({ feedbackId, tag: "important" })}>Add</Button>;
+ *   return <Button onClick={() => addTag.mutate({ id, tag: "important" })}>Add</Button>;
  * }
  * ```
  */
@@ -44,8 +44,8 @@ export function useAddTag() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ feedbackId, tag }: { feedbackId: string; tag: string }) =>
-      addTagServerFn({ data: { feedbackId, tag } }),
+    mutationFn: ({ id, tag }: { id: string; tag: string }) =>
+      addTagServerFn({ data: { id, tag } }),
     onSuccess: () => {
       // Invalidate both feedback and tags queries
       queryClient.invalidateQueries({ queryKey: ["feedback"] });
@@ -58,14 +58,14 @@ export function useAddTag() {
  * Hook to remove a tag from a feedback item.
  * Automatically invalidates feedback and tags queries on success.
  *
- * @returns Mutation function that takes { feedbackId, tag }
+ * @returns Mutation function that takes { id, tag }
  */
 export function useRemoveTag() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ feedbackId, tag }: { feedbackId: string; tag: string }) =>
-      removeTagServerFn({ data: { feedbackId, tag } }),
+    mutationFn: ({ id, tag }: { id: string; tag: string }) =>
+      removeTagServerFn({ data: { id, tag } }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["feedback"] });
       queryClient.invalidateQueries({ queryKey: ["tags"] });

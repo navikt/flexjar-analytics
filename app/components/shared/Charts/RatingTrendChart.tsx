@@ -108,9 +108,9 @@ export function RatingTrendChart() {
               to: "/feedback",
               search: {
                 ...params,
-                from: date,
-                to: date,
-                lavRating: average < 3 ? "true" : undefined,
+                fromDate: date,
+                toDate: date,
+                lowRating: average < 3 ? "true" : undefined,
               },
             });
           }

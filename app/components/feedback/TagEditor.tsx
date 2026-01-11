@@ -10,7 +10,7 @@ import { useState } from "react";
 import { useAddTag, useRemoveTag, useTags } from "~/hooks/useTags";
 
 interface TagEditorProps {
-  feedbackId: string;
+  id: string;
   currentTags: string[];
   compact?: boolean;
 }
@@ -38,7 +38,7 @@ function getChipsVariant(tag: string): "neutral" | "action" {
 }
 
 export function TagEditor({
-  feedbackId,
+  id,
   currentTags,
   compact = false,
 }: TagEditorProps) {
@@ -56,14 +56,14 @@ export function TagEditor({
 
   const handleAddTag = (tag: string) => {
     if (tag && !currentTags.includes(tag)) {
-      addTagMutation.mutate({ feedbackId, tag });
+      addTagMutation.mutate({ id, tag });
       setInputValue("");
       setIsAdding(false);
     }
   };
 
   const handleRemoveTag = (tag: string) => {
-    removeTagMutation.mutate({ feedbackId, tag });
+    removeTagMutation.mutate({ id, tag });
   };
 
   if (compact && currentTags.length === 0 && !isAdding) {

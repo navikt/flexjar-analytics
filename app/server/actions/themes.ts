@@ -29,7 +29,7 @@ const CreateThemeSchema = z.object({
   keywords: z.array(z.string()).min(1),
   color: z.string().optional(),
   priority: z.number().optional(),
-  analysisContext: z.enum(["GENERAL_FEEDBACK", "BLOCKER"]).optional(),
+  analysisContext: z.enum(["GENERAL_FEEDBACK", "BLOCKER"]),
 });
 
 const UpdateThemeSchema = z.object({
@@ -38,7 +38,7 @@ const UpdateThemeSchema = z.object({
   keywords: z.array(z.string()).optional(),
   color: z.string().optional(),
   priority: z.number().optional(),
-  analysisContext: z.enum(["GENERAL_FEEDBACK", "BLOCKER"]).optional(),
+  analysisContext: z.enum(["GENERAL_FEEDBACK", "BLOCKER"]),
 });
 
 import { mockThemes } from "~/mock/themes";
@@ -85,11 +85,6 @@ export const fetchThemesServerFn = createServerFn({ method: "GET" })
     await handleApiResponse(response);
     const allThemes = (await response.json()) as TextTheme[];
 
-    // Client-side filter as fallback if API doesn't support context param yet
-    if (filterContext && filterContext !== "ALL") {
-      return allThemes.filter((t) => t.analysisContext === filterContext);
-    }
-
     return allThemes;
   });
 
@@ -111,7 +106,7 @@ export const createThemeServerFn = createServerFn({ method: "POST" })
         keywords: data.keywords,
         color: data.color,
         priority: data.priority ?? 0,
-        analysisContext: data.analysisContext ?? "GENERAL_FEEDBACK",
+        analysisContext: data.analysisContext,
       };
       mockThemes.push(newTheme);
       return newTheme;

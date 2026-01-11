@@ -44,14 +44,15 @@ export function ExportPanel() {
           format,
           team: params.team,
           app: params.app,
-          feedbackId: params.feedbackId,
-          from: params.from,
-          to: params.to,
-          medTekst: params.medTekst,
-          fritekst: params.fritekst,
-          lavRating: params.lavRating,
+          surveyId: params.surveyId,
+          fromDate: params.fromDate,
+          toDate: params.toDate,
+          hasText: params.hasText,
+          query: params.query,
+          lowRating: params.lowRating,
           deviceType: params.deviceType,
-          tags: params.tags,
+          tag: params.tag,
+          segment: params.segment,
         },
       });
 
@@ -190,34 +191,29 @@ function ActiveFilters({
           <strong>App:</strong> {params.app}
         </BodyShort>
       )}
-      {params.feedbackId && (
+      {params.surveyId && (
         <BodyShort size="small" spacing>
-          <strong>Survey:</strong> {params.feedbackId}
+          <strong>Survey:</strong> {params.surveyId}
         </BodyShort>
       )}
-      {params.from && (
+      {params.fromDate && (
         <BodyShort size="small" spacing>
-          <strong>Fra:</strong> {dayjs(params.from).format("DD.MM.YYYY")}
+          <strong>Fra:</strong> {dayjs(params.fromDate).format("DD.MM.YYYY")}
         </BodyShort>
       )}
-      {params.to && (
+      {params.toDate && (
         <BodyShort size="small" spacing>
-          <strong>Til:</strong> {dayjs(params.to).format("DD.MM.YYYY")}
+          <strong>Til:</strong> {dayjs(params.toDate).format("DD.MM.YYYY")}
         </BodyShort>
       )}
-      {params.medTekst === "true" && (
+      {params.hasText === "true" && (
         <BodyShort size="small" spacing>
           <strong>Filter:</strong> Kun med tekst
         </BodyShort>
       )}
-      {params.lavRating === "true" && (
+      {params.lowRating === "true" && (
         <BodyShort size="small" spacing>
           <strong>Filter:</strong> Kun lave vurderinger (1-2)
-        </BodyShort>
-      )}
-      {params.stjerne === "true" && (
-        <BodyShort size="small" spacing>
-          <strong>Filter:</strong> Kun stjernede
         </BodyShort>
       )}
       {params.deviceType && (

@@ -66,7 +66,7 @@ export function FeedbackTable() {
   const feedbackList = data?.content || [];
   const totalPages = data?.totalPages || 1;
   const totalElements = data?.totalElements || 0;
-  const selectedSurvey = params.feedbackId;
+  const selectedSurvey = params.surveyId;
 
   return (
     <div className={styles.table}>
@@ -161,13 +161,13 @@ export function FeedbackTable() {
           feedbackCount={totalElements}
           isOpen={deleteDialogOpen}
           onClose={() => setDeleteDialogOpen(false)}
-          onDeleted={() => setParam("feedbackId", undefined)}
+          onDeleted={() => setParam("surveyId", undefined)}
         />
       )}
 
       {/* Delete single feedback confirmation dialog */}
       <DeleteFeedbackDialog
-        feedbackId={feedbackToDelete}
+        id={feedbackToDelete}
         onClose={() => setFeedbackToDelete(null)}
         onConfirm={() => {
           if (feedbackToDelete) {

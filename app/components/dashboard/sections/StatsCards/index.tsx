@@ -57,7 +57,7 @@ interface StatsCardsProps {
 export function StatsCards({ showRating = false }: StatsCardsProps) {
   const { data: stats, isPending } = useStats();
   const { params } = useSearchParams();
-  const hasSurveyFilter = !!params.feedbackId;
+  const hasSurveyFilter = !!params.surveyId;
 
   // isPending: no cached data AND fetching (TanStack Query v5 best practice)
   // With placeholderData: keepPreviousData, isPending stays false during refetches
@@ -97,7 +97,7 @@ export function StatsCards({ showRating = false }: StatsCardsProps) {
           icon={<CalendarIcon fontSize="1.25rem" aria-hidden />}
           label="Periode"
           value={`${periodDays}d`}
-          subtitle={`${stats?.period?.from || "–"} → ${stats?.period?.to || "nå"}`}
+          subtitle={`${stats?.period?.fromDate || "–"} → ${stats?.period?.toDate || "nå"}`}
         />
 
         <StatCard
@@ -144,7 +144,7 @@ export function StatsCards({ showRating = false }: StatsCardsProps) {
         icon={<CalendarIcon fontSize="1.25rem" aria-hidden />}
         label="Periode"
         value={`${periodDays}d`}
-        subtitle={`${stats?.period?.from || "–"} → ${stats?.period?.to || "nå"}`}
+        subtitle={`${stats?.period?.fromDate || "–"} → ${stats?.period?.toDate || "nå"}`}
       />
 
       <StatCard

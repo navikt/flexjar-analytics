@@ -10,9 +10,10 @@ export type { FeedbackStats } from "~/types/api";
  *
  * Automatically reacts to URL search params for filtering by:
  * - app: Filter by application name
- * - from/to: Date range filter
- * - feedbackId: Filter by specific survey ID
+ * - fromDate/toDate: Date range filter
+ * - surveyId: Filter by specific survey ID
  * - deviceType: Filter by device type (mobile/tablet/desktop)
+ * - task: Filter by specific task (Top Tasks drill-down)
  *
  * @returns React Query result with FeedbackStats data
  *
@@ -32,23 +33,23 @@ export function useStats() {
     queryKey: [
       "stats",
       params.app,
-      params.from,
-      params.to,
-      params.feedbackId,
+      params.fromDate,
+      params.toDate,
+      params.surveyId,
       params.deviceType,
-      params.ubehandlet,
       params.segment,
+      params.task, // Task filter for Top Tasks drill-down
     ],
     queryFn: () =>
       fetchStatsServerFn({
         data: {
           app: params.app,
-          from: params.from,
-          to: params.to,
-          feedbackId: params.feedbackId,
+          fromDate: params.fromDate,
+          toDate: params.toDate,
+          surveyId: params.surveyId,
           deviceType: params.deviceType,
-          ubehandlet: params.ubehandlet,
           segment: params.segment,
+          task: params.task, // Pass task filter to backend
         },
       }),
     staleTime: 30000, // 30 seconds

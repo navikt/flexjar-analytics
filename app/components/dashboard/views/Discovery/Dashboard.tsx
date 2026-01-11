@@ -15,7 +15,7 @@ export function DiscoveryDashboard() {
   const { data, isPending } = useDiscoveryStats();
   const { params } = useSearchParams();
   const { addSegment } = useSegmentFilter();
-  const surveyId = params.feedbackId;
+  const surveyId = params.surveyId;
 
   return (
     <>
