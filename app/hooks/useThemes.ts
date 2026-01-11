@@ -48,8 +48,20 @@ export function useThemes(options: UseThemesOptions = {}) {
   });
 
   const createMutation = useMutation({
-    mutationFn: (input: CreateThemeInput) =>
-      createThemeServerFn({ data: input }),
+    mutationFn: (input: CreateThemeInput) => {
+      if (context === "ALL") {
+        // Creating a theme without an explicit context is ambiguous.
+        // Callers should use useThemes({ context: ... }) when creating.
+        throw new Error("Theme context is required when creating a theme");
+      }
+
+      return createThemeServerFn({
+        data: {
+          ...input,
+          analysisContext: input.analysisContext ?? context,
+        },
+      });
+    },
     onSuccess: () => {
       // Invalidate all theme queries regardless of context
       queryClient.invalidateQueries({ queryKey: ["themes"] });
@@ -62,8 +74,22 @@ export function useThemes(options: UseThemesOptions = {}) {
     mutationFn: ({
       themeId,
       ...input
-    }: UpdateThemeInput & { themeId: string }) =>
-      updateThemeServerFn({ data: { themeId, ...input } }),
+    }: UpdateThemeInput & { themeId: string }) => {
+      const analysisContext =
+        input.analysisContext ?? (context === "ALL" ? undefined : context);
+
+      if (!analysisContext) {
+        throw new Error("Theme context is required when updating a theme");
+      }
+
+      return updateThemeServerFn({
+        data: {
+          themeId,
+          ...input,
+          analysisContext,
+        },
+      });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["themes"] });
       queryClient.invalidateQueries({ queryKey: ["discoveryStats"] });
