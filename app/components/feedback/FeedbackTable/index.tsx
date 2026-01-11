@@ -158,7 +158,7 @@ export function FeedbackTable() {
       {selectedSurvey && (
         <DeleteSurveyDialog
           surveyId={selectedSurvey}
-          feedbackCount={totalElements}
+          filteredCount={totalElements}
           isOpen={deleteDialogOpen}
           onClose={() => setDeleteDialogOpen(false)}
           onDeleted={() => setParam("surveyId", undefined)}
@@ -196,7 +196,7 @@ function SurveyToolbar({
         <BodyShort size="small" textColor="subtle">
           Viser {totalCount} svar for <strong>{surveyId}</strong>
         </BodyShort>
-        <Tooltip content={`Slett alle ${totalCount} svar for denne surveyen`}>
+        <Tooltip content="Slett hele surveyen (alle svar, uavhengig av filtrering)">
           <Button
             variant="danger"
             size="small"

@@ -6,14 +6,17 @@ import {
   ConfirmationPanel,
   HStack,
   Modal,
+  Skeleton,
   VStack,
 } from "@navikt/ds-react";
 import { useState } from "react";
 import { useDeleteSurvey } from "~/hooks/useDeleteSurvey";
+import { useSurveyTotalCount } from "~/hooks/useSurveyTotalCount";
 
 interface DeleteSurveyDialogProps {
   surveyId: string;
-  feedbackCount: number;
+  /** Count currently shown (with filters applied) - used to show user if they're viewing a subset */
+  filteredCount: number;
   isOpen: boolean;
   onClose: () => void;
   onDeleted?: () => void;
@@ -21,13 +24,19 @@ interface DeleteSurveyDialogProps {
 
 export function DeleteSurveyDialog({
   surveyId,
-  feedbackCount,
+  filteredCount,
   isOpen,
   onClose,
   onDeleted,
 }: DeleteSurveyDialogProps) {
   const [confirmed, setConfirmed] = useState(false);
   const deleteMutation = useDeleteSurvey();
+
+  // Fetch actual total count for this survey (ignoring other filters)
+  const { data: totalCount, isLoading: isLoadingTotal } = useSurveyTotalCount(
+    surveyId,
+    isOpen,
+  );
 
   const handleDelete = async () => {
     try {
@@ -45,12 +54,16 @@ export function DeleteSurveyDialog({
     onClose();
   };
 
+  // Check if user is viewing a filtered subset
+  const actualTotal = totalCount ?? filteredCount;
+  const isFiltered = actualTotal !== filteredCount;
+
   return (
     <Modal
       open={isOpen}
       onClose={handleClose}
       header={{
-        heading: "Slett alle svar for survey",
+        heading: "Slett hele surveyen",
         icon: <TrashIcon aria-hidden />,
       }}
       width="small"
@@ -58,20 +71,35 @@ export function DeleteSurveyDialog({
       <Modal.Body>
         <VStack gap="space-16">
           <Alert variant="warning">
-            Du er i ferd med å slette <strong>alle {feedbackCount} svar</strong>{" "}
-            for survey <strong>"{surveyId}"</strong>. Denne handlingen kan ikke
-            angres.
+            {isLoadingTotal ? (
+              <Skeleton width="100%" height="24px" />
+            ) : (
+              <>
+                Du er i ferd med å{" "}
+                <strong>permanent slette alle {actualTotal} svar</strong> for
+                survey <strong>"{surveyId}"</strong>.
+                {isFiltered && (
+                  <>
+                    {" "}
+                    Du ser nå {filteredCount} av {actualTotal} svar pga.
+                    filtrering, men{" "}
+                    <strong>alle {actualTotal} svar vil bli slettet</strong>.
+                  </>
+                )}
+              </>
+            )}
           </Alert>
 
           <BodyLong>
-            Dette fjerner tekstsvarene fra tilbakemeldingene (soft delete).
-            Ratings, tags og annen metadata kan fortsatt være igjen.
+            Denne handlingen kan ikke angres. All data for denne surveyen vil
+            bli permanent fjernet fra databasen.
           </BodyLong>
 
           <ConfirmationPanel
             checked={confirmed}
             onChange={() => setConfirmed(!confirmed)}
-            label="Ja, jeg forstår at dette fjerner tekstsvarene"
+            label={`Ja, slett permanent alle ${actualTotal} svar`}
+            disabled={isLoadingTotal}
           />
 
           {deleteMutation.isError && (
@@ -90,10 +118,10 @@ export function DeleteSurveyDialog({
           <Button
             variant="danger"
             onClick={handleDelete}
-            disabled={!confirmed}
+            disabled={!confirmed || isLoadingTotal}
             loading={deleteMutation.isPending}
           >
-            Slett {feedbackCount} svar
+            Slett {actualTotal} svar permanent
           </Button>
         </HStack>
       </Modal.Footer>

@@ -33,7 +33,7 @@ export const deleteSurveyServerFn = createServerFn({ method: "POST" })
     let page = 0;
     let deletedCount = 0;
 
-    // Backend deletes are soft-delete (clears text answers) per feedback item.
+    // Backend permanently deletes each feedback item.
     // This function batches by paging through feedback for the survey.
     while (true) {
       const listUrl = buildUrl(backendUrl, "/api/v1/intern/feedback", {
