@@ -17,7 +17,8 @@ export function useSurveyTotalCount(surveyId: string, enabled = true) {
       const result = await fetchFeedbackServerFn({
         data: {
           surveyId,
-          page: "0",
+          // fetchFeedbackServerFn expects 1-indexed pages (it converts to backend 0-indexed)
+          page: "1",
           size: "1", // Minimal data transfer, just need totalElements
         },
       });

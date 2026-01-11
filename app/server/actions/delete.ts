@@ -3,13 +3,11 @@ import { zodValidator } from "@tanstack/zod-adapter";
 import { authMiddleware } from "~/server/middleware/auth";
 import {
   type AuthContext,
-  buildUrl,
   getHeaders,
   isMockMode,
   mockDelay,
 } from "~/server/utils";
 import type { DeleteSurveyResult } from "~/types/api";
-import type { FeedbackPage } from "~/types/api";
 import { DeleteFeedbackSchema, DeleteSurveySchema } from "~/types/schemas";
 import { handleApiResponse } from "../fetchUtils";
 
@@ -27,49 +25,15 @@ export const deleteSurveyServerFn = createServerFn({ method: "POST" })
       return { deletedCount: 42, surveyId: data.surveyId };
     }
 
-    const headers = getHeaders(oboToken);
-    const pageSize = 200;
+    const url = `${backendUrl}/api/v1/intern/surveys/${encodeURIComponent(data.surveyId)}`;
+    const response = await fetch(url, {
+      method: "DELETE",
+      headers: getHeaders(oboToken),
+    });
 
-    let page = 0;
-    let deletedCount = 0;
+    await handleApiResponse(response);
 
-    // Backend permanently deletes each feedback item.
-    // This function batches by paging through feedback for the survey.
-    while (true) {
-      const listUrl = buildUrl(backendUrl, "/api/v1/intern/feedback", {
-        surveyId: data.surveyId,
-        page: String(page),
-        size: String(pageSize),
-      });
-
-      const listResponse = await fetch(listUrl, { headers });
-      await handleApiResponse(listResponse);
-
-      const feedbackPage = (await listResponse.json()) as FeedbackPage;
-
-      // Safety: avoid infinite loops on unexpected paging.
-      if (feedbackPage.content.length === 0) {
-        break;
-      }
-
-      for (const item of feedbackPage.content) {
-        const deleteUrl = `${backendUrl}/api/v1/intern/feedback/${encodeURIComponent(item.id)}`;
-        const deleteResponse = await fetch(deleteUrl, {
-          method: "DELETE",
-          headers,
-        });
-        await handleApiResponse(deleteResponse);
-        deletedCount += 1;
-      }
-
-      if (!feedbackPage.hasNext) {
-        break;
-      }
-
-      page += 1;
-    }
-
-    return { deletedCount, surveyId: data.surveyId };
+    return response.json() as Promise<DeleteSurveyResult>;
   });
 
 /**
