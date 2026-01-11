@@ -29,6 +29,7 @@ export const fetchContextTagsServerFn = createServerFn({ method: "GET" })
       const contextTags = getMockContextTags(
         data.surveyId,
         data.maxCardinality ?? 15,
+        data.task, // Pass task filter for Top Tasks drill-down
       );
 
       return {
@@ -42,8 +43,8 @@ export const fetchContextTagsServerFn = createServerFn({ method: "GET" })
       backendUrl,
       `/api/v1/intern/surveys/${encodeURIComponent(data.surveyId)}/context-tags`,
       {
-        team: "flex", // TODO: Get from auth context
         maxCardinality: String(data.maxCardinality ?? 10),
+        task: data.task,
       },
     );
     const response = await fetch(url, {

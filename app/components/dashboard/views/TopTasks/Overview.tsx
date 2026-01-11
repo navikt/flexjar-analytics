@@ -1,17 +1,13 @@
-import { XMarkIcon } from "@navikt/aksel-icons";
 import {
   BodyShort,
   Box,
-  Button,
   HStack,
   Heading,
   Hide,
   Table,
-  Tag,
   Tooltip,
   VStack,
 } from "@navikt/ds-react";
-import { useState } from "react";
 import { DashboardCard } from "~/components/dashboard";
 import { SegmentBreakdown } from "~/components/dashboard/SegmentBreakdown";
 import { DeviceBreakdownSection } from "~/components/dashboard/sections/FieldStats/DeviceBreakdownSection";
@@ -25,10 +21,16 @@ import { TopTasksStatsCards } from "./StatsCards";
 
 export function TopTasksOverview() {
   const { data, isLoading } = useTopTasksStats();
-  const [selectedTask, setSelectedTask] = useState<string | null>(null);
-  const { params } = useSearchParams();
+  const { params, setParam } = useSearchParams();
   const { addSegment } = useSegmentFilter();
   const surveyId = params.surveyId;
+
+  // Task filter from URL (global filter, shown in ActiveFiltersChips)
+  const selectedTask = params.task ?? null;
+
+  const handleTaskSelect = (taskName: string | null) => {
+    setParam("task", taskName ?? undefined);
+  };
 
   if (isLoading) return null;
   if (!data) return null;
@@ -53,17 +55,18 @@ export function TopTasksOverview() {
 
       <DashboardCard padding={{ xs: "space-16", md: "space-24" }}>
         <Box.New paddingBlock="0 space-16">
-          <Heading size="small">Oppgavekvadranten</Heading>
+          <Heading size="small">Oppgavekvadrant</Heading>
           <p
             style={{ margin: "0.5rem 0 0", fontSize: "0.875rem", opacity: 0.7 }}
           >
-            Volum vs suksessrate. Klikk på et punkt for å filtrere tabellen.
+            Volum vs suksessrate. Klikk på et punkt for å filtrere hele
+            dashboardet.
           </p>
         </Box.New>
         <div style={{ height: "clamp(280px, 50vw, 400px)", width: "100%" }}>
           <TaskQuadrantChart
             selectedTask={selectedTask}
-            onTaskSelect={setSelectedTask}
+            onTaskSelect={handleTaskSelect}
           />
         </div>
       </DashboardCard>
@@ -74,30 +77,9 @@ export function TopTasksOverview() {
           borderWidth="0 0 1 0"
           borderColor="neutral-subtle"
         >
-          <HStack justify="space-between" align="center" wrap gap="space-8">
-            <Heading size="small">
-              {data.questionText
-                ? `Spørsmål: ${data.questionText}`
-                : "Spørsmål"}
-            </Heading>
-            {selectedTask && (
-              <HStack gap="space-8" align="center">
-                <BodyShort size="small" textColor="subtle">
-                  Filtrert:
-                </BodyShort>
-                <Tag size="small" variant="info">
-                  {selectedTask}
-                  <Button
-                    variant="tertiary-neutral"
-                    size="xsmall"
-                    icon={<XMarkIcon aria-hidden />}
-                    onClick={() => setSelectedTask(null)}
-                    style={{ marginLeft: "0.25rem" }}
-                  />
-                </Tag>
-              </HStack>
-            )}
-          </HStack>
+          <Heading size="small">
+            {data.questionText ? `Spørsmål: ${data.questionText}` : "Spørsmål"}
+          </Heading>
         </Box.New>
         <Box overflowX="auto">
           <Table>

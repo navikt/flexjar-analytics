@@ -1,4 +1,5 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useSearchParams } from "~/hooks/useSearchParams";
 import { fetchContextTagsServerFn } from "~/server/actions";
 
 /**
@@ -23,13 +24,16 @@ import { fetchContextTagsServerFn } from "~/server/actions";
  * }
  */
 export function useContextTags(surveyId: string, maxCardinality?: number) {
+  const { params } = useSearchParams();
+
   return useQuery({
-    queryKey: ["context-tags", surveyId, maxCardinality],
+    queryKey: ["context-tags", surveyId, maxCardinality, params.task],
     queryFn: () =>
       fetchContextTagsServerFn({
         data: {
           surveyId: surveyId,
           maxCardinality: maxCardinality,
+          task: params.task, // Pass task filter for Top Tasks drill-down
         },
       }),
     enabled: !!surveyId,

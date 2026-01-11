@@ -307,6 +307,29 @@ export function calculateStats(
     });
   }
 
+  // Task filter: filter by specific task name (for Top Tasks drill-down)
+  const taskFilter = params.get("task");
+  if (taskFilter) {
+    filtered = filtered.filter((item) => {
+      // Only applies to topTasks survey type
+      if (item.surveyType !== "topTasks") return false;
+
+      const taskAnswer = item.answers.find(
+        (a) => a.fieldId === "task" || a.fieldId === "category",
+      );
+      if (!taskAnswer || taskAnswer.fieldType !== "SINGLE_CHOICE") return false;
+
+      const taskOption = taskAnswer.question.options?.find(
+        (o) => o.id === taskAnswer.value.selectedOptionId,
+      );
+      const taskName = taskOption
+        ? taskOption.label
+        : taskAnswer.value.selectedOptionId;
+
+      return taskName === taskFilter;
+    });
+  }
+
   // Legacy aggregations
   const byRating: Record<string, number> = {
     "1": 0,
@@ -814,6 +837,7 @@ export function getMockTopTasksStats(
   params: URLSearchParams,
 ): TopTasksResponse {
   const filtered = applyFiltersToItems(items, params);
+  const taskFilter = params.get("task");
   const taskMap = new Map<string, InternalTaskStats>();
   const dailyStats: Record<string, { total: number; success: number }> = {};
 
@@ -831,6 +855,9 @@ export function getMockTopTasksStats(
     const task = taskOption
       ? taskOption.label
       : taskAnswer.value.selectedOptionId;
+
+    // Task filter: skip if task doesn't match the filter
+    if (taskFilter && task !== taskFilter) continue;
 
     const successAnswer = item.answers.find(
       (a) => a.fieldId === "taskSuccess" || a.fieldId === "success",
@@ -1041,7 +1068,8 @@ export function getMockTopTasksStats(
       : undefined;
 
   // Calculate "Other" percentage
-  const totalCount = filtered.filter((i) => i.surveyType === "topTasks").length;
+  // Use sum of filtered tasks for accurate count after task filter
+  const totalCount = tasks.reduce((acc, t) => acc + t.totalCount, 0);
   const otherTask = tasks.find(
     (t) =>
       t.task.toLowerCase().includes("annet") ||
@@ -1077,6 +1105,7 @@ export function getMockBlockerStats(
   const filtered = applyFiltersToItems(items, params).filter(
     (item) => item.surveyType === "topTasks",
   );
+  const taskFilter = params.get("task");
 
   // Extract blocker responses
   const blockerResponses: Array<{
@@ -1086,12 +1115,8 @@ export function getMockBlockerStats(
   }> = [];
 
   for (const item of filtered) {
-    const blockerAnswer = item.answers.find(
-      (a) => a.fieldId === "blocker" || a.fieldId === "hindring",
-    );
-    const taskAnswer = item.answers.find(
-      (a) => a.fieldId === "task" || a.fieldId === "category",
-    );
+    const blockerAnswer = item.answers.find((a) => a.fieldId === "blocker");
+    const taskAnswer = item.answers.find((a) => a.fieldId === "task");
 
     if (blockerAnswer?.fieldType === "TEXT" && blockerAnswer.value.text) {
       const taskOption = taskAnswer?.question.options?.find(
@@ -1100,6 +1125,9 @@ export function getMockBlockerStats(
           o.id === taskAnswer.value.selectedOptionId,
       );
       const task = taskOption?.label ?? "Ukjent oppgave";
+
+      // Task filter: skip if task doesn't match the filter
+      if (taskFilter && task !== taskFilter) continue;
 
       blockerResponses.push({
         blocker: blockerAnswer.value.text,

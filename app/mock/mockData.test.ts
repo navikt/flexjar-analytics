@@ -159,4 +159,61 @@ describe("Mock Data Generation", () => {
     const taskWithDuration = stats.tasks.find((t) => t.totalCount > 0);
     expect(taskWithDuration?.avgTimeMs).toBeGreaterThan(0);
   });
+
+  describe("Task Filter", () => {
+    it("should filter Top Tasks stats by task name", () => {
+      // First get all tasks without filter
+      const unfiltered = getMockTopTasksStats(new URLSearchParams());
+      expect(unfiltered.tasks.length).toBeGreaterThan(1);
+
+      // Pick a task to filter by
+      const targetTask = unfiltered.tasks[0].task;
+      const params = new URLSearchParams({ task: targetTask });
+      const filtered = getMockTopTasksStats(params);
+
+      // Should only have the filtered task
+      expect(filtered.tasks.length).toBe(1);
+      expect(filtered.tasks[0].task).toBe(targetTask);
+
+      // Total submissions should be reduced
+      expect(filtered.totalSubmissions).toBeLessThanOrEqual(
+        unfiltered.totalSubmissions,
+      );
+    });
+
+    it("should filter Blocker stats by task name", () => {
+      // First get all blockers without filter
+      const unfiltered = getMockBlockerStats(new URLSearchParams());
+
+      // Find a task with blockers
+      const tasksWithBlockers = unfiltered.themes.filter((t) => t.count > 0);
+
+      if (tasksWithBlockers.length === 0 || unfiltered.totalBlockers === 0) {
+        // Skip if no blockers in mock data
+        return;
+      }
+
+      // Get the first task from recent blockers
+      const targetTask = unfiltered.recentBlockers[0]?.task;
+      if (!targetTask) return;
+
+      const params = new URLSearchParams({ task: targetTask });
+      const filtered = getMockBlockerStats(params);
+
+      // All recent blockers should be for the filtered task
+      if (filtered.recentBlockers.length > 0) {
+        for (const blocker of filtered.recentBlockers) {
+          expect(blocker.task).toBe(targetTask);
+        }
+      }
+    });
+
+    it("should return empty tasks array when filtering by non-existent task", () => {
+      const params = new URLSearchParams({ task: "NonExistentTask123" });
+      const filtered = getMockTopTasksStats(params);
+
+      // Tasks array should be empty for non-existent task
+      expect(filtered.tasks.length).toBe(0);
+    });
+  });
 });

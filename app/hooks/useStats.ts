@@ -13,6 +13,7 @@ export type { FeedbackStats } from "~/types/api";
  * - fromDate/toDate: Date range filter
  * - surveyId: Filter by specific survey ID
  * - deviceType: Filter by device type (mobile/tablet/desktop)
+ * - task: Filter by specific task (Top Tasks drill-down)
  *
  * @returns React Query result with FeedbackStats data
  *
@@ -37,6 +38,7 @@ export function useStats() {
       params.surveyId,
       params.deviceType,
       params.segment,
+      params.task, // Task filter for Top Tasks drill-down
     ],
     queryFn: () =>
       fetchStatsServerFn({
@@ -47,6 +49,7 @@ export function useStats() {
           surveyId: params.surveyId,
           deviceType: params.deviceType,
           segment: params.segment,
+          task: params.task, // Pass task filter to backend
         },
       }),
     staleTime: 30000, // 30 seconds

@@ -12,6 +12,8 @@ export const StatsParamsSchema = z.object({
   deviceType: z.string().optional(),
   /** Filter by context.tags (format: "key:value,key:value") */
   segment: z.string().optional(),
+  /** Filter by specific task (Top Tasks drill-down) */
+  task: z.string().optional(),
 });
 
 export type StatsParams = z.infer<typeof StatsParamsSchema>;
@@ -47,6 +49,8 @@ export const TopTasksParamsSchema = z.object({
   fromDate: z.string().optional(),
   toDate: z.string().optional(),
   deviceType: z.string().optional(),
+  /** Filter by specific task name (drill-down from quadrant) */
+  task: z.string().optional(),
 });
 
 export type TopTasksParams = z.infer<typeof TopTasksParamsSchema>;
@@ -67,6 +71,8 @@ export const BlockerParamsSchema = z.object({
   fromDate: z.string().optional(),
   toDate: z.string().optional(),
   deviceType: z.string().optional(),
+  /** Filter by specific task name (drill-down from quadrant) */
+  task: z.string().optional(),
 });
 
 export type BlockerParams = z.infer<typeof BlockerParamsSchema>;
@@ -122,6 +128,8 @@ export const ContextTagsParamsSchema = z.object({
   surveyId: z.string(),
   /** Max unique values per key. Keys with more values are filtered out. */
   maxCardinality: z.number().optional(),
+  /** Filter by specific task (Top Tasks drill-down) */
+  task: z.string().optional(),
 });
 
 export type ContextTagsParams = z.infer<typeof ContextTagsParamsSchema>;

@@ -63,6 +63,16 @@ export function ActiveFiltersChips() {
     });
   }
 
+  // Task filter (Top Tasks drill-down)
+  if (params.task) {
+    chips.push({
+      key: "task",
+      label: "Oppgave",
+      value: params.task,
+      onRemove: () => setParam("task", undefined),
+    });
+  }
+
   // Segment filters (metadata)
   for (const [key, value] of Object.entries(activeFilters)) {
     chips.push({

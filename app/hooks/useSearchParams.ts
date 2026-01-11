@@ -23,6 +23,9 @@ export interface SearchParams {
 
   /** Filter by context.tags (format: "key:value,key:value") */
   segment?: string;
+
+  /** Filter by specific task (for Top Tasks drill-down) */
+  task?: string;
 }
 
 // Store for managing search params reactively

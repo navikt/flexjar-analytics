@@ -491,11 +491,31 @@ export function deleteMockFeedback(id: string): boolean {
 export function getMockContextTags(
   surveyId: string,
   maxCardinality = 15,
+  task?: string,
 ): Record<string, { value: string; count: number }[]> {
   // Filter items by surveyId
-  const surveyItems = mockFeedbackItems.filter(
+  let surveyItems = mockFeedbackItems.filter(
     (item) => item.surveyId === surveyId,
   );
+
+  // Task filter: filter by specific task name (for Top Tasks drill-down)
+  if (task) {
+    surveyItems = surveyItems.filter((item) => {
+      if (item.surveyType !== "topTasks") return false;
+
+      const taskAnswer = item.answers.find((a) => a.fieldId === "task");
+      if (!taskAnswer || taskAnswer.fieldType !== "SINGLE_CHOICE") return false;
+
+      const taskOption = taskAnswer.question.options?.find(
+        (o) => o.id === taskAnswer.value.selectedOptionId,
+      );
+      const taskName = taskOption
+        ? taskOption.label
+        : taskAnswer.value.selectedOptionId;
+
+      return taskName === task;
+    });
+  }
 
   // Build context tag counts from actual metadata
   const tagCounts: Record<string, Map<string, number>> = {};

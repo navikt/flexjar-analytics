@@ -17,6 +17,7 @@ export function useTopTasksStats() {
       params.toDate,
       params.surveyId,
       params.deviceType,
+      params.task, // Task filter for drill-down
     ],
     queryFn: () =>
       fetchTopTasksServerFn({
@@ -26,6 +27,7 @@ export function useTopTasksStats() {
           fromDate: params.fromDate,
           toDate: params.toDate,
           deviceType: params.deviceType,
+          task: params.task, // Pass task filter to backend
         },
       }),
     staleTime: 60000, // 1 minute

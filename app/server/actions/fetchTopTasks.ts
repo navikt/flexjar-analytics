@@ -37,6 +37,7 @@ export const fetchTopTasksServerFn = createServerFn({ method: "GET" })
       fromDate: data.fromDate,
       toDate: data.toDate,
       deviceType: data.deviceType,
+      task: data.task,
     };
 
     const url = buildUrl(

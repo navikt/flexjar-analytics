@@ -39,6 +39,7 @@ export const fetchStatsServerFn = createServerFn({ method: "GET" })
       toDate: data.toDate,
       deviceType: data.deviceType,
       segment: data.segment?.split(",").filter(Boolean),
+      task: data.task,
     };
 
     const url = buildUrl(backendUrl, "/api/v1/intern/stats", backendParams);
