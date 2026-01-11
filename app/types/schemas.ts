@@ -168,7 +168,13 @@ const FieldTypeSchema = z.enum([
   "DATE",
 ]);
 
-const SurveyTypeSchema = z.enum(["rating", "topTasks", "custom"]);
+const SurveyTypeSchema = z.enum([
+  "rating",
+  "topTasks",
+  "discovery",
+  "taskPriority",
+  "custom",
+]);
 
 const ChoiceOptionSchema = z.object({
   id: z.string(),
