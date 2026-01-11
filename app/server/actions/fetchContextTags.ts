@@ -30,6 +30,7 @@ export const fetchContextTagsServerFn = createServerFn({ method: "GET" })
         data.surveyId,
         data.maxCardinality ?? 15,
         data.task, // Pass task filter for Top Tasks drill-down
+        data.segment,
       );
 
       return {
@@ -45,6 +46,7 @@ export const fetchContextTagsServerFn = createServerFn({ method: "GET" })
       {
         maxCardinality: String(data.maxCardinality ?? 10),
         task: data.task,
+        segment: data.segment?.split(",").filter(Boolean),
       },
     );
     const response = await fetch(url, {

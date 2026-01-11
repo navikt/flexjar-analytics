@@ -27,13 +27,20 @@ export function useContextTags(surveyId: string, maxCardinality?: number) {
   const { params } = useSearchParams();
 
   return useQuery({
-    queryKey: ["context-tags", surveyId, maxCardinality, params.task],
+    queryKey: [
+      "context-tags",
+      surveyId,
+      maxCardinality,
+      params.task,
+      params.segment,
+    ],
     queryFn: () =>
       fetchContextTagsServerFn({
         data: {
           surveyId: surveyId,
           maxCardinality: maxCardinality,
           task: params.task, // Pass task filter for Top Tasks drill-down
+          segment: params.segment,
         },
       }),
     enabled: !!surveyId,

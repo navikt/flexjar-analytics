@@ -131,6 +131,8 @@ export const ContextTagsParamsSchema = z.object({
   maxCardinality: z.number().optional(),
   /** Filter by specific task (Top Tasks drill-down) */
   task: z.string().optional(),
+  /** Segment filters (format: "key:value,key:value") */
+  segment: z.string().optional(),
 });
 
 export type ContextTagsParams = z.infer<typeof ContextTagsParamsSchema>;

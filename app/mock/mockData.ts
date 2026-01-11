@@ -493,6 +493,7 @@ export function getMockContextTags(
   surveyId: string,
   maxCardinality = 15,
   task?: string,
+  segment?: string,
 ): Record<string, { value: string; count: number }[]> {
   // Filter items by surveyId
   let surveyItems = mockFeedbackItems.filter(
@@ -515,6 +516,21 @@ export function getMockContextTags(
         : taskAnswer.value.selectedOptionId;
 
       return taskName === task;
+    });
+  }
+
+  // Segment filter (format: "key:value,key:value")
+  if (segment) {
+    const segmentFilters = segment.split(",").map((s) => {
+      const [key, value] = s.split(":");
+      return { key, value };
+    });
+
+    surveyItems = surveyItems.filter((item) => {
+      if (!item.metadata) return false;
+      return segmentFilters.every(
+        (filter) => item.metadata?.[filter.key] === filter.value,
+      );
     });
   }
 
