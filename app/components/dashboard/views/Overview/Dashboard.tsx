@@ -11,6 +11,8 @@ import { TopAppsChart } from "~/components/shared/Charts/TopAppsChart";
  * Displays aggregated stats across all surveys.
  */
 export function OverviewDashboard() {
+  const chartHeight = "clamp(150px, 30vw, 180px)";
+
   return (
     <>
       <StatsCards showRating />
@@ -25,7 +27,7 @@ export function OverviewDashboard() {
             <Heading size="small">Tilbakemeldinger per app</Heading>
             <div
               style={{
-                height: "clamp(150px, 30vw, 180px)",
+                height: chartHeight,
                 width: "100%",
               }}
             >
@@ -37,7 +39,7 @@ export function OverviewDashboard() {
         <DashboardCard padding={{ xs: "space-16", md: "space-24" }}>
           <VStack gap="space-16">
             <Heading size="small">Enheter</Heading>
-            <div style={{ width: "100%" }}>
+            <div style={{ height: chartHeight, width: "100%" }}>
               <DeviceBreakdownChart />
             </div>
           </VStack>
@@ -46,7 +48,9 @@ export function OverviewDashboard() {
         <DashboardCard padding={{ xs: "space-16", md: "space-24" }}>
           <VStack gap="space-16">
             <Heading size="small">Survey-typer</Heading>
-            <SurveyTypeDistribution height={150} />
+            <div style={{ height: chartHeight, width: "100%" }}>
+              <SurveyTypeDistribution height="100%" />
+            </div>
           </VStack>
         </DashboardCard>
       </DashboardGrid>

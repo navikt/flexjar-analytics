@@ -1,4 +1,3 @@
-import { Skeleton } from "@navikt/ds-react";
 import {
   Bar,
   BarChart,
@@ -7,6 +6,8 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { ChartEmptyState } from "~/components/shared/Charts/ChartEmptyState";
+import { ChartLoadingState } from "~/components/shared/Charts/ChartLoadingState";
 import { useTheme } from "~/context/ThemeContext";
 import { useSearchParams } from "~/hooks/useSearchParams";
 import { useStats } from "~/hooks/useStats";
@@ -42,7 +43,7 @@ export function TopAppsChart() {
   const colors = theme === "light" ? CHART_COLORS_LIGHT : CHART_COLORS;
 
   if (isPending) {
-    return <Skeleton variant="rectangle" height={200} />;
+    return <ChartLoadingState />;
   }
 
   const byApp = stats?.byApp || {};
@@ -55,17 +56,10 @@ export function TopAppsChart() {
 
   if (data.length === 0) {
     return (
-      <div
-        style={{
-          height: "100%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: colors.textMuted,
-        }}
-      >
-        Ingen app-data tilgjengelig
-      </div>
+      <ChartEmptyState
+        message="Ingen app-data tilgjengelig"
+        color={colors.textMuted}
+      />
     );
   }
 

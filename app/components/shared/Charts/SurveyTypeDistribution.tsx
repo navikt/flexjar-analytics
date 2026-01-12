@@ -1,4 +1,3 @@
-import { Skeleton } from "@navikt/ds-react";
 import {
   Bar,
   BarChart,
@@ -9,6 +8,8 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { ChartEmptyState } from "~/components/shared/Charts/ChartEmptyState";
+import { ChartLoadingState } from "~/components/shared/Charts/ChartLoadingState";
 import { useTheme } from "~/context/ThemeContext";
 import { useSurveyTypeDistribution } from "~/hooks/useSurveyTypeDistribution";
 import type { SurveyType } from "~/types/api";
@@ -48,11 +49,11 @@ const CHART_COLORS_LIGHT = {
 
 interface SurveyTypeDistributionProps {
   /** Height of the chart in pixels */
-  height?: number;
+  height?: number | string;
 }
 
 export function SurveyTypeDistribution({
-  height = 200,
+  height = "100%",
 }: SurveyTypeDistributionProps) {
   const { data: distribution, isPending } = useSurveyTypeDistribution();
   const { theme } = useTheme();
@@ -60,22 +61,15 @@ export function SurveyTypeDistribution({
   const colors = theme === "light" ? CHART_COLORS_LIGHT : CHART_COLORS;
 
   if (isPending) {
-    return <Skeleton variant="rectangle" height={height} />;
+    return <ChartLoadingState />;
   }
 
   if (!distribution || distribution.distribution.length === 0) {
     return (
-      <div
-        style={{
-          height,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: colors.textMuted,
-        }}
-      >
-        Ingen survey-data tilgjengelig
-      </div>
+      <ChartEmptyState
+        message="Ingen survey-data tilgjengelig"
+        color={colors.textMuted}
+      />
     );
   }
 

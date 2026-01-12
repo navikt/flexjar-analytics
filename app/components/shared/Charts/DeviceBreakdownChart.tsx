@@ -1,12 +1,6 @@
-import {
-  BodyShort,
-  HStack,
-  Hide,
-  Label,
-  Show,
-  Skeleton,
-  VStack,
-} from "@navikt/ds-react";
+import { BodyShort, HStack, Hide, Label, Show, VStack } from "@navikt/ds-react";
+import { ChartEmptyState } from "~/components/shared/Charts/ChartEmptyState";
+import { ChartLoadingState } from "~/components/shared/Charts/ChartLoadingState";
 import { useTheme } from "~/context/ThemeContext";
 import { useSearchParams } from "~/hooks/useSearchParams";
 import { useStats } from "~/hooks/useStats";
@@ -77,7 +71,7 @@ export function DeviceBreakdownChart({
     showRating ?? (surveyType === "rating" || surveyType === "custom");
 
   if (isPending) {
-    return <Skeleton variant="rectangle" height={200} />;
+    return <ChartLoadingState />;
   }
 
   const byDevice = stats?.byDevice || {};
@@ -97,17 +91,10 @@ export function DeviceBreakdownChart({
 
   if (data.length === 0) {
     return (
-      <div
-        style={{
-          height: "100%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: colors.textMuted,
-        }}
-      >
-        Ingen enhetsdata tilgjengelig
-      </div>
+      <ChartEmptyState
+        message="Ingen enhetsdata tilgjengelig"
+        color={colors.textMuted}
+      />
     );
   }
 
