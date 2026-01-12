@@ -4,7 +4,7 @@ import type { TextTheme } from "~/types/api";
 export const mockThemes: TextTheme[] = [
   {
     id: "11111111-1111-1111-1111-111111111111",
-    team: "flex",
+    team: "team-esyfo",
     name: "Sykepenger",
     keywords: ["sykemelding", "sykepenger", "syk", "sykmelding"],
     color: "#3b82f6",
@@ -13,7 +13,7 @@ export const mockThemes: TextTheme[] = [
   },
   {
     id: "22222222-2222-2222-2222-222222222222",
-    team: "flex",
+    team: "team-esyfo",
     name: "Utbetaling",
     keywords: ["utbetalt", "penger", "konto", "betaling", "utbetaling"],
     color: "#10b981",
@@ -22,7 +22,7 @@ export const mockThemes: TextTheme[] = [
   },
   {
     id: "33333333-3333-3333-3333-333333333333",
-    team: "flex",
+    team: "team-esyfo",
     name: "Søknad",
     keywords: ["søknad", "søke", "status", "dagpenger", "skjema"],
     color: "#f59e0b",
@@ -31,7 +31,7 @@ export const mockThemes: TextTheme[] = [
   },
   {
     id: "44444444-4444-4444-4444-444444444444",
-    team: "flex",
+    team: "team-esyfo",
     name: "Kontakt",
     keywords: ["kontakte", "snakke", "telefon", "saksbehandler", "henvendelse"],
     color: "#8b5cf6",
@@ -40,7 +40,7 @@ export const mockThemes: TextTheme[] = [
   },
   {
     id: "55555555-5555-5555-5555-555555555555",
-    team: "flex",
+    team: "team-esyfo",
     name: "Navigasjon",
     keywords: [
       "fant ikke",
@@ -58,7 +58,7 @@ export const mockThemes: TextTheme[] = [
   // Blocker themes for Top Tasks
   {
     id: "blocker-innlogging",
-    team: "flex",
+    team: "team-esyfo",
     name: "Innlogging",
     keywords: [
       "logget ut",
@@ -75,7 +75,7 @@ export const mockThemes: TextTheme[] = [
   },
   {
     id: "blocker-navigasjon",
-    team: "flex",
+    team: "team-esyfo",
     name: "Navigasjon",
     keywords: [
       "fant ikke",
@@ -92,7 +92,7 @@ export const mockThemes: TextTheme[] = [
   },
   {
     id: "blocker-teknisk",
-    team: "flex",
+    team: "team-esyfo",
     name: "Teknisk feil",
     keywords: [
       "feilmelding",
@@ -109,7 +109,7 @@ export const mockThemes: TextTheme[] = [
   },
   {
     id: "blocker-forstaelse",
-    team: "flex",
+    team: "team-esyfo",
     name: "Forståelse / Språk",
     keywords: [
       "skjønner ikke",

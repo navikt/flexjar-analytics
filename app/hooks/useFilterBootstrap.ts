@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useSearchParams } from "~/hooks/useSearchParams";
 import { fetchFilterBootstrapServerFn } from "~/server/actions";
 import type { FilterBootstrapResponse } from "~/types/schemas";
 
@@ -29,9 +30,12 @@ import type { FilterBootstrapResponse } from "~/types/schemas";
  * ```
  */
 export function useFilterBootstrap() {
+  const { params } = useSearchParams();
+
   return useQuery<FilterBootstrapResponse>({
-    queryKey: ["filterBootstrap"],
-    queryFn: () => fetchFilterBootstrapServerFn(),
+    queryKey: ["filterBootstrap", { team: params.team }],
+    queryFn: () =>
+      fetchFilterBootstrapServerFn({ data: { team: params.team } }),
     staleTime: 5 * 60 * 1000, // 5 minutes - bootstrap data changes rarely
     gcTime: 30 * 60 * 1000, // 30 minutes - keep in cache longer
   });

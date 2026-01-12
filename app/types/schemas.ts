@@ -4,7 +4,14 @@ import { z } from "zod";
 // Input Schemas for Server Functions
 // ============================================
 
+export const TeamParamsSchema = z.object({
+  team: z.string().optional(),
+});
+
+export type TeamParams = z.infer<typeof TeamParamsSchema>;
+
 export const StatsParamsSchema = z.object({
+  team: z.string().optional(),
   app: z.string().optional(),
   fromDate: z.string().optional(),
   toDate: z.string().optional(),
@@ -23,6 +30,7 @@ export type StatsParams = z.infer<typeof StatsParamsSchema>;
  * Uses canonical parameter names.
  */
 export const FeedbackParamsSchema = z.object({
+  team: z.string().optional(),
   app: z.string().optional(),
   surveyId: z.string().optional(),
   page: z.string().optional(),
@@ -44,6 +52,7 @@ export const FeedbackParamsSchema = z.object({
 export type FeedbackParams = z.infer<typeof FeedbackParamsSchema>;
 
 export const TopTasksParamsSchema = z.object({
+  team: z.string().optional(),
   app: z.string().optional(),
   surveyId: z.string().optional(),
   fromDate: z.string().optional(),
@@ -56,6 +65,7 @@ export const TopTasksParamsSchema = z.object({
 export type TopTasksParams = z.infer<typeof TopTasksParamsSchema>;
 
 export const DiscoveryParamsSchema = z.object({
+  team: z.string().optional(),
   app: z.string().optional(),
   surveyId: z.string().optional(),
   fromDate: z.string().optional(),
@@ -66,6 +76,7 @@ export const DiscoveryParamsSchema = z.object({
 export type DiscoveryParams = z.infer<typeof DiscoveryParamsSchema>;
 
 export const BlockerParamsSchema = z.object({
+  team: z.string().optional(),
   app: z.string().optional(),
   surveyId: z.string().optional(),
   fromDate: z.string().optional(),
@@ -78,6 +89,7 @@ export const BlockerParamsSchema = z.object({
 export type BlockerParams = z.infer<typeof BlockerParamsSchema>;
 
 export const TaskPriorityParamsSchema = z.object({
+  team: z.string().optional(),
   app: z.string().optional(),
   surveyId: z.string().optional(),
   fromDate: z.string().optional(),
@@ -91,12 +103,14 @@ export type TaskPriorityParams = z.infer<typeof TaskPriorityParamsSchema>;
 export const TagActionSchema = z.object({
   id: z.string(),
   tag: z.string(),
+  team: z.string().optional(),
 });
 
 export type TagAction = z.infer<typeof TagActionSchema>;
 
 export const DeleteSurveySchema = z.object({
   surveyId: z.string(),
+  team: z.string().optional(),
 });
 
 export type DeleteSurvey = z.infer<typeof DeleteSurveySchema>;
@@ -119,14 +133,22 @@ export type FilterBootstrapResponse = z.infer<
   typeof FilterBootstrapResponseSchema
 >;
 
+export const FilterBootstrapParamsSchema = z.object({
+  team: z.string().optional(),
+});
+
+export type FilterBootstrapParams = z.infer<typeof FilterBootstrapParamsSchema>;
+
 export const DeleteFeedbackSchema = z.object({
   id: z.string(),
+  team: z.string().optional(),
 });
 
 export type DeleteFeedback = z.infer<typeof DeleteFeedbackSchema>;
 
 export const ContextTagsParamsSchema = z.object({
   surveyId: z.string(),
+  team: z.string().optional(),
   /** Max unique values per key. Keys with more values are filtered out. */
   maxCardinality: z.number().optional(),
   /** Filter by specific task (Top Tasks drill-down) */

@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useSearchParams } from "~/hooks/useSearchParams";
 import {
   createThemeServerFn,
   deleteThemeServerFn,
@@ -39,11 +40,13 @@ export interface UseThemesOptions {
  */
 export function useThemes(options: UseThemesOptions = {}) {
   const queryClient = useQueryClient();
+  const { params } = useSearchParams();
   const context = options.context ?? "ALL";
 
   const themesQuery = useQuery({
-    queryKey: ["themes", context],
-    queryFn: () => fetchThemesServerFn({ data: { context } }),
+    queryKey: ["themes", { team: params.team, context }],
+    queryFn: () =>
+      fetchThemesServerFn({ data: { context, team: params.team } }),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
@@ -57,6 +60,7 @@ export function useThemes(options: UseThemesOptions = {}) {
 
       return createThemeServerFn({
         data: {
+          team: params.team,
           ...input,
           analysisContext: input.analysisContext ?? context,
         },
@@ -84,6 +88,7 @@ export function useThemes(options: UseThemesOptions = {}) {
 
       return updateThemeServerFn({
         data: {
+          team: params.team,
           themeId,
           ...input,
           analysisContext,
@@ -98,7 +103,8 @@ export function useThemes(options: UseThemesOptions = {}) {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (themeId: string) => deleteThemeServerFn({ data: { themeId } }),
+    mutationFn: (themeId: string) =>
+      deleteThemeServerFn({ data: { themeId, team: params.team } }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["themes"] });
       queryClient.invalidateQueries({ queryKey: ["discoveryStats"] });

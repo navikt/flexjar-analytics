@@ -9,7 +9,7 @@ import {
   isMockMode,
   mockDelay,
 } from "~/server/utils";
-import { TagActionSchema } from "~/types/schemas";
+import { TagActionSchema, TeamParamsSchema } from "~/types/schemas";
 import { handleApiResponse } from "../fetchUtils";
 
 /**
@@ -17,15 +17,18 @@ import { handleApiResponse } from "../fetchUtils";
  */
 export const fetchTagsServerFn = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .handler(async ({ context }): Promise<string[]> => {
+  .inputValidator(zodValidator(TeamParamsSchema))
+  .handler(async ({ data, context }): Promise<string[]> => {
     const { backendUrl, oboToken } = context as AuthContext;
 
     if (isMockMode()) {
       await mockDelay();
-      return getMockTags();
+      return getMockTags(data.team);
     }
 
-    const url = buildUrl(backendUrl, "/api/v1/intern/feedback/tags");
+    const url = buildUrl(backendUrl, "/api/v1/intern/feedback/tags", {
+      team: data.team,
+    });
     const response = await fetch(url, {
       headers: getHeaders(oboToken),
     });
@@ -49,7 +52,13 @@ export const addTagServerFn = createServerFn({ method: "POST" })
       return { success: true };
     }
 
-    const url = `${backendUrl}/api/v1/intern/feedback/${encodeURIComponent(data.id)}/tags`;
+    const url = buildUrl(
+      backendUrl,
+      `/api/v1/intern/feedback/${encodeURIComponent(data.id)}/tags`,
+      {
+        team: data.team,
+      },
+    );
     const response = await fetch(url, {
       method: "POST",
       headers: getHeaders(oboToken),
@@ -78,7 +87,7 @@ export const removeTagServerFn = createServerFn({ method: "POST" })
     const url = buildUrl(
       backendUrl,
       `/api/v1/intern/feedback/${encodeURIComponent(data.id)}/tags`,
-      { tag: data.tag },
+      { tag: data.tag, team: data.team },
     );
     const response = await fetch(url, {
       method: "DELETE",

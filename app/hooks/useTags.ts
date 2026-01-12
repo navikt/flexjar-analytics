@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useSearchParams } from "~/hooks/useSearchParams";
 import {
   addTagServerFn,
   fetchTagsServerFn,
@@ -19,9 +20,11 @@ import {
  * ```
  */
 export function useTags() {
+  const { params } = useSearchParams();
+
   return useQuery({
-    queryKey: ["tags"],
-    queryFn: () => fetchTagsServerFn(),
+    queryKey: ["tags", { team: params.team }],
+    queryFn: () => fetchTagsServerFn({ data: { team: params.team } }),
     staleTime: 60000, // 1 minute
   });
 }
@@ -42,10 +45,11 @@ export function useTags() {
  */
 export function useAddTag() {
   const queryClient = useQueryClient();
+  const { params } = useSearchParams();
 
   return useMutation({
     mutationFn: ({ id, tag }: { id: string; tag: string }) =>
-      addTagServerFn({ data: { id, tag } }),
+      addTagServerFn({ data: { id, tag, team: params.team } }),
     onSuccess: () => {
       // Invalidate both feedback and tags queries
       queryClient.invalidateQueries({ queryKey: ["feedback"] });
@@ -62,10 +66,11 @@ export function useAddTag() {
  */
 export function useRemoveTag() {
   const queryClient = useQueryClient();
+  const { params } = useSearchParams();
 
   return useMutation({
     mutationFn: ({ id, tag }: { id: string; tag: string }) =>
-      removeTagServerFn({ data: { id, tag } }),
+      removeTagServerFn({ data: { id, tag, team: params.team } }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["feedback"] });
       queryClient.invalidateQueries({ queryKey: ["tags"] });

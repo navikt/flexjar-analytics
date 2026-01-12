@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { zodValidator } from "@tanstack/zod-adapter";
 import { getMockSurveyTypeDistribution } from "~/mock/mockData";
 import { authMiddleware } from "~/server/middleware/auth";
 import {
@@ -8,6 +9,7 @@ import {
   isMockMode,
   mockDelay,
 } from "~/server/utils";
+import { TeamParamsSchema } from "~/types/schemas";
 import { handleApiResponse } from "../fetchUtils";
 
 export interface SurveyTypeCount {
@@ -29,20 +31,25 @@ export const fetchSurveyTypeDistributionServerFn = createServerFn({
   method: "GET",
 })
   .middleware([authMiddleware])
-  .handler(async ({ context }): Promise<SurveyTypeDistributionResponse> => {
-    const { backendUrl, oboToken } = context as AuthContext;
+  .inputValidator(zodValidator(TeamParamsSchema))
+  .handler(
+    async ({ data, context }): Promise<SurveyTypeDistributionResponse> => {
+      const { backendUrl, oboToken } = context as AuthContext;
 
-    if (isMockMode()) {
-      await mockDelay();
-      return getMockSurveyTypeDistribution();
-    }
+      if (isMockMode()) {
+        await mockDelay();
+        return getMockSurveyTypeDistribution(data.team);
+      }
 
-    const url = buildUrl(backendUrl, "/api/v1/intern/stats/survey-types", {});
-    const response = await fetch(url, {
-      headers: getHeaders(oboToken),
-    });
+      const url = buildUrl(backendUrl, "/api/v1/intern/stats/survey-types", {
+        team: data.team,
+      });
+      const response = await fetch(url, {
+        headers: getHeaders(oboToken),
+      });
 
-    await handleApiResponse(response);
+      await handleApiResponse(response);
 
-    return response.json() as Promise<SurveyTypeDistributionResponse>;
-  });
+      return response.json() as Promise<SurveyTypeDistributionResponse>;
+    },
+  );

@@ -33,6 +33,7 @@ export const fetchTaskPriorityServerFn = createServerFn({ method: "GET" })
     }
 
     const backendParams = {
+      team: data.team,
       app: data.app,
       surveyId: data.surveyId,
       fromDate: data.fromDate,

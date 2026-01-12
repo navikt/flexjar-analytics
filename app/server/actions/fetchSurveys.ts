@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { zodValidator } from "@tanstack/zod-adapter";
 import { getMockSurveysByApp } from "~/mock/mockData";
 import { authMiddleware } from "~/server/middleware/auth";
 import {
@@ -8,6 +9,7 @@ import {
   isMockMode,
   mockDelay,
 } from "~/server/utils";
+import { TeamParamsSchema } from "~/types/schemas";
 import { handleApiResponse } from "../fetchUtils";
 
 /**
@@ -15,15 +17,18 @@ import { handleApiResponse } from "../fetchUtils";
  */
 export const fetchSurveysByAppServerFn = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
-  .handler(async ({ context }): Promise<Record<string, string[]>> => {
+  .inputValidator(zodValidator(TeamParamsSchema))
+  .handler(async ({ data, context }): Promise<Record<string, string[]>> => {
     const { backendUrl, oboToken } = context as AuthContext;
 
     if (isMockMode()) {
       await mockDelay();
-      return getMockSurveysByApp();
+      return getMockSurveysByApp(data.team);
     }
 
-    const url = buildUrl(backendUrl, "/api/v1/intern/surveys");
+    const url = buildUrl(backendUrl, "/api/v1/intern/surveys", {
+      team: data.team,
+    });
     const response = await fetch(url, {
       headers: getHeaders(oboToken),
     });

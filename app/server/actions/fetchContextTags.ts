@@ -28,6 +28,7 @@ export const fetchContextTagsServerFn = createServerFn({ method: "GET" })
       // Calculate actual context tags from mock data (with all filters)
       const contextTags = getMockContextTags(
         data.surveyId,
+        data.team,
         data.maxCardinality ?? 15,
         data.task, // Pass task filter for Top Tasks drill-down
         data.segment,
@@ -49,6 +50,7 @@ export const fetchContextTagsServerFn = createServerFn({ method: "GET" })
       backendUrl,
       `/api/v1/intern/surveys/${encodeURIComponent(data.surveyId)}/context-tags`,
       {
+        team: data.team,
         maxCardinality: String(data.maxCardinality ?? 10),
         task: data.task,
         segment: data.segment?.split(",").filter(Boolean),

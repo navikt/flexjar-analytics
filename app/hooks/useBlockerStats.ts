@@ -15,6 +15,7 @@ export function useBlockerStats() {
   return useQuery({
     queryKey: [
       "blockerStats",
+      params.team,
       params.app,
       params.fromDate,
       params.toDate,
@@ -25,6 +26,7 @@ export function useBlockerStats() {
     queryFn: () =>
       fetchBlockerServerFn({
         data: {
+          team: params.team,
           app: params.app,
           surveyId: params.surveyId,
           fromDate: params.fromDate,

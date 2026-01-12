@@ -26,6 +26,7 @@ function transformToBackendParams(data: Record<string, string | undefined>) {
     .filter(Boolean);
 
   return {
+    team: data.team,
     app: data.app,
     surveyId: data.surveyId,
     page,

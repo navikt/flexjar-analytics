@@ -15,6 +15,7 @@ export function useTaskPriorityStats() {
   return useQuery({
     queryKey: [
       "taskPriorityStats",
+      params.team,
       params.app,
       params.fromDate,
       params.toDate,
@@ -25,6 +26,7 @@ export function useTaskPriorityStats() {
     queryFn: () =>
       fetchTaskPriorityServerFn({
         data: {
+          team: params.team,
           app: params.app,
           surveyId: params.surveyId,
           fromDate: params.fromDate,

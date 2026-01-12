@@ -15,6 +15,7 @@ export function useDiscoveryStats() {
   return useQuery({
     queryKey: [
       "discoveryStats",
+      params.team,
       params.app,
       params.fromDate,
       params.toDate,
@@ -24,6 +25,7 @@ export function useDiscoveryStats() {
     queryFn: () =>
       fetchDiscoveryServerFn({
         data: {
+          team: params.team,
           app: params.app,
           surveyId: params.surveyId,
           fromDate: params.fromDate,

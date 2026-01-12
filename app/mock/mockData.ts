@@ -318,28 +318,31 @@ export function filterFeedback(
 // ============================================
 
 export function getMockStats(params: URLSearchParams): FeedbackStats {
-  return calculateStats(mockFeedbackItems, params);
+  return calculateStats(
+    getMockItemsForTeam(params.get("team") ?? undefined),
+    params,
+  );
 }
 
 export function getMockFeedback(params: URLSearchParams): FeedbackPage {
-  return filterFeedback(mockFeedbackItems, params);
+  return filterFeedback(
+    getMockItemsForTeam(params.get("team") ?? undefined),
+    params,
+  );
 }
 
 export function getMockTeams(): TeamsAndApps {
   return {
     teams: {
-      "team-esyfo": [
-        "syfo-oppfolgingsplan-frontend",
-        "oppfolgingsplan-frontend",
-      ],
+      "team-esyfo": ["syfo-oppfolgingsplan-frontend", "dialogmote-frontend"],
     },
   };
 }
 
-export function getMockTags(): string[] {
+export function getMockTags(team?: string): string[] {
   // Return actual tags used in the feedback, not surveyIds
   const allTags = new Set<string>();
-  for (const item of mockFeedbackItems) {
+  for (const item of getMockItemsForTeam(team)) {
     if (item.tags) {
       for (const tag of item.tags) {
         allTags.add(tag);
@@ -352,33 +355,45 @@ export function getMockTags(): string[] {
 export function getMockTopTasksStats(
   params: URLSearchParams,
 ): TopTasksResponse {
-  return calculateTopTasksStats(mockFeedbackItems, params);
+  return calculateTopTasksStats(
+    getMockItemsForTeam(params.get("team") ?? undefined),
+    params,
+  );
 }
 
 export function getMockDiscoveryStats(
   params: URLSearchParams,
 ): DiscoveryResponse {
-  return calculateDiscoveryStats(mockFeedbackItems, params);
+  return calculateDiscoveryStats(
+    getMockItemsForTeam(params.get("team") ?? undefined),
+    params,
+  );
 }
 
 export function getMockTaskPriorityStats(
   params: URLSearchParams,
 ): TaskPriorityResponse {
-  return calculateTaskPriorityStats(mockFeedbackItems, params);
+  return calculateTaskPriorityStats(
+    getMockItemsForTeam(params.get("team") ?? undefined),
+    params,
+  );
 }
 
 export function getMockBlockerStats(params: URLSearchParams): BlockerResponse {
-  return calculateBlockerStats(mockFeedbackItems, params);
+  return calculateBlockerStats(
+    getMockItemsForTeam(params.get("team") ?? undefined),
+    params,
+  );
 }
 
-export function getMockSurveyTypeDistribution(): {
+export function getMockSurveyTypeDistribution(team?: string): {
   totalSurveys: number;
   distribution: { type: string; count: number; percentage: number }[];
 } {
   const typeCounts: Record<string, number> = {};
   const seenSurveys = new Set<string>();
 
-  for (const item of mockFeedbackItems) {
+  for (const item of getMockItemsForTeam(team)) {
     const surveyId = item.surveyId;
     if (seenSurveys.has(surveyId)) continue;
     seenSurveys.add(surveyId);
@@ -400,10 +415,25 @@ export function getMockSurveyTypeDistribution(): {
   return { totalSurveys, distribution };
 }
 
-export function getMockSurveysByApp(): Record<string, string[]> {
+const MOCK_TEAM_BY_APP: Record<string, string> = {
+  "syfo-oppfolgingsplan-frontend": "team-esyfo",
+  "dialogmote-frontend": "team-esyfo",
+  "nav-no-frontend": "team-esyfo",
+};
+
+function getMockItemsForTeam(team?: string): FeedbackDto[] {
+  const resolvedTeam = team ?? "team-esyfo";
+
+  return mockFeedbackItems.filter((item) => {
+    const app = item.app ?? "unknown";
+    return (MOCK_TEAM_BY_APP[app] ?? "team-esyfo") === resolvedTeam;
+  });
+}
+
+export function getMockSurveysByApp(team?: string): Record<string, string[]> {
   const surveysByApp: Record<string, string[]> = {};
 
-  for (const item of mockFeedbackItems) {
+  for (const item of getMockItemsForTeam(team)) {
     const app = item.app || "unknown";
     const surveyId = item.surveyId;
 
@@ -422,7 +452,7 @@ export function getMockSurveysByApp(): Record<string, string[]> {
  * Get filter bootstrap data for mock mode.
  * Provides all data needed for FilterBar dropdowns.
  */
-export function getMockFilterBootstrap(): {
+export function getMockFilterBootstrap(team?: string): {
   generatedAt: string;
   selectedTeam: string;
   availableTeams: string[];
@@ -431,14 +461,18 @@ export function getMockFilterBootstrap(): {
   surveysByApp: Record<string, string[]>;
   tags: string[];
 } {
-  const surveysByApp = getMockSurveysByApp();
+  void team;
+  const availableTeams = ["team-esyfo"];
+  const selectedTeam = "team-esyfo";
+
+  const surveysByApp = getMockSurveysByApp(selectedTeam);
   const apps = Object.keys(surveysByApp).sort();
-  const tags = getMockTags();
+  const tags = getMockTags(selectedTeam);
 
   return {
     generatedAt: new Date().toISOString(),
-    selectedTeam: "flex",
-    availableTeams: ["flex"],
+    selectedTeam,
+    availableTeams,
     deviceTypes: ["mobile", "tablet", "desktop"],
     apps,
     surveysByApp,
@@ -491,6 +525,7 @@ export function deleteMockFeedback(id: string): boolean {
  */
 export function getMockContextTags(
   surveyId: string,
+  team: string | undefined,
   maxCardinality = 15,
   task?: string,
   segment?: string,
@@ -500,8 +535,8 @@ export function getMockContextTags(
   hasText = false,
   lowRating = false,
 ): Record<string, { value: string; count: number }[]> {
-  // Filter items by surveyId
-  let surveyItems = mockFeedbackItems.filter(
+  // Filter items by surveyId (and team)
+  let surveyItems = getMockItemsForTeam(team).filter(
     (item) => item.surveyId === surveyId,
   );
 

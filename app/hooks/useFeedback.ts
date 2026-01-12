@@ -36,6 +36,7 @@ export function useFeedback() {
   return useQuery({
     queryKey: [
       "feedback",
+      params.team,
       params.app,
       params.surveyId,
       params.page,
@@ -54,6 +55,7 @@ export function useFeedback() {
     queryFn: () =>
       fetchFeedbackServerFn({
         data: {
+          team: params.team,
           app: params.app,
           surveyId: params.surveyId,
           page: params.page,

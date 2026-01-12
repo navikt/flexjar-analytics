@@ -11,6 +11,7 @@ import {
   VStack,
 } from "@navikt/ds-react";
 import dayjs from "dayjs";
+import { useEffect } from "react";
 import { PeriodSelector } from "~/components/dashboard/PeriodSelector";
 import { getSurveyFeatures } from "~/config/surveyConfig";
 import { useFilterBootstrap } from "~/hooks/useFilterBootstrap";
@@ -24,12 +25,21 @@ interface FilterBarProps {
 }
 
 export function FilterBar({ showDetails = false }: FilterBarProps) {
-  const { params, setParam, resetParams } = useSearchParams();
+  const { params, setParam, setParams, resetParams } = useSearchParams();
 
   // Use centralized filter bootstrap for all dropdown data
   const { data: bootstrap, isPending: isPendingBootstrap } =
     useFilterBootstrap();
   const { data: stats, isPending: isPendingStats } = useStats();
+
+  // Ensure `team` is always present in the URL when backend provides it.
+  // This avoids React Query cache mixing and makes team-selection explicit.
+  useEffect(() => {
+    if (!bootstrap) return;
+    if (params.team) return;
+    if (!bootstrap.selectedTeam) return;
+    setParam("team", bootstrap.selectedTeam);
+  }, [bootstrap, params.team, setParam]);
 
   // Determine active features based on survey type
   const features = getSurveyFeatures(stats?.surveyType);
@@ -45,6 +55,9 @@ export function FilterBar({ showDetails = false }: FilterBarProps) {
   // Get available apps from bootstrap data
   const availableApps = bootstrap?.apps ?? [];
   const apps = ["alle", ...availableApps];
+
+  const availableTeams = bootstrap?.availableTeams ?? [];
+  const selectedTeam = params.team ?? bootstrap?.selectedTeam;
 
   // Get surveys by app from bootstrap data
   const surveysByApp = bootstrap?.surveysByApp ?? {};
@@ -89,15 +102,41 @@ export function FilterBar({ showDetails = false }: FilterBarProps) {
   };
 
   const handleReset = () => {
+    const team = params.team;
     resetParams();
     // Default to last 30 days on reset
     const end = dayjs();
     const start = dayjs().subtract(29, "day");
 
     setTimeout(() => {
-      setParam("fromDate", start.format("YYYY-MM-DD"));
-      setParam("toDate", end.format("YYYY-MM-DD"));
+      setParams({
+        team,
+        fromDate: start.format("YYYY-MM-DD"),
+        toDate: end.format("YYYY-MM-DD"),
+      });
     }, 0);
+  };
+
+  const handleTeamChange = (newTeam: string) => {
+    setParams({
+      team: newTeam,
+      // Keep period, reset the rest to avoid invalid cross-team combinations.
+      fromDate: params.fromDate,
+      toDate: params.toDate,
+      app: undefined,
+      surveyId: undefined,
+      query: undefined,
+      tag: undefined,
+      deviceType: undefined,
+      hasText: undefined,
+      lowRating: undefined,
+      segment: undefined,
+      task: undefined,
+      theme: undefined,
+      pathname: undefined,
+      page: undefined,
+      size: undefined,
+    });
   };
 
   // Only count filters that user has explicitly set (exclude default date range)
@@ -140,6 +179,23 @@ export function FilterBar({ showDetails = false }: FilterBarProps) {
           <HStack gap="space-12" align="end" justify="space-between" wrap>
             {/* Left side: Compact dropdowns + Search */}
             <HStack gap="space-12" align="end" wrap>
+              {availableTeams.length > 1 && selectedTeam && (
+                <Select
+                  label="Team"
+                  hideLabel
+                  size="small"
+                  value={selectedTeam}
+                  onChange={(e) => handleTeamChange(e.target.value)}
+                  style={{ minWidth: 140, maxWidth: 200 }}
+                >
+                  {availableTeams.map((team) => (
+                    <option key={team} value={team}>
+                      {team}
+                    </option>
+                  ))}
+                </Select>
+              )}
+
               <Select
                 label="App"
                 hideLabel
@@ -229,8 +285,25 @@ export function FilterBar({ showDetails = false }: FilterBarProps) {
         {/* Mobile/Tablet layout */}
         <Hide above="md">
           <VStack gap="space-8">
-            {/* First row: App + Survey */}
+            {/* First row: Team (optional) + App + Survey */}
             <HStack gap="space-8" wrap>
+              {availableTeams.length > 1 && selectedTeam && (
+                <Select
+                  label="Team"
+                  hideLabel
+                  size="small"
+                  value={selectedTeam}
+                  onChange={(e) => handleTeamChange(e.target.value)}
+                  style={{ flex: 1, minWidth: 120 }}
+                >
+                  {availableTeams.map((team) => (
+                    <option key={team} value={team}>
+                      {team}
+                    </option>
+                  ))}
+                </Select>
+              )}
+
               <Select
                 label="App"
                 hideLabel

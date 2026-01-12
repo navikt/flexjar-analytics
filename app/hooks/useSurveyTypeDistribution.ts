@@ -1,4 +1,5 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useSearchParams } from "~/hooks/useSearchParams";
 import { fetchSurveyTypeDistributionServerFn } from "~/server/actions/fetchSurveyTypeDistribution";
 import type { SurveyType } from "~/types/api";
 
@@ -14,9 +15,12 @@ export interface SurveyTypeDistributionData {
 }
 
 export function useSurveyTypeDistribution() {
+  const { params } = useSearchParams();
+
   return useQuery({
-    queryKey: ["surveyTypeDistribution"],
-    queryFn: () => fetchSurveyTypeDistributionServerFn(),
+    queryKey: ["surveyTypeDistribution", { team: params.team }],
+    queryFn: () =>
+      fetchSurveyTypeDistributionServerFn({ data: { team: params.team } }),
     placeholderData: keepPreviousData,
   });
 }

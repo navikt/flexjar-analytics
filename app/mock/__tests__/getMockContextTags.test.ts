@@ -119,6 +119,7 @@ describe("getMockContextTags", () => {
 
     const tags = getMockContextTags(
       surveyId,
+      undefined,
       15,
       undefined,
       "harAktivSykmelding:Ja",

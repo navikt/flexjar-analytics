@@ -3,6 +3,7 @@ import { zodValidator } from "@tanstack/zod-adapter";
 import { authMiddleware } from "~/server/middleware/auth";
 import {
   type AuthContext,
+  buildUrl,
   getHeaders,
   isMockMode,
   mockDelay,
@@ -25,7 +26,11 @@ export const deleteSurveyServerFn = createServerFn({ method: "POST" })
       return { deletedCount: 42, surveyId: data.surveyId };
     }
 
-    const url = `${backendUrl}/api/v1/intern/surveys/${encodeURIComponent(data.surveyId)}`;
+    const url = buildUrl(
+      backendUrl,
+      `/api/v1/intern/surveys/${encodeURIComponent(data.surveyId)}`,
+      { team: data.team },
+    );
     const response = await fetch(url, {
       method: "DELETE",
       headers: getHeaders(oboToken),
@@ -52,7 +57,11 @@ export const deleteFeedbackServerFn = createServerFn({ method: "POST" })
       return { success: deleted };
     }
 
-    const url = `${backendUrl}/api/v1/intern/feedback/${encodeURIComponent(data.id)}`;
+    const url = buildUrl(
+      backendUrl,
+      `/api/v1/intern/feedback/${encodeURIComponent(data.id)}`,
+      { team: data.team },
+    );
     const response = await fetch(url, {
       method: "DELETE",
       headers: getHeaders(oboToken),

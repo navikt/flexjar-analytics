@@ -137,6 +137,7 @@ function transformToBackendParams(data: Record<string, string | undefined>) {
 
   return {
     format: data.format,
+    team: data.team,
     app: data.app,
     surveyId: data.surveyId,
     fromDate: data.fromDate,

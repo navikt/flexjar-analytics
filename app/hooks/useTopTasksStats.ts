@@ -22,6 +22,7 @@ export function useTopTasksStats() {
     queryFn: () =>
       fetchTopTasksServerFn({
         data: {
+          team: params.team,
           app: params.app,
           surveyId: params.surveyId,
           fromDate: params.fromDate,

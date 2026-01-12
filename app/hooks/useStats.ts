@@ -32,6 +32,7 @@ export function useStats() {
   return useQuery({
     queryKey: [
       "stats",
+      params.team,
       params.app,
       params.fromDate,
       params.toDate,
@@ -43,6 +44,7 @@ export function useStats() {
     queryFn: () =>
       fetchStatsServerFn({
         data: {
+          team: params.team,
           app: params.app,
           fromDate: params.fromDate,
           toDate: params.toDate,

@@ -18,10 +18,12 @@ import { handleApiResponse } from "../fetchUtils";
 
 const ThemeIdSchema = z.object({
   themeId: z.string(),
+  team: z.string().optional(),
 });
 
 const FetchThemesParamsSchema = z.object({
   context: z.enum(["GENERAL_FEEDBACK", "BLOCKER", "ALL"]).optional(),
+  team: z.string().optional(),
 });
 
 const CreateThemeSchema = z.object({
@@ -30,6 +32,7 @@ const CreateThemeSchema = z.object({
   color: z.string().optional(),
   priority: z.number().optional(),
   analysisContext: z.enum(["GENERAL_FEEDBACK", "BLOCKER"]),
+  team: z.string().optional(),
 });
 
 const UpdateThemeSchema = z.object({
@@ -39,6 +42,7 @@ const UpdateThemeSchema = z.object({
   color: z.string().optional(),
   priority: z.number().optional(),
   analysisContext: z.enum(["GENERAL_FEEDBACK", "BLOCKER"]),
+  team: z.string().optional(),
 });
 
 import { mockThemes } from "~/mock/themes";
@@ -73,6 +77,9 @@ export const fetchThemesServerFn = createServerFn({ method: "GET" })
 
     // Build URL with optional context filter
     const params: Record<string, string> = {};
+    if (data.team) {
+      params.team = data.team;
+    }
     if (filterContext && filterContext !== "ALL") {
       params.context = filterContext;
     }
@@ -101,7 +108,7 @@ export const createThemeServerFn = createServerFn({ method: "POST" })
       await mockDelay();
       const newTheme: TextTheme = {
         id: crypto.randomUUID(),
-        team: "flex",
+        team: data.team ?? "team-esyfo",
         name: data.name,
         keywords: data.keywords,
         color: data.color,
@@ -112,14 +119,18 @@ export const createThemeServerFn = createServerFn({ method: "POST" })
       return newTheme;
     }
 
-    const url = buildUrl(backendUrl, "/api/v1/intern/themes", {});
+    const { team, ...payload } = data;
+
+    const url = buildUrl(backendUrl, "/api/v1/intern/themes", {
+      team,
+    });
     const response = await fetch(url, {
       method: "POST",
       headers: {
         ...getHeaders(oboToken),
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(payload),
     });
 
     await handleApiResponse(response);
@@ -134,7 +145,7 @@ export const updateThemeServerFn = createServerFn({ method: "POST" })
   .inputValidator(zodValidator(UpdateThemeSchema))
   .handler(async ({ data, context }): Promise<TextTheme> => {
     const { backendUrl, oboToken } = context as AuthContext;
-    const { themeId, ...updateData } = data;
+    const { themeId, team, ...updateData } = data;
 
     if (isMockMode()) {
       await mockDelay();
@@ -149,7 +160,9 @@ export const updateThemeServerFn = createServerFn({ method: "POST" })
       return theme;
     }
 
-    const url = buildUrl(backendUrl, `/api/v1/intern/themes/${themeId}`, {});
+    const url = buildUrl(backendUrl, `/api/v1/intern/themes/${themeId}`, {
+      team,
+    });
     const response = await fetch(url, {
       method: "PUT",
       headers: {
@@ -179,11 +192,9 @@ export const deleteThemeServerFn = createServerFn({ method: "POST" })
       return;
     }
 
-    const url = buildUrl(
-      backendUrl,
-      `/api/v1/intern/themes/${data.themeId}`,
-      {},
-    );
+    const url = buildUrl(backendUrl, `/api/v1/intern/themes/${data.themeId}`, {
+      team: data.team,
+    });
     const response = await fetch(url, {
       method: "DELETE",
       headers: getHeaders(oboToken),

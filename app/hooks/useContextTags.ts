@@ -31,6 +31,7 @@ export function useContextTags(surveyId: string, maxCardinality?: number) {
       "context-tags",
       surveyId,
       maxCardinality,
+      params.team,
       params.task,
       params.segment,
       params.fromDate,
@@ -44,6 +45,7 @@ export function useContextTags(surveyId: string, maxCardinality?: number) {
         data: {
           surveyId: surveyId,
           maxCardinality: maxCardinality,
+          team: params.team,
           task: params.task, // Pass task filter for Top Tasks drill-down
           segment: params.segment,
           fromDate: params.fromDate, // Pass period filter
