@@ -33,6 +33,11 @@ export function useContextTags(surveyId: string, maxCardinality?: number) {
       maxCardinality,
       params.task,
       params.segment,
+      params.fromDate,
+      params.toDate,
+      params.deviceType,
+      params.hasText,
+      params.lowRating,
     ],
     queryFn: () =>
       fetchContextTagsServerFn({
@@ -41,6 +46,11 @@ export function useContextTags(surveyId: string, maxCardinality?: number) {
           maxCardinality: maxCardinality,
           task: params.task, // Pass task filter for Top Tasks drill-down
           segment: params.segment,
+          fromDate: params.fromDate, // Pass period filter
+          toDate: params.toDate,
+          deviceType: params.deviceType,
+          hasText: params.hasText === "true",
+          lowRating: params.lowRating === "true",
         },
       }),
     enabled: !!surveyId,

@@ -133,6 +133,16 @@ export const ContextTagsParamsSchema = z.object({
   task: z.string().optional(),
   /** Segment filters (format: "key:value,key:value") */
   segment: z.string().optional(),
+  /** Period filter: start date (YYYY-MM-DD) */
+  fromDate: z.string().optional(),
+  /** Period filter: end date (YYYY-MM-DD) */
+  toDate: z.string().optional(),
+  /** Device type filter: mobile, tablet, desktop */
+  deviceType: z.string().optional(),
+  /** Filter for feedback with text responses */
+  hasText: z.boolean().optional(),
+  /** Filter for low ratings (1-2) */
+  lowRating: z.boolean().optional(),
 });
 
 export type ContextTagsParams = z.infer<typeof ContextTagsParamsSchema>;

@@ -19,6 +19,11 @@ import { useState } from "react";
 import { DashboardCard, DashboardGrid } from "~/components/dashboard";
 import { useSearchParams } from "~/hooks/useSearchParams";
 import { exportServerFn } from "~/server/actions";
+import {
+  formatMetadataLabel,
+  formatMetadataValue,
+  parseSegmentParam,
+} from "~/utils/segmentUtils";
 
 type ExportFormat = "csv" | "json" | "excel";
 
@@ -184,14 +189,17 @@ export function ExportPanel() {
 function ActiveFilters({
   params,
 }: { params: ReturnType<typeof useSearchParams>["params"] }) {
+  const segments = parseSegmentParam(params.segment);
+  const segmentEntries = Object.entries(segments);
+
   return (
-    <div style={{ display: "grid", gap: "1rem" }}>
-      {params.app && (
+    <VStack gap="space-12">
+      {params.app && params.app !== "alle" && (
         <BodyShort size="small" spacing>
           <strong>App:</strong> {params.app}
         </BodyShort>
       )}
-      {params.surveyId && (
+      {params.surveyId && params.surveyId !== "alle" && (
         <BodyShort size="small" spacing>
           <strong>Survey:</strong> {params.surveyId}
         </BodyShort>
@@ -206,6 +214,11 @@ function ActiveFilters({
           <strong>Til:</strong> {dayjs(params.toDate).format("DD.MM.YYYY")}
         </BodyShort>
       )}
+      {params.query && (
+        <BodyShort size="small" spacing>
+          <strong>Søk:</strong> {params.query}
+        </BodyShort>
+      )}
       {params.hasText === "true" && (
         <BodyShort size="small" spacing>
           <strong>Filter:</strong> Kun med tekst
@@ -216,6 +229,11 @@ function ActiveFilters({
           <strong>Filter:</strong> Kun lave vurderinger (1-2)
         </BodyShort>
       )}
+      {params.tag && (
+        <BodyShort size="small" spacing>
+          <strong>Tags:</strong> {params.tag}
+        </BodyShort>
+      )}
       {params.deviceType && (
         <BodyShort size="small" spacing>
           <strong>Enhet:</strong>{" "}
@@ -223,9 +241,24 @@ function ActiveFilters({
             ? "Mobil"
             : params.deviceType === "desktop"
               ? "Desktop"
-              : "Alle"}
+              : params.deviceType === "tablet"
+                ? "Nettbrett"
+                : "Alle"}
         </BodyShort>
       )}
-    </div>
+
+      {segmentEntries.length > 0 && (
+        <VStack gap="space-4">
+          <BodyShort size="small" spacing>
+            <strong>Segmentering:</strong>
+          </BodyShort>
+          {segmentEntries.map(([key, value]) => (
+            <BodyShort key={key} size="small" spacing>
+              {formatMetadataLabel(key)}: {formatMetadataValue(value)}
+            </BodyShort>
+          ))}
+        </VStack>
+      )}
+    </VStack>
   );
 }

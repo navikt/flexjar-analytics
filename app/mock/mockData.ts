@@ -494,11 +494,49 @@ export function getMockContextTags(
   maxCardinality = 15,
   task?: string,
   segment?: string,
+  fromDate?: string,
+  toDate?: string,
+  deviceType?: string,
+  hasText = false,
+  lowRating = false,
 ): Record<string, { value: string; count: number }[]> {
   // Filter items by surveyId
   let surveyItems = mockFeedbackItems.filter(
     (item) => item.surveyId === surveyId,
   );
+
+  // Period filter (must match the feedback filtering logic)
+  if (fromDate) {
+    surveyItems = surveyItems.filter((item) => item.submittedAt >= fromDate);
+  }
+  if (toDate) {
+    surveyItems = surveyItems.filter(
+      (item) => item.submittedAt <= `${toDate}T23:59:59Z`,
+    );
+  }
+
+  // Device type filter
+  if (deviceType) {
+    surveyItems = surveyItems.filter(
+      (item) => item.context?.deviceType === deviceType,
+    );
+  }
+
+  // Has text filter
+  if (hasText) {
+    surveyItems = surveyItems.filter((item) => hasTextResponse(item));
+  }
+
+  // Low rating filter (1-2)
+  if (lowRating) {
+    surveyItems = surveyItems.filter((item) => {
+      const ratingAnswer = item.answers.find((a) => a.fieldType === "RATING");
+      if (ratingAnswer && ratingAnswer.value.type === "rating") {
+        return ratingAnswer.value.rating <= 2;
+      }
+      return false;
+    });
+  }
 
   // Task filter: filter by specific task name (for Top Tasks drill-down)
   if (task) {

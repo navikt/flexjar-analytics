@@ -25,12 +25,17 @@ export const fetchContextTagsServerFn = createServerFn({ method: "GET" })
     if (isMockMode()) {
       await mockDelay(300);
 
-      // Calculate actual context tags from mock data
+      // Calculate actual context tags from mock data (with all filters)
       const contextTags = getMockContextTags(
         data.surveyId,
         data.maxCardinality ?? 15,
         data.task, // Pass task filter for Top Tasks drill-down
         data.segment,
+        data.fromDate,
+        data.toDate,
+        data.deviceType,
+        data.hasText ?? false,
+        data.lowRating ?? false,
       );
 
       return {
@@ -47,6 +52,11 @@ export const fetchContextTagsServerFn = createServerFn({ method: "GET" })
         maxCardinality: String(data.maxCardinality ?? 10),
         task: data.task,
         segment: data.segment?.split(",").filter(Boolean),
+        fromDate: data.fromDate,
+        toDate: data.toDate,
+        deviceType: data.deviceType,
+        hasText: data.hasText === true ? "true" : undefined,
+        lowRating: data.lowRating === true ? "true" : undefined,
       },
     );
     const response = await fetch(url, {

@@ -1,5 +1,4 @@
-import { ChevronDownIcon } from "@navikt/aksel-icons";
-import { ActionMenu, Button, HStack } from "@navikt/ds-react";
+import { Select, VStack } from "@navikt/ds-react";
 import { useContextTags } from "~/hooks/useContextTags";
 import { useSegmentFilter } from "~/hooks/useSegmentFilter";
 import { formatMetadataLabel, formatMetadataValue } from "~/utils/segmentUtils";
@@ -9,8 +8,8 @@ interface ContextTagsFilterProps {
 }
 
 /**
- * Compact filter component using ActionMenu dropdowns.
- * One dropdown per context tag for efficient single-select filtering.
+ * Compact segmentation controls for context.tags.
+ * Renders one single-select per key.
  */
 export function ContextTagsFilter({ surveyId }: ContextTagsFilterProps) {
   const { activeFilters, addSegment, removeSegment } = useSegmentFilter();
@@ -40,45 +39,30 @@ export function ContextTagsFilter({ surveyId }: ContextTagsFilterProps) {
   };
 
   return (
-    <HStack gap="space-8" wrap>
+    <VStack gap="space-8">
       {Object.entries(contextTags).map(([key, values]) => {
         const label = formatMetadataLabel(key);
         const selectedValue = activeFilters[key];
-        const displayValue = selectedValue
-          ? `${label}: ${formatMetadataValue(selectedValue)}`
-          : label;
 
         return (
-          <ActionMenu key={key}>
-            <ActionMenu.Trigger>
-              <Button
-                variant={
-                  selectedValue ? "primary-neutral" : "secondary-neutral"
-                }
-                size="small"
-                icon={<ChevronDownIcon aria-hidden />}
-                iconPosition="right"
-              >
-                {displayValue}
-              </Button>
-            </ActionMenu.Trigger>
-            <ActionMenu.Content>
-              <ActionMenu.RadioGroup
-                label={label}
-                value={selectedValue || ""}
-                onValueChange={(val) => setFilter(key, val || undefined)}
-              >
-                <ActionMenu.RadioItem value="">Alle</ActionMenu.RadioItem>
-                {values.map((item) => (
-                  <ActionMenu.RadioItem key={item.value} value={item.value}>
-                    {formatMetadataValue(item.value)} ({item.count})
-                  </ActionMenu.RadioItem>
-                ))}
-              </ActionMenu.RadioGroup>
-            </ActionMenu.Content>
-          </ActionMenu>
+          <Select
+            key={key}
+            label={label}
+            size="small"
+            value={selectedValue || ""}
+            onChange={(e) =>
+              setFilter(key, e.target.value === "" ? undefined : e.target.value)
+            }
+          >
+            <option value="">Alle</option>
+            {values.map((item) => (
+              <option key={item.value} value={item.value}>
+                {formatMetadataValue(item.value)} ({item.count})
+              </option>
+            ))}
+          </Select>
         );
       })}
-    </HStack>
+    </VStack>
   );
 }

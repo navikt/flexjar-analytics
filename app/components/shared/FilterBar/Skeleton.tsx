@@ -1,7 +1,6 @@
 import {
   Skeleton as AkselSkeleton,
   Box,
-  HGrid,
   HStack,
   Hide,
   Show,
@@ -19,7 +18,7 @@ export function Skeleton({
 }: FilterBarSkeletonProps) {
   return (
     <VStack gap="space-12" style={{ width: "100%" }}>
-      {/* Primary Row: Mirrors FilterBar's HGrid layout */}
+      {/* Mirrors FilterBar layout */}
       <Box.New
         padding={{ xs: "space-12", md: "space-16" }}
         background="raised"
@@ -28,81 +27,66 @@ export function Skeleton({
         borderColor="neutral-subtle"
         borderWidth="1"
       >
-        <HGrid
-          columns={{ xs: 1, sm: 2, lg: "1fr 1fr auto auto" }}
-          gap={{ xs: "space-8", md: "space-12" }}
-          align="end"
-        >
-          {/* App Select Skeleton */}
-          <AkselSkeleton variant="rounded" height={32} />
+        {/* Desktop layout */}
+        <Show above="md">
+          <HStack gap="space-12" align="end" justify="space-between" wrap>
+            {/* Left side: App/Survey/Search + Filter button */}
+            <HStack gap="space-12" align="end" wrap>
+              <AkselSkeleton variant="rounded" width={140} height={32} />
+              <AkselSkeleton variant="rounded" width={180} height={32} />
+              {showDetails && (
+                <AkselSkeleton variant="rounded" width={180} height={32} />
+              )}
+              {showDetails && (
+                <AkselSkeleton variant="rounded" width={96} height={32} />
+              )}
+            </HStack>
 
-          {/* Survey Select Skeleton */}
-          <AkselSkeleton variant="rounded" height={32} />
-
-          {/* Period and Reset - visible on lg+ */}
-          <Show above="lg">
-            <AkselSkeleton variant="rounded" width={156} height={34} />
-          </Show>
-          <Show above="lg">
-            {hasActiveFilters && (
-              <AkselSkeleton variant="rounded" width={100} height={32} />
-            )}
-          </Show>
-        </HGrid>
-
-        {/* Period and reset on mobile/tablet */}
-        <Hide above="lg">
-          <HStack
-            gap="space-8"
-            justify="space-between"
-            align="center"
-            style={{ marginTop: "0.5rem" }}
-          >
-            <AkselSkeleton variant="rounded" width={156} height={34} />
-            {hasActiveFilters && (
-              <AkselSkeleton variant="rounded" width={100} height={32} />
-            )}
+            {/* Right side: Period + Reset */}
+            <HStack gap="space-8" align="end">
+              <AkselSkeleton variant="rounded" width={156} height={34} />
+              {hasActiveFilters && (
+                <AkselSkeleton variant="rounded" width={96} height={32} />
+              )}
+            </HStack>
           </HStack>
+        </Show>
+
+        {/* Mobile/Tablet layout */}
+        <Hide above="md">
+          <VStack gap="space-8">
+            {/* First row: App + Survey */}
+            <HStack gap="space-8" wrap>
+              <AkselSkeleton
+                variant="rounded"
+                height={32}
+                style={{ flex: 1 }}
+              />
+              <AkselSkeleton
+                variant="rounded"
+                height={32}
+                style={{ flex: 1 }}
+              />
+            </HStack>
+
+            {/* Second row: Period + Filter + Reset */}
+            <HStack gap="space-8" justify="space-between" align="center">
+              <HStack gap="space-8" align="center">
+                <AkselSkeleton variant="rounded" width={156} height={34} />
+                {showDetails && (
+                  <AkselSkeleton variant="rounded" width={96} height={32} />
+                )}
+              </HStack>
+              {hasActiveFilters && (
+                <AkselSkeleton variant="rounded" width={32} height={32} />
+              )}
+            </HStack>
+
+            {/* Third row: Search */}
+            {showDetails && <AkselSkeleton variant="rounded" height={32} />}
+          </VStack>
         </Hide>
       </Box.New>
-
-      {/* Secondary Row: Detail Filters */}
-      {showDetails && (
-        <Box.New
-          paddingInline="space-16"
-          paddingBlock="space-12"
-          style={{
-            background: "var(--ax-bg-default)",
-            minHeight: "44px",
-          }}
-          borderRadius="large"
-          borderColor="neutral-subtle"
-          borderWidth="1"
-        >
-          <HStack gap="space-12" align="center" wrap>
-            <HStack gap="space-8" align="center">
-              {/* Search + Tags */}
-              <AkselSkeleton variant="rounded" width={200} height={32} />
-              <AkselSkeleton variant="rounded" width={200} height={32} />
-            </HStack>
-
-            <HStack gap="space-8" align="center">
-              {/* Device Toggle + Buttons */}
-              <AkselSkeleton variant="rounded" width={150} height={32} />
-              <div
-                style={{
-                  width: "1px",
-                  height: "24px",
-                  background: "var(--ax-border-neutral-subtle)",
-                  margin: "0 0.25rem",
-                }}
-              />
-              <AkselSkeleton variant="rounded" width={100} height={32} />
-              <AkselSkeleton variant="rounded" width={100} height={32} />
-            </HStack>
-          </HStack>
-        </Box.New>
-      )}
     </VStack>
   );
 }
