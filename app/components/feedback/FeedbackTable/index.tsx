@@ -80,9 +80,7 @@ export function FeedbackTable() {
       )}
 
       {feedbackList.length === 0 ? (
-        <Alert variant="info">
-          Ingen tilbakemeldinger funnet med disse filtrene
-        </Alert>
+        <Alert variant="info">Ingen tilbakemeldinger funnet</Alert>
       ) : (
         <>
           {/* Desktop: Table view */}
