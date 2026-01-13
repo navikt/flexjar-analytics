@@ -1,6 +1,6 @@
 import { Box, HStack, Heading, Tag, Tooltip, VStack } from "@navikt/ds-react";
 import type { TagProps } from "@navikt/ds-react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { DiscoveryDashboard } from "~/components/dashboard/views/Discovery/Dashboard";
 import { OverviewDashboard } from "~/components/dashboard/views/Overview/Dashboard";
@@ -13,6 +13,8 @@ import { Header } from "~/components/shared/Header";
 import { PrivacyMaskedNotice } from "~/components/shared/PrivacyMaskedNotice";
 import { useSearchParams } from "~/hooks/useSearchParams";
 import { useStats } from "~/hooks/useStats";
+import { queryClient } from "~/queryClient";
+import { fetchFilterBootstrapServerFn } from "~/server/actions";
 import type { SurveyType } from "~/types/api";
 
 /**
@@ -74,6 +76,39 @@ const SURVEY_CONFIG: Record<
 };
 
 export const Route = createFileRoute("/")({
+  beforeLoad: async () => {
+    // Only enforce on the client; SSR can render without team and the client will redirect.
+    if (typeof window === "undefined") return;
+
+    const currentSearch = new URLSearchParams(window.location.search);
+    const currentTeam = currentSearch.get("team")?.trim();
+    if (currentTeam) return;
+
+    const bootstrap = await queryClient.ensureQueryData({
+      queryKey: ["filterBootstrap", { team: undefined }],
+      queryFn: () =>
+        fetchFilterBootstrapServerFn({ data: { team: undefined } }),
+      staleTime: 5 * 60 * 1000,
+    });
+
+    const selectedTeam = bootstrap?.selectedTeam?.trim();
+    if (!selectedTeam) return;
+
+    // Seed the cache for the canonical key used after redirect.
+    queryClient.setQueryData(
+      ["filterBootstrap", { team: selectedTeam }],
+      bootstrap,
+    );
+
+    const nextSearch = Object.fromEntries(currentSearch.entries());
+    nextSearch.team = selectedTeam;
+
+    throw redirect({
+      to: "/",
+      search: nextSearch,
+      replace: true,
+    });
+  },
   component: DashboardPage,
 });
 

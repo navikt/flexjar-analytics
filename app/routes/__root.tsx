@@ -1,5 +1,5 @@
 import { Theme } from "@navikt/ds-react/Theme";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import {
   HeadContent,
   Outlet,
@@ -13,17 +13,8 @@ import akselStyles from "@navikt/ds-css/darkside?url";
 import flexjarLogo from "~/assets/flexjar.png";
 import { ErrorComponent } from "~/components/shared/ErrorComponent";
 import { ThemeProvider, useTheme } from "~/context/ThemeContext";
+import { queryClient } from "~/queryClient";
 import globalStyles from "~/styles/global.css?url";
-
-// Create QueryClient outside component to avoid recreation on each render
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60, // 1 minute
-      retry: 1,
-    },
-  },
-});
 
 export const Route = createRootRoute({
   head: () => ({
