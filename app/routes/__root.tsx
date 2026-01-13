@@ -1,5 +1,5 @@
 import { Theme } from "@navikt/ds-react/Theme";
-import { QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   HeadContent,
   Outlet,
@@ -7,13 +7,13 @@ import {
   createRootRoute,
 } from "@tanstack/react-router";
 import type * as React from "react";
+import { useState } from "react";
 
 // Import Aksel Darkside styles (supports light/dark mode)
 import akselStyles from "@navikt/ds-css/darkside?url";
 import flexjarLogo from "~/assets/flexjar.png";
 import { ErrorComponent } from "~/components/shared/ErrorComponent";
 import { ThemeProvider, useTheme } from "~/context/ThemeContext";
-import { queryClient } from "~/queryClient";
 import globalStyles from "~/styles/global.css?url";
 
 export const Route = createRootRoute({
@@ -49,6 +49,18 @@ export const Route = createRootRoute({
 });
 
 function RootComponent() {
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 1000 * 60, // 1 minute
+            retry: 1,
+          },
+        },
+      }),
+  );
+
   return (
     <ThemeProvider>
       <QueryClientProvider client={queryClient}>

@@ -11,7 +11,6 @@ import {
   VStack,
 } from "@navikt/ds-react";
 import dayjs from "dayjs";
-import { useEffect } from "react";
 import { PeriodSelector } from "~/components/dashboard/PeriodSelector";
 import { getSurveyFeatures } from "~/config/surveyConfig";
 import { useFilterBootstrap } from "~/hooks/useFilterBootstrap";
@@ -31,15 +30,6 @@ export function FilterBar({ showDetails = false }: FilterBarProps) {
   const { data: bootstrap, isPending: isPendingBootstrap } =
     useFilterBootstrap();
   const { data: stats, isPending: isPendingStats } = useStats();
-
-  // Ensure `team` is always present in the URL when backend provides it.
-  // This avoids React Query cache mixing and makes team-selection explicit.
-  useEffect(() => {
-    if (!bootstrap) return;
-    if (params.team) return;
-    if (!bootstrap.selectedTeam) return;
-    setParam("team", bootstrap.selectedTeam);
-  }, [bootstrap, params.team, setParam]);
 
   // Determine active features based on survey type
   const features = getSurveyFeatures(stats?.surveyType);

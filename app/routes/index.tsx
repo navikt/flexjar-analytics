@@ -13,7 +13,6 @@ import { Header } from "~/components/shared/Header";
 import { PrivacyMaskedNotice } from "~/components/shared/PrivacyMaskedNotice";
 import { useSearchParams } from "~/hooks/useSearchParams";
 import { useStats } from "~/hooks/useStats";
-import { queryClient } from "~/queryClient";
 import { fetchFilterBootstrapServerFn } from "~/server/actions";
 import type { SurveyType } from "~/types/api";
 
@@ -76,38 +75,36 @@ const SURVEY_CONFIG: Record<
 };
 
 export const Route = createFileRoute("/")({
-  beforeLoad: async () => {
-    // Only enforce on the client; SSR can render without team and the client will redirect.
-    if (typeof window === "undefined") return;
-
-    const currentSearch = new URLSearchParams(window.location.search);
-    const currentTeam = currentSearch.get("team")?.trim();
+  beforeLoad: async ({ location }) => {
+    // Ensure `team` is present before route components render.
+    // This prevents an initial fetch with team=undefined followed by a second fetch after `team` is injected.
+    const currentTeamRaw = (
+      location.search as Record<string, unknown> | undefined
+    )?.team;
+    const currentTeam =
+      typeof currentTeamRaw === "string" ? currentTeamRaw.trim() : undefined;
     if (currentTeam) return;
 
-    const bootstrap = await queryClient.ensureQueryData({
-      queryKey: ["filterBootstrap", { team: undefined }],
-      queryFn: () =>
-        fetchFilterBootstrapServerFn({ data: { team: undefined } }),
-      staleTime: 5 * 60 * 1000,
-    });
+    try {
+      const bootstrap = await fetchFilterBootstrapServerFn({
+        data: { team: undefined },
+      });
+      const selectedTeam = bootstrap?.selectedTeam?.trim();
+      if (!selectedTeam) return;
 
-    const selectedTeam = bootstrap?.selectedTeam?.trim();
-    if (!selectedTeam) return;
-
-    // Seed the cache for the canonical key used after redirect.
-    queryClient.setQueryData(
-      ["filterBootstrap", { team: selectedTeam }],
-      bootstrap,
-    );
-
-    const nextSearch = Object.fromEntries(currentSearch.entries());
-    nextSearch.team = selectedTeam;
-
-    throw redirect({
-      to: "/",
-      search: nextSearch,
-      replace: true,
-    });
+      throw redirect({
+        to: "/",
+        search: {
+          ...(location.search as Record<string, unknown> | undefined),
+          team: selectedTeam,
+        },
+        replace: true,
+      });
+    } catch {
+      // If we're not authenticated yet (or bootstrap fails), don't block rendering.
+      // The UI and existing FilterBar fallback behavior will still work.
+      return;
+    }
   },
   component: DashboardPage,
 });
